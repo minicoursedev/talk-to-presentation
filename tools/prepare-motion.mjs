@@ -53,6 +53,6 @@ try{
   if(errors.length) throw Error(errors.join('\n'));
   if(!preview) await copyFile(resolve(caseDir,'audio/timeline.wav'),resolve(caseDir,'motion/timeline.wav'));
   await writeFile(resolve(caseDir,'motion/src/prepared.json'),JSON.stringify({...meta.format,audio:!preview,pages},null,2)+'\n');
-  await writeFile(resolve(caseDir,'motion/src/project.meta'),JSON.stringify({version:0,shared:{background:null,range:[0,(pages.reduce((sum,p)=>sum+p.frames,0)-1-1e-6)/meta.format.fps],size:{x:meta.format.width,y:meta.format.height},audioOffset:0},preview:{fps:meta.format.fps,resolutionScale:1},rendering:{fps:meta.format.fps,resolutionScale:1,colorSpace:'srgb',exporter:{name:'@motion-canvas/ffmpeg',options:{fastStart:true,includeAudio:!preview}}}},null,2)+'\n');
+  await writeFile(resolve(caseDir,'motion/src/project.meta'),JSON.stringify({version:0,shared:{background:null,range:[0,pages.reduce((sum,p)=>sum+p.frames,0)/meta.format.fps],size:{x:meta.format.width,y:meta.format.height},audioOffset:0},preview:{fps:meta.format.fps,resolutionScale:1},rendering:{fps:meta.format.fps,resolutionScale:1,colorSpace:'srgb',exporter:{name:'@canvas-commons/ffmpeg',options:{fastStart:true,includeAudio:!preview}}}},null,2)+'\n');
   console.log(`Prepared ${pages.length} pages (${preview?'SILENT PREVIEW ONLY':'with narration'}).`);
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

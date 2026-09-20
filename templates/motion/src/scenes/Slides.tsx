@@ -1,9 +1,9 @@
-import {Img, makeScene2D} from '@motion-canvas/2d';
-import {createRef} from '@motion-canvas/core';
+import {Img, makeScene2D} from '@canvas-commons/2d';
+import {createRef} from '@canvas-commons/core';
 import prepared from '../prepared.json';
 
 // Baseline: exact illustrated-HTML composition, visible first frame and direct cuts.
-// For object-level animation replace this case's scene with native Motion Canvas layers.
+// For object-level animation replace this case's scene with native Canvas Commons layers.
 export default makeScene2D(function* (view) {
   const layers = prepared.pages.map(() => createRef<Img>());
   prepared.pages.forEach((page, index) => view.add(

@@ -1,6 +1,6 @@
 [繁體中文](video.md) | [简体中文](video.zh-CN.md) | [English](video.en.md)
 
-# Motion Canvas 输出
+# Canvas Commons 输出
 
 以下命令皆使用绝对 `PROJECT_ROOT`；`my-talk` 换成案件 ID。
 
@@ -33,7 +33,7 @@ prepare-motion 使用自己启动的短期 HTTP 伺服器与 Chromium，结束�
 
 ## 动画及构图
 
-默认模板是真正的 Motion Canvas scene，逐页图片直接切换。它不包含物件分层动画。需要动画时依用户指定修改案件 scene，使用原生 Layout/Txt/Img 与 tween；不要宣称整页图片就是分层动画。
+默认模板是真正的 Canvas Commons scene，逐页图片直接切换。它不包含物件分层动画。需要动画时依用户指定修改案件 scene，使用原生 Layout/Txt/Img 与 tween；不要宣称整页图片就是分层动画。
 
 - 首帧内容及品牌即须可见；不要以全透明 fade-in 或空白等待初始化。
 - 换页前页可见直到下一页接手；不可先全部淡出造成空白。
@@ -44,10 +44,10 @@ prepare-motion 使用自己启动的短期 HTTP 伺服器与 Chromium，结束�
 
 ## 渲染
 
-`build` 只完成 TypeScript/Vite 编译。正式 MP4 由 Motion Canvas 编辑器渲染：
+`build` 只完成 TypeScript/Vite 编译。正式 MP4 由 Canvas Commons 编辑器渲染：
 
 1. Exporter 选 `Video (FFmpeg)`。
-2. 沿用 prepare-motion 设置的 range（0 至总帧数减 1，exporter 包含结束帧），尺寸、fps 依 case.format，scale 1、audio offset 0。
+2. 沿用 prepare-motion 设置的 range（0 至总帧数／fps 秒；新版 exporter 以此差值限制 MP4 时长，不再减一帧），尺寸、fps 依 case.format，scale 1、audio offset 0。
 3. 正式视频启用 Include audio 与 Fast start。静音预览不开音讯，且只以 preview 名称交付。
 4. 按 RENDER 等待完成；输出在 `cases/my-talk/motion/output/`，以实际档名为准。
 

@@ -2,7 +2,7 @@
 
 # Presentation production handoff (macOS)
 
-Turn a conversation between a person and AI into shared presentation sources, then produce Takahashi-style HTML, illustrated HTML, and a narrated Motion Canvas MP4. The brand, voice, and case content are replaceable; no particular event or organization is required.
+Turn a conversation between a person and AI into shared presentation sources, then produce Takahashi-style HTML, illustrated HTML, and a narrated [Canvas Commons](https://github.com/canvas-commons/canvas-commons) MP4. The brand, voice, and case content are replaceable; no particular event or organization is required.
 
 This directory is the handoff project. Move it as a whole without relying on the original workspace, older cases, the original user account, or a pre-existing virtual environment. The bundled skill is in `.agents/skills/presentation-production/`. Open this directory as a project in Codex, or follow the documentation to run the scripts manually.
 
@@ -31,7 +31,7 @@ See [workflow](.agents/skills/presentation-production/references/workflow.en.md)
 ## Voice and video
 
 - [Voice production](.agents/skills/presentation-production/references/voice.en.md): Qwen model download, reference voices, per-page main and background narration, selected-page regeneration, subtitles, and timing.
-- [Video production](.agents/skills/presentation-production/references/video.en.md): silent Motion Canvas previews, production audio, rendering, and muxing.
+- [Video production](.agents/skills/presentation-production/references/video.en.md): silent Canvas Commons previews, production audio, rendering, and muxing.
 - [Acceptance](.agents/skills/presentation-production/references/acceptance.en.md): technical, visual, and listening checks from HTML through the final video.
 - [Verification record](docs/VERIFICATION.en.md): what was and was not actually verified.
 
@@ -39,7 +39,7 @@ Reference voice WAV files are **excluded from the handoff**. The [voice catalog 
 
 The package contains two neutral example pages and a programmatically drawn SVG. It excludes old cases, the original brand logo, human voice WAVs, model weights, node_modules, and virtual environments. Models are downloaded at a fixed revision; dependencies are installed from lockfiles. Fonts use the macOS system fonts: record the macOS version during acceptance. Pixel-identical typography across macOS versions is not guaranteed.
 
-The video template captures each illustrated HTML page as an image, then presents and renders those images in a real Motion Canvas scene to preserve the minimal example's composition. Its default behavior is direct page cuts, not object-level animation. For object animation, edit the case's `motion/src/scenes/Slides.tsx` and use native Motion Canvas nodes and animation according to the approved design. The tools do not overwrite existing scenes.
+The video template captures each illustrated HTML page as an image, then presents and renders those images in a real Canvas Commons scene to preserve the minimal example's composition. Its default behavior is direct page cuts, not object-level animation. For object animation, edit the case's `motion/src/scenes/Slides.tsx` and use native Canvas Commons nodes and animation according to the approved design. The tools do not overwrite existing scenes.
 
 ## Handoff boundaries
 

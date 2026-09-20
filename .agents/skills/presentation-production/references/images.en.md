@@ -8,7 +8,7 @@ This workflow covers new illustrations, edits, and replacements. Preserve conten
 
 - New image: follow the confirmed topic, selected pages, and illustration requirements.
 - Image content edit: inspect the original, identify the objects, composition, or style to change, and modify only that part while preserving other confirmed elements.
-- Wrong position, crop, full-bleed coverage, mask, or layering: fix the HTML/Motion Canvas layout source and reuse the image. Do not regenerate artwork to fix display problems.
+- Wrong position, crop, full-bleed coverage, mask, or layering: fix the HTML/Canvas Commons layout source and reuse the image. Do not regenerate artwork to fix display problems.
 - Ordinary rebuilds reuse existing images. Generate or edit image content only when the user asks for it.
 
 ## Produce images

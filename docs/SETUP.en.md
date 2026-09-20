@@ -58,7 +58,7 @@ The generation script reads only that directory. It does not search a parent `.h
 
 ## Maintaining versions
 
-Node dependencies are locked in `package-lock.json`. Motion Canvas 3.17.2 and FFmpeg exporter 1.1.1 retain the previously used engineering versions. Do not use `npm audit fix --force` to introduce incompatible major versions. Development servers bind only to `127.0.0.1`.
+Node dependencies are locked in `package-lock.json`. Canvas Commons core, 2d, editor, Vite plugin, and FFmpeg exporter are pinned to 0.3.1. These packages require Node >= 20.19.0; the installation target remains Node 22 LTS. Do not use `npm audit fix --force` to introduce incompatible major versions. Development servers bind only to `127.0.0.1`.
 
 Direct Python dependencies are in `requirements.in`; the complete resolution is in `requirements-macos.lock.txt`, targeting Python 3.12 on Apple Silicon. Re-resolve with uv only when deliberately upgrading:
 
@@ -66,7 +66,7 @@ Direct Python dependencies are in `requirements.in`; the complete resolution is 
 uv pip compile "$PROJECT_ROOT/requirements.in" --python-version 3.12 --python-platform aarch64-apple-darwin --no-header -o "$PROJECT_ROOT/requirements-macos.lock.txt"
 ```
 
-After an upgrade, repeat installation, input validation, timeline construction, Motion Canvas build/render, and visual/listening acceptance.
+After an upgrade, repeat installation, input validation, timeline construction, Canvas Commons build/render, and visual/listening acceptance.
 
 ## Troubleshooting
 

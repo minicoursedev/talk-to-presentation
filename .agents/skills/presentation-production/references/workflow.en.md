@@ -19,7 +19,7 @@ cases/<case-id>/
   audio/background/         Background narration: page-<page>.wav
   audio/combined/           Per-page main/background combination
   audio/timeline.wav        Complete audio aligned to frame boundaries
-  motion/src/               Editable Motion Canvas scene for this case
+  motion/src/               Editable Canvas Commons scene for this case
   dist/                     Three deliverables
 ```
 

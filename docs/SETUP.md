@@ -58,7 +58,7 @@ python3.12 -m venv "$PROJECT_ROOT/.venv"
 
 ## 版本維護
 
-Node dependencies 固定在 `package-lock.json`；Motion Canvas 3.17.2、FFmpeg exporter 1.1.1 延續已用過的工程版本。不要用 `npm audit fix --force` 直接改到不相容 major。開發伺服器只綁 `127.0.0.1`。
+Node dependencies 固定在 `package-lock.json`；Canvas Commons core、2d、editor、Vite plugin 與 FFmpeg exporter 均固定為 0.3.1。套件要求 Node >= 20.19.0；本包安裝目標仍為 Node 22 LTS。不要用 `npm audit fix --force` 直接改到不相容 major。開發伺服器只綁 `127.0.0.1`。
 
 Python 直接依賴在 `requirements.in`；完整依賴解析保存在 `requirements-macos.lock.txt`，針對 Python 3.12 / Apple Silicon。只有刻意升級時才用 uv 重新解析：
 
@@ -66,7 +66,7 @@ Python 直接依賴在 `requirements.in`；完整依賴解析保存在 `requirem
 uv pip compile "$PROJECT_ROOT/requirements.in" --python-version 3.12 --python-platform aarch64-apple-darwin --no-header -o "$PROJECT_ROOT/requirements-macos.lock.txt"
 ```
 
-升級後需重新跑安裝、輸入驗證、時間軸、Motion Canvas build/render 與視聽驗收。
+升級後需重新跑安裝、輸入驗證、時間軸、Canvas Commons build/render 與視聽驗收。
 
 ## 常見問題
 

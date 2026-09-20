@@ -1,13 +1,13 @@
 ---
 name: presentation-production
-description: Create and revise a presentation from human discussion into Takahashi HTML, illustrated HTML, and a narrated Motion Canvas MP4 using the accompanying portable macOS project. Use for content, narration, illustration, animation, rebuilding, and output verification.
+description: Create and revise a presentation from human discussion into Takahashi HTML, illustrated HTML, and a narrated Canvas Commons MP4 using the accompanying portable macOS project. Use for content, narration, illustration, animation, rebuilding, and output verification.
 ---
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
 # Presentation and narrated video production
 
-Use this skill with the accompanying handoff project. It does not assume a brand or speaker. Installing the skill alone does not install Qwen, Motion Canvas, or the project tools.
+Use this skill with the accompanying handoff project. It does not assume a brand or speaker. Installing the skill alone does not install Qwen, Canvas Commons, or the project tools.
 
 ## Start here
 
@@ -30,7 +30,7 @@ Use this skill with the accompanying handoff project. It does not assume a brand
 - New cases, schemas, rebuild commands: [workflow](references/workflow.en.md).
 - Text, Qwen, reference voices, WAVs, timing, and subtitles: [voice production](references/voice.en.md).
 - Illustrations and image changes: [images](references/images.en.md).
-- Motion Canvas, composition, and rendering: [video production](references/video.en.md).
+- Canvas Commons, composition, and rendering: [video production](references/video.en.md).
 - Before delivery: [acceptance](references/acceptance.en.md).
 
 Voice changes rebuild only affected audio, timing, subtitles, and video. Illustration changes rebuild illustrated HTML and video. Animation changes rebuild only video. Brand changes rebuild both HTML versions and video. Confirmed WAVs for pages outside the requested change must remain unchanged.

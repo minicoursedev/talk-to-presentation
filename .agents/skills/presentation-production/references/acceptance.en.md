@@ -16,7 +16,7 @@ Keep technical testing separate from human content approval. Record sources, out
 - Main/background files remain separate. WAV SHA-256 values outside the selected regeneration pages remain unchanged.
 - Listen to every regenerated page for text, tone, internal pauses, and endings. RMS, non-silence, and successful decoding do not prove listening acceptance.
 - Rebuild timing and subtitles from the final WAVs and align them to frame boundaries. Subtitles include the confirmed main and background narration.
-- Motion Canvas build, FFmpeg exporter render, subtitle muxing, ffprobe, and full decoding all pass, with matching dimensions, fps, and duration.
+- Canvas Commons build, FFmpeg exporter render, subtitle muxing, ffprobe, and full decoding all pass, with matching dimensions, fps, and duration.
 - Inspect frame 0, the frame before/at/after every page boundary, the last page, and changed pages in the final MP4. Play complete transitions; a screenshot after settling is insufficient.
 - Compare coverage, crop, text, masks, and branding with illustrated HTML. Custom animation must not silently change composition.
 - Listen to the opening, middle, ending, and changed pages. Subtitles are not evidence that audio is correct.
@@ -26,5 +26,5 @@ Keep technical testing separate from human content approval. Record sources, out
 - Run tools from another directory containing spaces and Chinese characters, with an unrelated current working directory. They must not refer to the original project, another case's node_modules, or the original venv.
 - npm ci and the Python lockfile can recreate dependencies; the model download command uses a fixed revision.
 - The voice catalog README exists and reference WAVs do not. There is no original brand logo, old case, or original user's absolute path.
-- The neutral example can build both HTML versions and a silent Motion Canvas project. Without voice inputs, do not claim full Qwen/narrated MP4 acceptance.
+- The neutral example can build both HTML versions and a silent Canvas Commons project. Without voice inputs, do not claim full Qwen/narrated MP4 acceptance.
 - List actual passing commands, unverified items, and required recipient inputs at delivery.

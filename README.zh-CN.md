@@ -2,7 +2,7 @@
 
 # 演示文稿制作交接包（macOS）
 
-从人与 AI 的对话整理共同内容来源，制作高桥流 HTML、美化 HTML 与旁白 Motion Canvas MP4。品牌、声音及案件内容可替换，不限定任何活动或组织。
+从人与 AI 的对话整理共同内容来源，制作高桥流 HTML、美化 HTML 与旁白 [Canvas Commons](https://github.com/canvas-commons/canvas-commons) MP4。品牌、声音及案件内容可替换，不限定任何活动或组织。
 
 这个目录就是交接 project。整个目录可搬移；不需原工作区、旧案件、原用户帐号或原虚拟环境。`.agents/skills/presentation-production/` 是随项目交付的 skill。使用 Codex 时将这个目录开成项目；也可以照文件手动操作 scripts。
 
@@ -30,7 +30,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
 ## 配音与视频
 
 - [配音](.agents/skills/presentation-production/references/voice.zh-CN.md)：Qwen 模型下载、参考声音、逐页主／背景旁白、局部重制、字幕与时间轴。
-- [视频](.agents/skills/presentation-production/references/video.zh-CN.md)：Motion Canvas 静音预览、正式音轨、渲染、封装。
+- [视频](.agents/skills/presentation-production/references/video.zh-CN.md)：Canvas Commons 静音预览、正式音轨、渲染、封装。
 - [验收](.agents/skills/presentation-production/references/acceptance.zh-CN.md)：从 HTML 到最终视频的技术及视听检查。
 - [本次验证记录](docs/VERIFICATION.zh-CN.md)：实际完成及未完成的验证范围。
 
@@ -38,7 +38,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
 
 本包包含中性的两页文字与程序绘制 SVG，不含旧案件、原品牌 Logo、人声 WAV、模型权重、node_modules 或虚拟环境。模型以固定 revision 下载；依赖以 lockfile 安装。字体使用 macOS 系统字体，首次验收需记录 macOS 版本；不同 macOS 的字体细节未承诺像素完全一致。
 
-视频模板由美化 HTML 产生逐页图片，再以真正的 Motion Canvas 场景呈现与渲染，让最小示例的构图一致。默认为直接换页，不假装具有物件分层动画。需要物件动画时，修改案件 `motion/src/scenes/Slides.tsx`，依确认设计使用 Motion Canvas 的原生节点与动画；工具不会覆写既有场景。
+视频模板由美化 HTML 产生逐页图片，再以真正的 Canvas Commons 场景呈现与渲染，让最小示例的构图一致。默认为直接换页，不假装具有物件分层动画。需要物件动画时，修改案件 `motion/src/scenes/Slides.tsx`，依确认设计使用 Canvas Commons 的原生节点与动画；工具不会覆写既有场景。
 
 ## 交接边界
 

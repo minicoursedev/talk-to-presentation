@@ -19,7 +19,7 @@ cases/<case-id>/
   audio/background/         補背景旁白 page-<page>.wav
   audio/combined/           每頁主／背景合成
   audio/timeline.wav        與幀邊界對齊的總音軌
-  motion/src/               此案件可修改的 Motion Canvas 場景
+  motion/src/               此案件可修改的 Canvas Commons 場景
   dist/                     三種交付物
 ```
 

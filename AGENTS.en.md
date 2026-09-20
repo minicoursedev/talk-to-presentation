@@ -6,7 +6,7 @@
 - Preserve user decisions and existing approvals across tasks. Never treat generated draft content as approved.
 - Keep screen text, main narration, background narration and tones separate.
 - Change only requested sources and their affected outputs; reuse confirmed images and audio by default.
-- Three final outputs: Takahashi HTML, illustrated HTML, narrated Motion Canvas MP4.
+- Three final outputs: Takahashi HTML, illustrated HTML, narrated Canvas Commons MP4.
 - Brand comes from `brand.json`; never assume a particular organization or speaker.
 - Sources live in `cases/`; `dist/` and prepared screenshots are rebuildable outputs.
 - No subagents unless explicitly requested. No platform or service architecture.

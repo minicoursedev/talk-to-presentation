@@ -1,6 +1,6 @@
 [繁體中文](video.md) | [简体中文](video.zh-CN.md) | [English](video.en.md)
 
-# Motion Canvas output
+# Canvas Commons output
 
 Commands use an absolute `PROJECT_ROOT`. Replace `my-talk` with the case ID.
 
@@ -33,7 +33,7 @@ prepare-motion starts its own temporary HTTP server and Chromium instance and cl
 
 ## Animation and composition
 
-The default template is a real Motion Canvas scene with direct cuts between page images. It does not provide object-level animation. When requested, edit the case's scene using native Layout/Txt/Img nodes and tweening. Do not describe whole-page images as layered object animation.
+The default template is a real Canvas Commons scene with direct cuts between page images. It does not provide object-level animation. When requested, edit the case's scene using native Layout/Txt/Img nodes and tweening. Do not describe whole-page images as layered object animation.
 
 - Content and branding must be visible on the first frame. Do not initialize with a fully transparent fade-in or an empty wait.
 - Keep the outgoing page visible until the next page takes over; do not fade everything out and leave a gap.
@@ -44,10 +44,10 @@ The default template is a real Motion Canvas scene with direct cuts between page
 
 ## Rendering
 
-`build` only performs TypeScript/Vite compilation. Render production MP4 files in the Motion Canvas editor:
+`build` only performs TypeScript/Vite compilation. Render production MP4 files in the Canvas Commons editor:
 
 1. Select `Video (FFmpeg)` as the exporter.
-2. Keep the range set by prepare-motion: frame 0 through total frames minus 1, because the exporter includes the end frame. Follow case.format for dimensions and fps, with scale 1 and audio offset 0.
+2. Keep the range set by prepare-motion: 0 through total frames / fps seconds. The new exporter limits MP4 duration to this difference; do not subtract one frame. Follow case.format for dimensions and fps, with scale 1 and audio offset 0.
 3. Enable Include audio and Fast start for production video. Silent previews have no audio and must be delivered only as previews.
 4. Press RENDER and wait for completion. Output is under `cases/my-talk/motion/output/`; use the actual filename.
 

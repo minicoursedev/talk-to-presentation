@@ -4,7 +4,28 @@
 
 日期：2026-09-21。這是交接工具的技術驗證，不是任何正式簡報的內容或配音驗收。
 
-## 實測環境
+## Canvas Commons 0.3.1 遷移驗證
+
+目前交接包使用 Canvas Commons 0.3.1（core、2d、editor、Vite plugin、FFmpeg exporter），搭配 Vite 4.5.14、TypeScript 5.2.2 與 Playwright 1.58.2。套件使用 ESM，project 已設定 `type: module`，並補入上游型別宣告所需的 `@types/chroma-js` 3.1.2。
+
+本次在同一台 Apple Silicon Mac、Node 26.7.0 與既有 Chrome 驗證；Node 22 仍是安裝目標，並非本次實測版本。Qwen 模型、語音產生腳本、內容來源與兩種 HTML 產生器未變更。
+
+- 新版完整 npm 安裝與 exporter 的 FFmpeg 6.1.1／ffprobe 二進位下載成功。搬移後的鎖定檔檢查使用 `npm ci --ignore-scripts`，另驗證兩種 HTML、Chrome 取圖與 TypeScript/Vite 編譯；搬移目錄不重複下載二進位，因此不把該次檢查列為完整安裝腳本驗證。
+- 本次 npm 安裝回報 7 項依賴 audit 結果（2 low、2 moderate、3 high）；未執行強制升級或宣稱安全審查通過。開發伺服器只綁本機。
+- 無 WAV 的 sample 亦完成靜音 exporter 渲染：180 幀、6.000 秒；沒有 audio stream，完整解碼通過。
+- 兩種 HTML、sample 與新案件的 TypeScript/Vite 編譯、Canvas Commons 編輯器載入通過。
+- 實際 FFmpeg exporter 渲染與字幕封裝通過：1080×1920、30fps、126 幀、4.200 秒，H.264、AAC 與 mov_text。完整解碼通過，音軌長度為 4.200 秒。
+- 遷移時修正 range：新 exporter 以結束時間減開始時間限制 MP4 時長；沿用舊版的「減一幀」會少一幀。現在使用總幀數／fps。
+- 實際查看新影片第 0、65、66、67、125 幀：品牌與內容首幀可見，第 65 幀為第一頁，第 66 幀為第二頁，無空白；文字與原 HTML 構圖一致。
+- 使用三段臨時合成音（主／背景分開），解碼後與原時間軸的 PCM 相關係數為 0.99999，兩者皆為 100800 個 24kHz 取樣。這只驗證音訊傳遞，不代表真人朗讀與語氣已抽聽；未呼叫 Qwen。
+
+本次測試 MP4 SHA-256：`ba57fd4a52452bb49b9f62dc8db63b90e18a3b1d270995e3f08b527460e7052e`。測試 WAV 與 MP4 不收入 ZIP。
+
+下方保留遷移前紀錄，歷史 Motion Canvas 成果不作為新引擎的渲染證據。
+
+## 遷移前的歷史驗證（Motion Canvas）
+
+### 實測環境
 
 - macOS 26.6.2（25G83）、Apple Silicon arm64。
 - Node 26.7.0；Python 3.12.14 的獨立虛擬環境。
@@ -12,7 +33,7 @@
 - Playwright 1.58.2 搭配本機 Google Chrome；Chromium 自動下載完成後解壓縮停滯，已停止該安裝程序，改走文件中的 `BROWSER_EXECUTABLE` 方式。沒有把自動下載路徑列為已通過。
 - 系統 FFmpeg 9.0.1；exporter 使用 npm 套件帶入的 FFmpeg。
 
-## 已完成
+### 已完成
 
 1. 全新 npm 安裝：在交接 project 及 ZIP 解壓後的獨立目錄分別執行 `npm ci`，不連結原案件 node_modules。
 2. Python：用交接包的完整 lockfile 建立全新 `.venv` 並安裝 90 個套件；可匯入 Qwen3TTSModel、PyTorch 2.11.0、torchaudio 2.11.0 和 OpenCC，繁簡轉換通過。環境沒有 SoX 系統執行檔，匯入時有警告；SETUP 已列為必要安裝項目。因此未把完整 setup shell 從乾淨 OS 執行列為已通過。
@@ -29,7 +50,7 @@
 最後測試影片 SHA-256：
 `40992973f3887dbc0b0d3abba15623c45cbffe2d9b008a2c66c6e8252f1e56d8`
 
-## 尚未驗證／接手者必要輸入
+### 尚未驗證／接手者必要輸入
 
 - 不附參考 WAV，未執行真人聲線 Qwen 推論，也未做真人旁白抽聽。需要使用者提供參考 WAV、對應逐字稿與明確生成授權後，依配音流程驗收。
 - 品牌 Logo 由使用者提供；中性範例預設只顯示文字品牌。
@@ -37,7 +58,7 @@
 - 這不是全新實體 Mac 的 OS provisioning 測試；驗證涵蓋獨立依賴安裝與搬移後重建，不包含 Homebrew 本身安裝。
 - npm 安裝回報 5 項 dependency audit 結果（1 low、2 moderate、2 high）。沿用固定的 Motion Canvas/Vite 相容組合，未執行強制 major 升級或宣稱安全審查通過；開發伺服器僅供本機使用。
 
-## 重跑
+### 重跑
 
 ```bash
 python3 "$PROJECT_ROOT/tools/smoke_test.py"

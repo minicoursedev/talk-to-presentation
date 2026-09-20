@@ -1,13 +1,13 @@
 ---
 name: presentation-production
-description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS 專案建立或修改高橋流 HTML、美化 HTML 與含旁白的 Motion Canvas MP4。適用於內容、旁白、插圖、動畫、重建與輸出驗證。
+description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS 專案建立或修改高橋流 HTML、美化 HTML 與含旁白的 Canvas Commons MP4。適用於內容、旁白、插圖、動畫、重建與輸出驗證。
 ---
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
 # 簡報與旁白影片製作
 
-本 skill 與交接 project 一起使用；不綁定品牌或說話者。單獨安裝 skill 不會安裝 Qwen、Motion Canvas 或專案工具。
+本 skill 與交接 project 一起使用；不綁定品牌或說話者。單獨安裝 skill 不會安裝 Qwen、Canvas Commons 或專案工具。
 
 ## 開始
 
@@ -30,7 +30,7 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 - 新案件、schema、重建命令：[工作流程](references/workflow.md)。
 - 文稿、Qwen、參考語音、WAV、時間軸與字幕：[配音](references/voice.md)。
 - 插圖及圖片修改：[圖片](references/images.md)。
-- Motion Canvas、構圖與渲染：[影片](references/video.md)。
+- Canvas Commons、構圖與渲染：[影片](references/video.md)。
 - 交付前：[驗收](references/acceptance.md)。
 
 改語音只重建相關音檔、時間軸、字幕及影片；改插圖重建美化 HTML 與影片；改動畫只重建影片；改品牌重建兩種 HTML 與影片。未指定頁面的已確認 WAV 不應改變。
