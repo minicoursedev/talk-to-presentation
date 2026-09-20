@@ -1,3 +1,5 @@
+[繁體中文](acceptance.md) | [简体中文](acceptance.zh-CN.md) | [English](acceptance.en.md)
+
 # 驗收
 
 技術測試與人類內容確認分開；每份記錄標明來源、輸出 SHA-256 和實際檢查時間，不沿用舊版驗收。

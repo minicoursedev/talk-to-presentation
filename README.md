@@ -1,3 +1,5 @@
+[繁體中文](README.md) | [简体中文](README.zh-CN.md) | [English](README.en.md)
+
 # 簡報製作交接包（macOS）
 
 從人與 AI 的對話整理共同內容來源，製作高橋流 HTML、美化 HTML 與旁白 Motion Canvas MP4。品牌、聲音及案件內容可替換，不限定任何活動或組織。
@@ -12,7 +14,7 @@
 4. 先試中性最小範例，再用工具建立自己的案件。
 
 ```bash
-PROJECT_ROOT="/你的實際路徑/public"
+PROJECT_ROOT="/absolute/path/to/public"
 node "$PROJECT_ROOT/tools/takahashi-html/build.mjs" sample
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" sample
 python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
@@ -22,7 +24,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
 - `http://127.0.0.1:4173/cases/sample/dist/sample.html`
 - `http://127.0.0.1:4173/cases/sample/dist/sample-v.html`
 
-新案件：`python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --title "我的講題"`。
+新案件：`python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"`。
 完整命令、來源 schema 與確認關卡見 [工作流程](.agents/skills/presentation-production/references/workflow.md)。
 
 ## 配音與影片
@@ -40,7 +42,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
 
 ## 交接邊界
 
-只支援 macOS 首版，不提供 Linux、Windows 或 CUDA 安裝流程。環境下載需要網路；安裝及模型下載完成後，既有素材重建與 Qwen 推論不需依赖原工作區。AI 製圖工具不是安裝包的一部分，可沿用使用者提供的圖片；若要新生成圖片，需接手者自己的可用工具。
+只支援 macOS 首版，不提供 Linux、Windows 或 CUDA 安裝流程。環境下載需要網路；安裝及模型下載完成後，既有素材重建與 Qwen 推論不需依賴原工作區。AI 製圖工具不是安裝包的一部分，可沿用使用者提供的圖片；若要新生成圖片，需接手者自己的可用工具。
 
 交接包完成不等於任意案件內容已確認或 narrated MP4 已驗收。範例無人聲；靜音預覽只能用於畫面與工具檢查，不能稱為配音交付。
 
@@ -51,3 +53,13 @@ python3 "$PROJECT_ROOT/tools/package.py" "$PROJECT_ROOT/presentation-handoff.zip
 ```
 
 只收錄通用工具、skill、文件與 sample 來源，不收錄其他案件、語音、模型、環境或生成產物。ZIP 內含 `MANIFEST.sha256`；在解壓後的 public 目錄可用 `shasum -a 256 -c MANIFEST.sha256` 核對來源檔案。
+
+## 文件語言
+
+既有 `.md` 路徑提供繁體中文；同目錄的 `.zh-CN.md` 與 `.en.md` 分別提供簡體中文與英文。每份文件頂端皆可切換語言，內部說明連結會留在同一語言。文件翻譯不會改寫示範簡報內容、語氣識別字、檔名或錄音逐字稿，也不代表 CLI 與第三方編輯器已完成多語系介面。
+
+所有語言的文件一起維護。修改後執行下列檢查，核對三語完整性、連結與語氣資料契約：
+
+```bash
+python3 "$PROJECT_ROOT/tools/check_docs.py"
+```

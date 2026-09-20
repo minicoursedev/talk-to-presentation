@@ -37,5 +37,8 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  assert all(hashlib.sha256(p.read_bytes()).hexdigest()==digest for p,digest in originals.items())
  run(sys.executable,root/'tools/init_case.py','新案例',cwd='/tmp')
  assert (root/'cases/新案例/motion/src/scenes/Slides.tsx').exists()
+ for suffix in ('','.zh-CN','.en'):
+  doc=root/f'cases/新案例/content/draft{suffix}.md'
+  assert doc.is_file() and '{{title}}' not in doc.read_text()
  run(sys.executable,root/'tools/init_case.py','新案例',ok=False,cwd='/tmp')
  print('PASS: relocation, absolute invocation from unrelated cwd, both HTML builders, missing voices, independent new case, non-contiguous pages, separate captions, frame-aligned timing, unchanged source WAVs')

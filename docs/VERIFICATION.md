@@ -1,3 +1,5 @@
+[繁體中文](VERIFICATION.md) | [简体中文](VERIFICATION.zh-CN.md) | [English](VERIFICATION.en.md)
+
 # 本次交接包驗證
 
 日期：2026-09-21。這是交接工具的技術驗證，不是任何正式簡報的內容或配音驗收。

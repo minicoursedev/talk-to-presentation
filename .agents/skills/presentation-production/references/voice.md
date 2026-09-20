@@ -1,3 +1,5 @@
+[繁體中文](voice.md) | [简体中文](voice.zh-CN.md) | [English](voice.en.md)
+
 # 配音與時間軸
 
 先依 project 的 `docs/SETUP.md` 安裝 `.venv` 與下載指定 Qwen revision。macOS 首版使用 CPU/float32/eager；不假設 CUDA 或 MPS 可用。生成耗時依機器、文字與模型而異，不承諾固定速度。
@@ -6,11 +8,11 @@
 本版工具要求單聲道 PCM16 WAV。來源格式不同時另存副本：
 
 ```bash
-ffmpeg -i "/絕對路徑/原始錄音.wav" -ac 1 -c:a pcm_s16le "$PROJECT_ROOT/shared/voice/reference-voice/平靜敘述.wav"
+ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PROJECT_ROOT/shared/voice/reference-voice/平靜敘述.wav"
 python3 "$PROJECT_ROOT/tools/voice.py" check my-talk
 ```
 
-缺少 WAV 或逐字稿时須停止並列出缺項，不使用其他人的聲線替代。本文命令中的 my-talk 是案例 ID。
+缺少 WAV 或逐字稿時須停止並列出缺項，不使用其他人的聲線替代。本文命令中的 my-talk 是案例 ID。
 
 逐頁確認主旁白、主語氣、補背景旁白、背景語氣，且獲得生成授權後：
 
@@ -32,3 +34,5 @@ python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 此步使用 Python 標準庫，驗證 mono PCM16、非靜音、非削波、相同 sample rate。主旁白和背景旁白間隔依案件 timing；每頁長度由實際 WAV 對齊影片幀，尾段補齊到精確頁面邊界，避免跨頁漂移。字幕分別對應主旁白和背景旁白，不用標題代替。
 
 修改旁白、語氣或 WAV 後要重新生成受影響段落，重建 timeline 和影片。prepare-motion 會拒絕來源／WAV 雜湊與 timeline 不符的狀況。音檔存在或技術檢查通過不代表朗讀已驗收。
+
+文件語言不會改變配音語言。現行生成腳本固定使用 `language="Chinese"`，不因閱讀英文文件就改為英文配音；若需其他配音語言，須另行修改並驗證生成流程。

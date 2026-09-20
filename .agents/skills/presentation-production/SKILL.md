@@ -1,7 +1,9 @@
 ---
 name: presentation-production
-description: Create and revise a presentation from human discussion into Takahashi HTML, illustrated HTML, and a narrated Motion Canvas MP4 using the accompanying portable macOS project. Use for content, narration, illustration, animation, rebuilding, and output verification.
+description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS 專案建立或修改高橋流 HTML、美化 HTML 與含旁白的 Motion Canvas MP4。適用於內容、旁白、插圖、動畫、重建與輸出驗證。
 ---
+
+[繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
 # 簡報與旁白影片製作
 

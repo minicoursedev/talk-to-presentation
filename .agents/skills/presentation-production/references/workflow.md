@@ -1,3 +1,5 @@
+[繁體中文](workflow.md) | [简体中文](workflow.zh-CN.md) | [English](workflow.en.md)
+
 # 案件與工作流程
 
 交接 project 的 README 是執行入口。此 skill 必須保留在 project 的 `.agents/skills/`，以下文件連結才有效。若全域安裝 skill，需將文件連結改為使用者指定 project 的絕對路徑；不要依賴 skill 目錄反推另一個 project。
@@ -29,7 +31,7 @@ cases/<case-id>/
 命令中的 `PROJECT_ROOT` 必須是接手者的絕對路徑，可含空格或中文。以下命令可從任意 cwd 執行：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --title "我的講題"
+python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"
 node "$PROJECT_ROOT/tools/takahashi-html/build.mjs" my-talk
 python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
 ```

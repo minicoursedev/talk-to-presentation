@@ -1,3 +1,5 @@
+[繁體中文](README.md) | [简体中文](README.zh-CN.md) | [English](README.en.md)
+
 # 使用自己的品牌
 
 本包不附 Logo。將你的 Logo 放在此目錄，然後修改 project 根目錄的 `brand.json`：

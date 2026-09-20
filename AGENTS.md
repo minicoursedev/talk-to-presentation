@@ -1,13 +1,17 @@
-# Presentation production
+[繁體中文](AGENTS.md) | [简体中文](AGENTS.zh-CN.md) | [English](AGENTS.en.md)
 
-- Use `.agents/skills/presentation-production/SKILL.md` for presentation work.
-- Preserve user decisions and existing approvals across tasks. Never treat generated draft content as approved.
-- Keep screen text, main narration, background narration and tones separate.
-- Change only requested sources and their affected outputs; reuse confirmed images and audio by default.
-- Three final outputs: Takahashi HTML, illustrated HTML, narrated Motion Canvas MP4.
-- Brand comes from `brand.json`; never assume a particular organization or speaker.
-- Sources live in `cases/`; `dist/` and prepared screenshots are rebuildable outputs.
-- No subagents unless explicitly requested. No platform or service architecture.
-- Package contains no reference voice WAVs. Missing inputs must be reported, not substituted.
-- Resolve paths from script location or explicit absolute project root, never from an assumed current directory or developer home.
-- Build success is not visual/listening acceptance. Report untested stages explicitly.
+# 簡報製作
+
+- 簡報工作使用 `.agents/skills/presentation-production/SKILL.md`。
+- 延續跨任務的使用者決策與既有授權。不得將生成的草稿視為已確認內容。
+- 畫面文字、主旁白、補背景旁白與語氣分開保存。
+- 只改指定來源及受影響的輸出；預設沿用已確認的圖片與音訊。
+- 三種最終輸出：高橋流 HTML、美化 HTML、含旁白的 Motion Canvas MP4。
+- 品牌來自 `brand.json`；不得假設特定組織或說話者。
+- 來源放在 `cases/`；`dist/` 與準備好的截圖都是可重建的產物。
+- 未明確要求時不使用子代理，不擴大成平台或服務架構。
+- 交接包不含參考語音 WAV。缺少輸入時回報，不得替換。
+- 從腳本位置或明確指定的專案絕對路徑解析檔案位置，不假設工作目錄或開發者的 home 路徑。
+- 建置成功不代表視覺或聽覺驗收通過。明確列出未測試階段。
+
+- 所有說明文件須同步提供繁體中文、簡體中文與英文，更新時一併維護同語言連結；程式識別字、檔案路徑與錄音逐字稿保留實際執行值。

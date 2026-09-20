@@ -1,3 +1,5 @@
+[繁體中文](SETUP.md) | [简体中文](SETUP.zh-CN.md) | [English](SETUP.en.md)
+
 # macOS 從零建立環境
 
 ## 系統工具
@@ -28,7 +30,7 @@ sox --version
 把交接目錄放在任意可寫位置，定義其絕對路徑（下例需替換）：
 
 ```bash
-PROJECT_ROOT="/你的實際路徑/public"
+PROJECT_ROOT="/absolute/path/to/public"
 bash "$PROJECT_ROOT/tools/setup-macos.sh"
 ```
 
@@ -86,3 +88,7 @@ bash "$PROJECT_ROOT/tools/setup-macos.sh"
 ```
 
 安裝腳本會跳過 Chromium 下載；prepare-motion 會使用指定瀏覽器。之後每次執行需保留此環境變數。這條路徑只是一個常見的範例，腳本本身沒有寫死它。使用非 Playwright 配套版本時，需重新確認畫面並記錄實際瀏覽器版本。
+
+## SoX 依賴的範圍
+
+`qwen-tts` 會安裝 Python 的 `sox` 包裝套件，不會因此安裝系統的 SoX 執行檔。目前 setup 與 doctor 仍將系統 SoX 列為必要條件；這描述的是現行腳本行為。已查到直接使用 SoX 的程式在 Qwen 的 25Hz tokenizer，尚未驗證本包 12Hz 流程是否必須依賴系統 SoX，不能僅因匯入警告就判定它必須安裝。此文件翻譯未變更安裝腳本。

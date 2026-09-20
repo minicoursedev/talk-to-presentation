@@ -5,7 +5,7 @@ from common import ROOT
 p=argparse.ArgumentParser();p.add_argument('output',type=Path);args=p.parse_args()
 if not args.output.is_absolute():p.error('Output ZIP must be an absolute path')
 allowed={'.agents','docs','tools','templates','shared','cases'}
-rootfiles={'README.md','AGENTS.md','.gitignore','brand.json','model.json','package.json','package-lock.json','requirements.in','requirements-macos.lock.txt'}
+rootfiles={'README.md','README.zh-CN.md','README.en.md','AGENTS.md','AGENTS.zh-CN.md','AGENTS.en.md','.gitignore','brand.json','model.json','package.json','package-lock.json','requirements.in','requirements-macos.lock.txt'}
 files=[]
 candidates=[p for name in allowed for p in (ROOT/name).rglob('*')] + [ROOT/name for name in rootfiles]
 for path in candidates:

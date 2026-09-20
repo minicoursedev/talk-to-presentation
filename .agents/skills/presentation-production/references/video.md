@@ -1,3 +1,5 @@
+[繁體中文](video.md) | [简体中文](video.zh-CN.md) | [English](video.en.md)
+
 # Motion Canvas 輸出
 
 以下命令皆使用絕對 `PROJECT_ROOT`；`my-talk` 換成案件 ID。
