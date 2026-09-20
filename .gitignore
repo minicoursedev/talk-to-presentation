@@ -1,0 +1,12 @@
+node_modules/
+.venv/
+models/qwen3-tts/
+.DS_Store
+**/__pycache__/
+cases/*/motion/dist/
+cases/*/motion/output/
+cases/*/motion/public/
+cases/*/motion/src/prepared.json
+verification/
+*.zip
+cases/*/motion/timeline.wav

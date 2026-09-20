@@ -1,0 +1,6 @@
+qwen-tts==0.1.1
+transformers==4.57.3
+opencc-python-reimplemented==0.1.7
+numpy
+soundfile
+torch

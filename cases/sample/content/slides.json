@@ -1,0 +1,30 @@
+[
+  {
+    "page": 1,
+    "screen": "從一個問題\n開始",
+    "narration": "從一個問題開始。",
+    "tone": "平靜敘述",
+    "backgroundNarration": null,
+    "backgroundTone": null,
+    "previewSeconds": 3,
+    "visual": {
+      "illustrations": [
+        "assets/illustrations/example.svg"
+      ],
+      "notes": "中性幾何範例，可替換"
+    }
+  },
+  {
+    "page": 2,
+    "screen": "把想法\n說清楚",
+    "narration": "把想法說清楚。",
+    "tone": "平靜敘述",
+    "backgroundNarration": null,
+    "backgroundTone": null,
+    "previewSeconds": 3,
+    "visual": {
+      "illustrations": [],
+      "notes": ""
+    }
+  }
+]

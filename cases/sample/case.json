@@ -1,0 +1,19 @@
+{
+  "id": "sample",
+  "title": "中性最小範例",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "timing": {
+    "voiceOffsetFrames": 10,
+    "tailFrames": 20,
+    "backgroundGapSeconds": 0.18
+  },
+  "outputs": {
+    "takahashiHtml": "dist/sample.html",
+    "visualHtml": "dist/sample-v.html",
+    "video": "dist/sample.mp4"
+  }
+}
