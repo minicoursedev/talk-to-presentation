@@ -1,5 +1,7 @@
 [繁體中文](SETUP.md) | [简体中文](SETUP.zh-CN.md) | [English](SETUP.en.md)
 
+[資料存放規則](DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
+
 # macOS 從零建立環境
 
 ## 系統工具
@@ -53,7 +55,7 @@ python3.12 -m venv "$PROJECT_ROOT/.venv"
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/download_model.py"
 ```
 
-`model.json` 固定 Hugging Face repo 與 revision，下載到包內 `models/qwen3-tts`。網路失敗可重跑下載命令；不能把不完整下載當成可用模型。模型檔案及第三方依賴遵守各自授權，本包不重新授權它們。
+`model.json` 固定 Hugging Face repo 與 revision，下載到使用者資料根目錄的 `models/qwen3-tts`。網路失敗可重跑下載命令；不能把不完整下載當成可用模型。模型檔案及第三方依賴遵守各自授權，本包不重新授權它們。
 生成腳本只讀該目錄，不到上層 `.hf-cache` 或原使用者環境找檔案。CPU 推論需要足夠 RAM 與磁碟空間；實際需求依執行長度與依賴而定，執行前確認可用資源。
 
 ## 版本維護

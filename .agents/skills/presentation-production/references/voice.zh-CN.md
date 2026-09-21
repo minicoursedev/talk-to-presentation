@@ -1,5 +1,7 @@
 [繁體中文](voice.md) | [简体中文](voice.zh-CN.md) | [English](voice.en.md)
 
+[数据存放规则](../../../../docs/DATA_LAYOUT.zh-CN.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
+
 # 配音与时间轴
 
 先依 project 的 `docs/SETUP.md` 安装 `.venv` 与下载指定 Qwen revision。macOS 首版使用 CPU/float32/eager；不假设 CUDA 或 MPS 可用。生成耗时依机器、文字与模型而异，不承诺固定速度。
@@ -8,8 +10,8 @@
 本版工具要求单声道 PCM16 WAV。来源格式不同时另存副本：
 
 ```bash
-ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PROJECT_ROOT/shared/voice/reference-voice/平靜敘述.wav"
-python3 "$PROJECT_ROOT/tools/voice.py" check my-talk
+ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/平靜敘述.wav"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" check my-talk
 ```
 
 缺少 WAV 或逐字稿时须停止并列出缺项，不使用其他人的声线替代。本文命令中的 my-talk 是案例 ID。
@@ -28,7 +30,7 @@ python3 "$PROJECT_ROOT/tools/voice.py" check my-talk
 逐页抽听文字、语气、停顿和结尾后，重建时间轴，不呼叫 Qwen：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 ```
 
 此步使用 Python 标准库，验证 mono PCM16、非静音、非削波、相同 sample rate。主旁白和背景旁白间隔依案件 timing；每页长度由实际 WAV 对齐视频帧，尾段补齐到精确页面边界，避免跨页漂移。字幕分别对应主旁白和背景旁白，不用标题代替。
@@ -36,3 +38,10 @@ python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 修改旁白、语气或 WAV 后要重新生成受影响段落，重建 timeline 和视频。prepare-motion 会拒绝来源／WAV 杂凑与 timeline 不符的状况。音频文件存在或技术检查通过不代表朗读已验收。
 
 文件语言不会改变配音语言。现行生成脚本固定使用 `language="Chinese"`，不因阅读英文文件就改为英文配音；若需其他配音语言，须另行修改并验证生成流程。
+
+## 沿用语气与调整语速
+
+- 每次使用前读取实际语气 README，不假设档名必须是语气名称；例如编号 WAV 只要有明确的语气与逐字稿对照即可。若案件语气不在表内，先确认是否只是相同语气的改名；不能自行以其他情绪替换。原始录音与格式转换副本分开保存，不覆写唯一来源。
+- 降低音量可避免输出碰到数值上限，无法修复原始音档已发生的削波。不得为了通过峰值检查就称为音质已修复；仍需抽听，必要时回报录音问题。
+- 仅要求语速变更时，优先对保留的原速 WAV 做保音高时间伸缩，不重新合成文稿。先备份原速 WAV 与旁边的 JSON，另记来源 SHA-256、目标倍速及处理方式，避免重跑时在已加速档上再次加速。沿用 TTS 的文字／语气 provenance，不把后处理误标成新模型输出。
+- 依处理后 WAV 重建时间轴、字幕、影片来源与成片；抽听变速后的停顿与结尾。每页原有进场／尾段停留未必同步缩短，因此总片长不一定是原片长除以倍速。将倍速记入案件决策，跨主题沿用需有使用者指示。

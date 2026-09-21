@@ -1,5 +1,7 @@
 [繁體中文](SETUP.md) | [简体中文](SETUP.zh-CN.md) | [English](SETUP.en.md)
 
+[Data storage rules](DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+
 # Setting up macOS from scratch
 
 ## System tools
@@ -53,7 +55,7 @@ Download the model once, only when new speech generation is needed:
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/download_model.py"
 ```
 
-`model.json` pins the Hugging Face repository and revision. Files are downloaded into `models/qwen3-tts` inside the project. Retry the download command after a network failure; an incomplete download is not a usable model. Model files and third-party dependencies retain their own licenses; this package does not relicense them.
+`model.json` pins the Hugging Face repository and revision. Files are downloaded into `models/qwen3-tts` inside the user data root. Retry the download command after a network failure; an incomplete download is not a usable model. Model files and third-party dependencies retain their own licenses; this package does not relicense them.
 The generation script reads only that directory. It does not search a parent `.hf-cache` or the original user's environment. CPU inference requires sufficient RAM and disk space; actual requirements depend on the workload and dependencies. Check available resources before running it.
 
 ## Maintaining versions

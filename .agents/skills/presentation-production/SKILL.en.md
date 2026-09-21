@@ -1,7 +1,10 @@
 ---
 name: presentation-production
+
 description: Create and revise a presentation from human discussion into Takahashi HTML, illustrated HTML, and a narrated Canvas Commons MP4 using the accompanying portable macOS project. Use for content, narration, illustration, animation, rebuilding, and output verification.
 ---
+
+[Data storage rules](../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
@@ -15,6 +18,8 @@ Use this skill with the accompanying handoff project. It does not assume a brand
 2. Read [workflow](references/workflow.en.md) first. If the environment is not ready, read [macOS setup](../../../docs/SETUP.en.md).
 3. Read the selected case's `case.json`, `content/draft.md`, and `content/slides.json`. For a new case, use the project's `tools/init_case.py`; do not copy dependencies from an old case manually.
 
+4. Read the case template snapshot identified by `case.json.style` (usually `content/style/style.en.md`) and follow its narrative, voice, visuals, and pacing. `init_case.py` snapshots the selected template for new cases; see the [core style template](../../../shared/styles/default/style.en.md) for defaults and replacement. Preserve confirmed decisions for older cases without a style record rather than applying a new template automatically.
+
 ## Core rules
 
 - Develop the topic through conversation. Screen text, main narration, background narration, tones, illustrations, and animation are separate decisions. Change only what the user requests.
@@ -24,6 +29,9 @@ Use this skill with the accompanying handoff project. It does not assume a brand
 - Read the brand name and logo from `brand.json`. If no logo is configured, the neutral sample displays brand text. Production delivery uses the recipient's confirmed brand settings.
 - Do not edit `dist/` directly to change HTML or video. Sources are slides, assets, and scenes; illustrated HTML may serve as the visual composition reference for video.
 - Invoke scripts using absolute paths formed from `PROJECT_ROOT`; never hard-code an installation location.
+
+- Image coverage, voice speed, and batch style are case decisions recorded in `draft.md`. When every page needs an image, set `case.json.visual.requireImages`; do not exempt titles, questions, or closing pages. See [images](references/images.en.md) for page planning and checks.
+- Beautification and image changes preserve confirmed page order, text, and narration. Data presence does not prove visibility; follow [acceptance](references/acceptance.en.md) before delivery.
 
 ## Read for the current task
 

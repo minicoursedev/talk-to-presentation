@@ -1,8 +1,10 @@
 #!/usr/bin/env node
+import {casePath, caseFile, readBrand} from '../data-paths.mjs';
 
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {checkVisuals} from '../check-visuals.mjs';
 
 const caseId = process.argv[2];
 if (!caseId || !/^[\p{L}\p{N}][\p{L}\p{N}_-]*$/u.test(caseId)) {
@@ -11,11 +13,12 @@ if (!caseId || !/^[\p{L}\p{N}][\p{L}\p{N}_-]*$/u.test(caseId)) {
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(scriptDir, '../..');
-const caseDir = resolve(root, 'cases', caseId);
+const caseDir = casePath(caseId);
 const metadata = JSON.parse(await readFile(resolve(caseDir, 'case.json'), 'utf8'));
 const slides = JSON.parse(await readFile(resolve(caseDir, 'content/slides.json'), 'utf8'));
-const brand = JSON.parse(await readFile(resolve(root, 'brand.json'), 'utf8'));
-const outputPath = resolve(caseDir, metadata.outputs.visualHtml);
+await checkVisuals(caseDir, metadata, slides);
+const brand = await readBrand();
+const outputPath = caseFile(caseDir, metadata.outputs.visualHtml);
 const width = Number(metadata.format?.width ?? 1080);
 const height = Number(metadata.format?.height ?? 1920);
 const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning']);

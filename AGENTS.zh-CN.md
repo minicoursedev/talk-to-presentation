@@ -1,5 +1,7 @@
 [繁體中文](AGENTS.md) | [简体中文](AGENTS.zh-CN.md) | [English](AGENTS.en.md)
 
+[数据存放规则](docs/DATA_LAYOUT.zh-CN.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
+
 # 演示文稿制作
 
 - 演示文稿工作使用 `.agents/skills/presentation-production/SKILL.md`。
@@ -15,3 +17,5 @@
 - 建置成功不代表视觉或听觉验收通过。明确列出未测试阶段。
 
 - 所有说明文件须同步提供繁体中文、简体中文与英文，更新时一并维护同语言链接；程序识别字、文件路径与录音逐字稿保留实际执行值。
+
+- 第一次使用时主动提供[入门指南](docs/GETTING_STARTED.zh-CN.md)与可复制的开始模板，先读取已有信息并检查环境，再询问尚缺且影响下一步的问题；在配音或大量制作前说明必要输入，不等失败后才要求补充。

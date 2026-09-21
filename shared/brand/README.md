@@ -1,5 +1,7 @@
 [繁體中文](README.md) | [简体中文](README.zh-CN.md) | [English](README.en.md)
 
+[資料存放規則](../../docs/DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
+
 # 使用自己的品牌
 
 本包不附 Logo。將你的 Logo 放在此目錄，然後修改 project 根目錄的 `brand.json`：

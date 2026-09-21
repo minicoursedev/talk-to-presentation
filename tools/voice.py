@@ -1,7 +1,7 @@
 """Validate, generate selected main/background narration, or rebuild existing WAVs."""
 import argparse, math, re, wave, array, sys, hashlib
 from pathlib import Path
-from common import ROOT, read, write, load, catalog
+from common import ROOT, DATA_ROOT, data_path, case_file, read, write, load, catalog
 
 def pcm(path):
     with wave.open(str(path),'rb') as w:
@@ -14,6 +14,7 @@ def pcm(path):
     return rate,data
 
 def save(path,rate,data):
+    path=data_path(path)
     path.parent.mkdir(parents=True,exist_ok=True)
     out=array.array('h',data)
     if sys.byteorder!='little': out.byteswap()
@@ -30,7 +31,7 @@ def rebuild(case,meta,slides):
         page=slide['page']; segments=[]
         for kind,field in [('main','narration'),('background','backgroundNarration')]:
             if not slide.get(field): continue
-            path=case/'audio'/kind/f'page-{page}.wav'
+            path=case_file(case,f'audio/{kind}/page-{page}.wav')
             r,data=pcm(path)
             provenance=path.with_suffix('.json')
             if provenance.exists():
@@ -81,7 +82,7 @@ def main():
             tone=s.get(tonefield)
             if tone not in refs: errors.append(f'Page {s["page"]}: unknown tone {tone}');continue
             wav,text=refs[tone]
-            if not wav.is_file(): errors.append(f'Page {s["page"]}: missing {wav.relative_to(ROOT)}');continue
+            if not wav.is_file(): errors.append(f'Page {s["page"]}: missing {wav.relative_to(DATA_ROOT)}');continue
             if not text: errors.append(f'Empty reference transcript: {tone}')
             try: pcm(wav)
             except Exception as e: errors.append(str(e))
@@ -92,9 +93,9 @@ def main():
     if not jobs: raise SystemExit('No selected narration to generate')
     # Preflight all targets before loading model or changing audio.
     for s,kind,tone,tts in jobs:
-        target=case/'audio'/kind/f'page-{s["page"]}.wav'
+        target=case_file(case,f'audio/{kind}/page-{s["page"]}.wav')
         if target.exists() and not a.replace: raise SystemExit(f'{target}: exists; use --replace only for authorized regeneration')
-    config=read(ROOT/'model.json'); modeldir=ROOT/config['directory']
+    config=read(ROOT/'model.json'); modeldir=data_path(config['directory'])
     if not (modeldir/'download-source.json').exists() or read(modeldir/'download-source.json') != config:
         raise SystemExit('Model provenance missing or changed. Run tools/download_model.py for the configured revision')
     if not (modeldir/'config.json').exists(): raise SystemExit('Model missing. Run: .venv/bin/python tools/download_model.py')
@@ -115,7 +116,7 @@ def main():
         wavs,rate=model.generate_voice_clone(text=converter.convert(tts),language='Chinese',voice_clone_prompt=prompts[tone],non_streaming_mode=True)
         data=np.asarray(wavs[0]).reshape(-1)
         if not len(data) or not np.isfinite(data).all() or np.max(np.abs(data))<0.001 or np.max(np.abs(data))>=1: raise RuntimeError('Invalid/silent/clipped TTS output')
-        target=case/'audio'/kind/f'page-{s["page"]}.wav'
+        target=case_file(case,f'audio/{kind}/page-{s["page"]}.wav')
         save(target,int(rate),array.array('h',np.rint(data*32767).astype(np.int16)))
         write(target.with_suffix('.json'),{'page':s['page'],'kind':kind,'tone':tone,'ttsText':tts,'model':config,'referenceSha256':hashlib.sha256(refs[tone][0].read_bytes()).hexdigest()})
     print('Generated selected WAVs only. Listen, then run timeline to rebuild captions and timing.')

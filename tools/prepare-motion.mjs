@@ -1,30 +1,36 @@
+import {dataRoot, dataPath, casePath, caseFile} from './data-paths.mjs';
 import {readFile, writeFile, mkdir, copyFile, stat} from 'node:fs/promises';
 import {resolve, dirname, extname, sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createServer} from 'node:http';
 import {createHash} from 'node:crypto';
 import {chromium} from 'playwright';
-const root=resolve(dirname(fileURLToPath(import.meta.url)), '..');
+import {checkVisuals} from './check-visuals.mjs';
+const root=dataRoot;
 const id=process.argv[2], preview=process.argv.includes('--preview');
 if(!id || !/^[\p{L}\p{N}_-]+$/u.test(id)) throw Error('Usage: node tools/prepare-motion.mjs <case-id> [--preview]');
-const caseDir=resolve(root,'cases',id);
+const caseDir=casePath(id);
 const json=async p=>JSON.parse(await readFile(p,'utf8'));
 const meta=await json(resolve(caseDir,'case.json')), slides=await json(resolve(caseDir,'content/slides.json'));
+for (const path of Object.values(meta.outputs)) caseFile(caseDir,path);
+caseFile(caseDir,'motion/src');
+caseFile(caseDir,'motion/timeline.wav');
+await checkVisuals(caseDir, meta, slides);
 let timeline;
 if(!preview){
   timeline=await json(resolve(caseDir,'content/timeline.json'));
   const source=createHash('sha256').update(await readFile(resolve(caseDir,'content/slides.json'))).update(await readFile(resolve(caseDir,'case.json'))).digest('hex');
   if(timeline.source!==source) throw Error('Timeline stale: rebuild with tools/voice.py timeline');
   for(const input of timeline.inputs){
-    const hash=createHash('sha256').update(await readFile(resolve(caseDir,input.file))).digest('hex');
+    const hash=createHash('sha256').update(await readFile(caseFile(caseDir,input.file))).digest('hex');
     if(hash!==input.sha256) throw Error('WAV changed: rebuild timeline');
   }
 }
-const output=resolve(caseDir,'motion/public');await mkdir(resolve(output,'slides'),{recursive:true});
+const output=caseFile(caseDir,'motion/public');await mkdir(resolve(output,'slides'),{recursive:true});
 const errors=[];
 const server=createServer(async(req,res)=>{
   try{
-    const p=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));
+    const p=dataPath('.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));
     if(!p.startsWith(root+sep)) throw Error('Outside project');
     res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2'})[extname(p)]||'application/octet-stream');
     res.end(await readFile(p));

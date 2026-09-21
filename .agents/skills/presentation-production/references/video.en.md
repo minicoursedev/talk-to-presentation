@@ -1,5 +1,7 @@
 [繁體中文](video.md) | [简体中文](video.zh-CN.md) | [English](video.en.md)
 
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+
 # Canvas Commons output
 
 Commands use an absolute `PROJECT_ROOT`. Replace `my-talk` with the case ID.
@@ -20,7 +22,7 @@ node "$PROJECT_ROOT/tools/motion.mjs" start sample --port 9002
 Preview duration comes from each page's `previewSeconds` (default: 3 seconds), not production narration timing. For production video, build timing from confirmed WAVs:
 
 ```bash
-python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 node "$PROJECT_ROOT/tools/prepare-motion.mjs" my-talk
 node "$PROJECT_ROOT/tools/motion.mjs" build my-talk
@@ -56,15 +58,15 @@ prepare-motion writes project.meta to match case.format, but still check the set
 Mux the newly exported video with confirmed subtitles:
 
 ```bash
-python3 "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PROJECT_ROOT/cases/my-talk/motion/output/presentation.mp4"
-python3 "$PROJECT_ROOT/tools/verify_video.py" my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PRESENTATION_DATA_ROOT/cases/my-talk/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
 ```
 
 finish_video requires an audio stream; it will not turn a silent example into a purported narrated MP4.
 To verify only the silent technical example:
 
 ```bash
-python3 "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PROJECT_ROOT/cases/sample/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PRESENTATION_DATA_ROOT/cases/sample/motion/output/presentation.mp4"
 ```
 
 verify_video checks H.264, dimensions, fps, required audio/subtitle streams, duration, and complete decoding, and writes the result to the case's verification/media.json. It does not replace watching or listening.

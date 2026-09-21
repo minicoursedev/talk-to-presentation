@@ -1,11 +1,11 @@
 """Check the trilingual document inventory, language links and voice catalog identifiers."""
 import re
 from pathlib import Path
-from common import ROOT, catalog
+from common import ROOT
 
 suffixes = ('', '.zh-CN', '.en')
-ignored = {'.git', '.venv', 'node_modules', '__pycache__', 'dist', 'output', 'verification'}
-docs = sorted(p for p in ROOT.rglob('*.md') if not ignored.intersection(p.relative_to(ROOT).parts))
+ignored = {'.git', '.venv', 'node_modules', '__pycache__', 'dist', 'output', 'verification', 'models'}
+docs = sorted(p for p in ROOT.rglob('*.md') if not ignored.intersection(p.relative_to(ROOT).parts) and p.relative_to(ROOT).parts[:2] != ('shared','voice') and (p.relative_to(ROOT).parts[0] != 'cases' or p.relative_to(ROOT).parts[1] == 'sample'))
 def base_stem(p):
     return re.sub(r'\.(zh-CN|en)$', '', p.stem)
 
@@ -35,17 +35,16 @@ for base in sorted(families):
                 if actual != suffix:
                     errors.append(f'Cross-language body link in {path.relative_to(ROOT)}: {href}')
 
-voice_dir = ROOT / 'shared/voice/reference-voice'
+voice_dir = ROOT / 'templates'
 def voice_rows(path):
     return [re.match(r'^\|\s*\d+\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|', line).groups()
             for line in path.read_text(encoding='utf-8').splitlines()
             if re.match(r'^\|\s*\d+\s*\|', line)]
-reference = voice_rows(voice_dir/'README.md')
+reference = voice_rows(voice_dir/'voice-catalog.md')
 for suffix in suffixes:
-    if voice_rows(voice_dir/f'README{suffix}.md') != reference:
+    if voice_rows(voice_dir/f'voice-catalog{suffix}.md') != reference:
         errors.append(f'Voice IDs, filenames or recording transcripts changed in README{suffix}.md')
-if len(catalog()) != len(reference):
-    errors.append('Canonical voice catalog is no longer readable by the runtime parser')
+
 if errors:
     raise SystemExit('\n'.join(errors))
 print(f'PASS: {len(families)} document families, {len(docs)} documents, language navigation, local links and {len(reference)} unchanged voice entries')

@@ -1,5 +1,7 @@
 [繁體中文](voice.md) | [简体中文](voice.zh-CN.md) | [English](voice.en.md)
 
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+
 # Voice production and timing
 
 First follow the project's `docs/SETUP.md` to install `.venv` and download the pinned Qwen revision. The macOS first release uses CPU/float32/eager; it does not assume CUDA or MPS availability. Generation time depends on the machine, text, and model; no fixed speed is promised.
@@ -8,8 +10,8 @@ Reference WAVs are not included. The user places them in `shared/voice/reference
 The tools require mono PCM16 WAVs. Convert a different source format into a separate file:
 
 ```bash
-ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PROJECT_ROOT/shared/voice/reference-voice/平靜敘述.wav"
-python3 "$PROJECT_ROOT/tools/voice.py" check my-talk
+ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/平靜敘述.wav"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" check my-talk
 ```
 
 If a WAV or transcript is missing, stop and list what is missing; do not substitute someone else's voice. Replace my-talk in these commands with the case ID.
@@ -28,7 +30,7 @@ Visual line breaks must not become TTS pause instructions. The tool collapses wh
 Listen to each page for text, tone, pauses, and endings. Then rebuild timing without calling Qwen:
 
 ```bash
-python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 ```
 
 This step uses the Python standard library to check mono PCM16, non-silence, no clipping, and a consistent sample rate. Main/background gaps follow case timing. Page durations are calculated from the actual WAVs and padded to exact video frame boundaries to prevent cross-page drift. Subtitles cover the main and background narration separately; titles do not replace spoken captions.
@@ -36,3 +38,10 @@ This step uses the Python standard library to check mono PCM16, non-silence, no 
 After changing narration, tones, or WAVs, regenerate the affected segments and rebuild timing and video. prepare-motion rejects sources or WAV hashes that do not match the timeline. File existence or passing technical checks does not mean speech has passed listening acceptance.
 
 Documentation language does not change speech language. The current generator fixes `language="Chinese"`; reading the English documentation does not enable English narration. Other speech languages require a separate implementation change and validation.
+
+## Reuse voice mappings and change speech speed
+
+- Read the actual voice catalog before use. Filenames need not equal tone names; numbered WAVs are valid when tone/transcript mappings are explicit. If a case tone is absent, first check whether it is a rename of the same tone; do not substitute another emotion arbitrarily. Preserve original recordings separately from format-converted copies.
+- Lowering volume can keep output below a numerical peak threshold; it cannot repair clipping already present in a source. Do not call audio repaired merely because it passes the peak check. Listen and report recording problems when needed.
+- For speed-only requests, prefer pitch-preserving time stretching from retained original-speed WAVs over new synthesis. First preserve original WAVs and sidecar JSON; record source SHA-256, target speed, and processing method separately to prevent cumulative acceleration on reruns. Preserve TTS text/tone provenance and distinguish postprocessing from new model output.
+- Rebuild timing, subtitles, video inputs, and the final video from processed WAVs, then listen for pauses and endings. Existing per-page lead/tail pauses may remain unchanged, so total duration need not equal original duration divided by speed. Record the speed as a case decision; carrying it across topics requires user direction.

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {casePath, caseFile, readBrand} from '../data-paths.mjs';
 
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
@@ -11,11 +12,11 @@ if (!caseId || !/^[\p{L}\p{N}][\p{L}\p{N}_-]*$/u.test(caseId)) {
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(scriptDir, '../..');
-const caseDir = resolve(projectRoot, 'cases', caseId);
+const caseDir = casePath(caseId);
 const metadata = JSON.parse(await readFile(resolve(caseDir, 'case.json'), 'utf8'));
 const slides = JSON.parse(await readFile(resolve(caseDir, 'content/slides.json'), 'utf8'));
-const brand = JSON.parse(await readFile(resolve(projectRoot, 'brand.json'), 'utf8'));
-const outputPath = resolve(caseDir, metadata.outputs.takahashiHtml);
+const brand = await readBrand();
+const outputPath = caseFile(caseDir, metadata.outputs.takahashiHtml);
 const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning']);
 const canvasWidth = Number(metadata.format?.width ?? 1080);
 const canvasHeight = Number(metadata.format?.height ?? 1920);

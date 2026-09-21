@@ -1,7 +1,10 @@
 ---
 name: presentation-production
+
 description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS 專案建立或修改高橋流 HTML、美化 HTML 與含旁白的 Canvas Commons MP4。適用於內容、旁白、插圖、動畫、重建與輸出驗證。
 ---
+
+[資料存放規則](../../../docs/DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
@@ -15,6 +18,8 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 2. 先讀 [工作流程](references/workflow.md)，環境未建立時讀 [macOS 安裝](../../../docs/SETUP.md)。
 3. 讀指定案件的 `case.json`、`content/draft.md`、`content/slides.json`；新案件用 project 的 `tools/init_case.py`，不手動複製舊案件依賴。
 
+4. 讀取 `case.json.style` 指定的案件樣板快照（通常為 `content/style/style.md`），依其敘事、口吻、視覺與節奏製作。新案件由 `init_case.py` 保存選定樣板；預設與替換方式見[核心風格樣板](../../../shared/styles/default/style.md)。既有案件未設定時先沿用其已確認決策，不自動套用新樣板。
+
 ## 核心規則
 
 - 對話形成主題；畫面文字、主旁白、補背景旁白、語氣、插圖與動畫是分開的決策。只改使用者指定項目。
@@ -24,6 +29,9 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 - 品牌名稱和 Logo 都由 `brand.json` 決定。Logo 未設定時，中性範例顯示品牌文字；正式交付使用接手者確認的品牌設定。
 - HTML 與影片不直接修改 `dist/`。來源是 slides、資產和場景；美化 HTML 可作影片構圖比對基準。
 - 呼叫 scripts 時使用由 `PROJECT_ROOT` 組成的絕對路徑，不寫死安裝位置。
+
+- 圖片覆蓋範圍、語速與批次風格是案件決策，記在 `draft.md`；每頁需圖時設定 `case.json.visual.requireImages`，不可自行排除標題、提問或結尾頁。逐頁規劃與檢查見 [圖片](references/images.md)。
+- 美化與換圖保留已確認頁序、文字與旁白；資料仍在不等於畫面可見，交付前依 [驗收](references/acceptance.md) 核對。
 
 ## 按任務閱讀
 

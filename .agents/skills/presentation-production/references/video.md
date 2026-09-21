@@ -1,5 +1,7 @@
 [繁體中文](video.md) | [简体中文](video.zh-CN.md) | [English](video.en.md)
 
+[資料存放規則](../../../../docs/DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
+
 # Canvas Commons 輸出
 
 以下命令皆使用絕對 `PROJECT_ROOT`；`my-talk` 換成案件 ID。
@@ -20,7 +22,7 @@ node "$PROJECT_ROOT/tools/motion.mjs" start sample --port 9002
 每頁預覽秒數來自 `previewSeconds`（預設 3 秒）；不代表正式旁白時間。正式影片使用已確認 WAV 重建時間軸：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/voice.py" timeline my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 node "$PROJECT_ROOT/tools/prepare-motion.mjs" my-talk
 node "$PROJECT_ROOT/tools/motion.mjs" build my-talk
@@ -56,15 +58,15 @@ prepare-motion 會寫入匹配 case.format 的 project.meta，仍需在 UI 核�
 將 exporter 本次輸出的影片與已確認字幕封裝：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PROJECT_ROOT/cases/my-talk/motion/output/presentation.mp4"
-python3 "$PROJECT_ROOT/tools/verify_video.py" my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PRESENTATION_DATA_ROOT/cases/my-talk/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
 ```
 
 finish_video 強制需要音軌，不會把靜音範例包裝成 narrated MP4。
 若只驗證靜音技術範例：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PROJECT_ROOT/cases/sample/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PRESENTATION_DATA_ROOT/cases/sample/motion/output/presentation.mp4"
 ```
 
 verify_video 檢查 H.264、尺寸、fps、正式音軌與字幕、長度及完整解碼，將結果寫入案件 verification/media.json。它不代替觀看或抽聽。

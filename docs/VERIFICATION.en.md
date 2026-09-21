@@ -1,5 +1,7 @@
 [繁體中文](VERIFICATION.md) | [简体中文](VERIFICATION.zh-CN.md) | [English](VERIFICATION.en.md)
 
+[Data storage rules](DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+
 # Handoff verification record
 
 Date: 2026-09-21. These are technical checks of the handoff tools, not content or narration acceptance for a production presentation.
@@ -65,3 +67,5 @@ python3 "$PROJECT_ROOT/tools/smoke_test.py"
 ```
 
 The test creates non-human signals in a temporary directory and removes them when finished. It does not call Qwen, change production cases, or add reference voices. Actual Motion Canvas rendering and visual/listening acceptance still follow the skill's video and acceptance documents.
+
+2026-09-21 storage separation: trilingual docs and skill validation passed, along with isolated packaging, both HTML builders, timeline tests, unchanged repository hashes, and rejection of repository-internal roots, escaping outputs and symlinks. An external case completed two silent-preview screenshots and TypeScript/Vite compilation. No voice generation or final MP4 rendering was performed; legacy personal data was not moved.

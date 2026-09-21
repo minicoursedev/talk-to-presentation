@@ -1,5 +1,7 @@
 [繁體中文](VERIFICATION.md) | [简体中文](VERIFICATION.zh-CN.md) | [English](VERIFICATION.en.md)
 
+[数据存放规则](DATA_LAYOUT.zh-CN.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
+
 # 本次交接包验证
 
 日期：2026-09-21。这是交接工具的技术验证，不是任何正式演示文稿的内容或配音验收。
@@ -65,3 +67,5 @@ python3 "$PROJECT_ROOT/tools/smoke_test.py"
 ```
 
 此测试在临时目录自行创建非人声讯号，结束即移除；不会呼叫 Qwen、改正式案件或加入参考语音。Motion Canvas 的实际渲染与视听验收仍依 skill 的视频及验收文件执行。
+
+2026-09-21 数据分离验证：通过三语文档与 skill 检查、隔离打包／两种 HTML／时间轴测试、仓库内容哈希不变检查，以及仓库内路径、越界输出与符号链接拒绝测试。仓库外案例完成两页静音截图及 TypeScript／Vite 构建。本次未生成真人配音或渲染最终 MP4，已有个人数据未搬移。

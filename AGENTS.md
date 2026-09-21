@@ -1,5 +1,7 @@
 [繁體中文](AGENTS.md) | [简体中文](AGENTS.zh-CN.md) | [English](AGENTS.en.md)
 
+[資料存放規則](docs/DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
+
 # 簡報製作
 
 - 簡報工作使用 `.agents/skills/presentation-production/SKILL.md`。
@@ -15,3 +17,5 @@
 - 建置成功不代表視覺或聽覺驗收通過。明確列出未測試階段。
 
 - 所有說明文件須同步提供繁體中文、簡體中文與英文，更新時一併維護同語言連結；程式識別字、檔案路徑與錄音逐字稿保留實際執行值。
+
+- 第一次使用時主動提供[入門指南](docs/GETTING_STARTED.md)與可複製的開始範本，先讀取已有資訊並檢查環境，再詢問尚缺且影響下一步的問題；在配音或大量製作前揭露必要輸入，不等失敗後才要求補件。

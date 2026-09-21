@@ -1,5 +1,7 @@
 [繁體中文](workflow.md) | [简体中文](workflow.zh-CN.md) | [English](workflow.en.md)
 
+[資料存放規則](../../../../docs/DATA_LAYOUT.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。 能力倉庫只保存工具、skill、內建樣板與中性範例。一般製作不得修改內建風格、範例或參考網站。使用者錄音、逐字稿、品牌、自訂風格、案件與輸出都放在倉庫外。
+
 # 案件與工作流程
 
 交接 project 的 README 是執行入口。此 skill 必須保留在 project 的 `.agents/skills/`，以下文件連結才有效。若全域安裝 skill，需將文件連結改為使用者指定 project 的絕對路徑；不要依賴 skill 目錄反推另一個 project。
@@ -7,7 +9,7 @@
 ```text
 brand.json                  共用品牌名稱、Logo 路徑
 model.json                  Qwen repo、固定 revision、本地下載目錄
-shared/voice/reference-voice/README.md  語氣與逐字稿契約，不附 WAV
+templates/voice-catalog.md  語氣與逐字稿契約，不附 WAV
 cases/<case-id>/
   case.json                 id、format、timing、outputs
   content/draft.md           草稿、使用者確認及局部修改範圍
@@ -31,9 +33,10 @@ cases/<case-id>/
 命令中的 `PROJECT_ROOT` 必須是接手者的絕對路徑，可含空格或中文。以下命令可從任意 cwd 執行：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"
+export PRESENTATION_DATA_ROOT="$("$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_data.py")"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"
 node "$PROJECT_ROOT/tools/takahashi-html/build.mjs" my-talk
-python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PROJECT_ROOT"
+python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROOT"
 ```
 
 在可用瀏覽器開啟 `http://127.0.0.1:4173/cases/my-talk/dist/my-talk.html`。Codex In-app Browser 可用時直接開啟；沒有時用一般瀏覽器。重建後重新整理。端口被占用時換空閒端口，不停止別人的服務。
@@ -45,3 +48,13 @@ node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 ```
 
 新案件由可執行模板建立，不把既有成品當來源。樣例是中性技術範例，不含既有案件內容或人聲。它可在缺少 Qwen 與參考 WAV 時完成 HTML、靜音影片工程的技術檢查；正式 narrated MP4 仍需使用者提供聲音輸入。
+
+## 對話、風格與案件決策
+
+專案入口承接對話，這個能力目錄負責製作。從目的、受眾、核心訊息與來源形成敘事及逐頁內容；以 `content/draft.md` 保存決策、所選風格、授權與進度。模板是記錄輔助，不是開始前必填的問卷。
+
+選用共用的[風格參考](../../../../shared/styles/default/style.md)或使用者提供的參考，記錄其路徑及要延續的特徵。跨頁與跨主題延續視覺語言，各頁的物件、場景及關係依自己的語意規劃。風格、內容及製作設定分開保存，讓每次製作可重用能力而保有自己的目的。
+
+將整體敘事分配到逐頁畫面、旁白及視覺說明，生成與修改時以這份共同來源為準。來源文件的主題邊界及頁碼對照亦保留在案件中。美化不改寫已確認內容；若需要內容調整，明確提出其影響。
+
+明確要求的輸出沿用既有執行授權；只釐清會影響下一步的未決內容。批次工作逐案記錄內容、素材、輸出與驗收進度，依要求接續完成。缺項阻擋哪一階段就列明哪一階段，不以建立案件代替完成交付。

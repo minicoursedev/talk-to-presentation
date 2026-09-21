@@ -1,5 +1,7 @@
 [繁體中文](images.md) | [简体中文](images.zh-CN.md) | [English](images.en.md)
 
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+
 # Creating and updating images
 
 This workflow covers new illustrations, edits, and replacements. Preserve content confirmations and image-generation permissions from the existing conversation; do not add duplicate approval gates.
@@ -30,3 +32,17 @@ This workflow covers new illustrations, edits, and replacements. Preserve conten
 - Inspect the image itself and its appearance in illustrated HTML and the final video. Check that the new version is used, coverage/crop and text placement agree, and no extra mask or obscured brand has been introduced.
 - Check every changed page, including pages identified by the user. Follow the video workflow to validate a local render before rendering the full video.
 - Report changed pages, image paths, rebuilt outputs, and outstanding confirmations. Image generation alone does not establish that HTML and video have been updated and verified.
+
+## Per-page planning and coverage
+
+Read the whole topic first. In each page's `visual.notes`, record “what this page says → visible objects/relationships → composition and text space.” Also read the case's selected style reference and representative pages. Derive objects, scenes, and relationships from the page's meaning while preserving a shared visual language.
+
+Visual design and additional narrative information are separate dimensions. Titles, questions, and closing pages may need no new plot, but still need the agreed visual treatment. If the user requires an image on every page, include those pages too. Do not make full image coverage a universal requirement for other cases. Clarify coverage only when existing instructions cannot resolve a consequential choice.
+
+When every page needs an image, add `"visual": {"requireImages": true}` to that case's `case.json` before bulk production. Illustrated HTML builds and video preparation will then reject missing images. A one-time check is also available:
+
+```bash
+node "$PROJECT_ROOT/tools/check-visuals.mjs" my-talk --require-images
+```
+
+The tool checks page identifiers, references, file existence and nonempty files, and reports illustrated counts and pages without images. The current HTML renderer displays only `illustrations[0]`. File existence does not establish decodability, relevance, or readable text; inspect every rendered page. Reusing an asset may be intentional; require distinct assets only if the user asks for different images on every page. Once generation is authorized, the page plan guides execution rather than adding an approval gate.
