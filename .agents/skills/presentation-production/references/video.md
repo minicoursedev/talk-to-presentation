@@ -70,3 +70,19 @@ finish_video 強制需要音軌，不會把靜音範例包裝成 narrated MP4。
 ```
 
 verify_video 檢查 H.264、尺寸、fps、正式音軌與字幕、長度及完整解碼，將結果寫入案件 verification/media.json。它不代替觀看或抽聽。
+
+## 可重跑的命令列匯出
+
+完成上面的 timeline、HTML、prepare 與 build 後，可直接執行：
+
+```bash
+node "$PROJECT_ROOT/tools/render-video.mjs" my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PRESENTATION_DATA_ROOT/cases/my-talk/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
+```
+
+`render-video.mjs` 啟動只綁 `127.0.0.1` 的臨時 Vite 服務，以 Playwright 呼叫 Canvas Commons 的 `Renderer` 與 `Video (FFmpeg)` exporter，沿用 prepare 寫入的尺寸、幀率、範圍與音軌。它與編輯器走同一個渲染器，會執行案件的 scene；失敗回傳非零狀態，完成即關閉服務與瀏覽器。支援 `BROWSER_EXECUTABLE`，輸出固定為 `motion/output/presentation.mp4`，重跑會替換此生成檔。
+
+靜音測試需先 `prepare-motion.mjs sample --preview`，再 `render-video.mjs sample --preview`，產生 `motion/output/preview.mp4`。用 `verify_video.py sample --preview --file <該檔絕對路徑>` 檢查；不要交給要求正式音軌的 finish_video。這條命令不執行 TTS，也不代替視覺與聽覺驗收。
+
+沿用已有美化 HTML 時，prepare 支援 `#progress`／`#progressBar` 滑桿（從 1 開始）及 `.short-frame`／`.slide.active` 畫布。滑桿 input 事件須切到對應頁，頁序須與 `slides.json` 一致；任意 HTML 不保證可直接匯入。

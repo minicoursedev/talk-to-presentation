@@ -47,11 +47,15 @@ try{
   await page.goto(`http://127.0.0.1:${port}/cases/${encodeURIComponent(id)}/${meta.outputs.visualHtml}`,{waitUntil:'networkidle'});
   await page.evaluate(()=>document.fonts.ready);
   await page.addStyleTag({content:'.progress {display:none !important;}'});
+  const progress=page.locator('#progress, #progressBar').first();
+  const frame=page.locator('.short-frame, .slide.active').first();
+  if(await progress.count()===0) throw Error('Visual HTML needs #progress or #progressBar navigation');
+  if(await frame.count()===0) throw Error('Visual HTML needs .short-frame or .slide.active frame');
   const pages=[];
   for(let index=0;index<slides.length;index++){
-    await page.locator('#progress').evaluate((el,n)=>{el.value=String(n);el.dispatchEvent(new Event('input'));},index+1);
+    await progress.evaluate((el,n)=>{el.value=String(n);el.dispatchEvent(new Event('input'));},index+1);
     await page.evaluate(async()=>{await Promise.all([...document.images].map(im=>im.decode()));});
-    await page.locator('.short-frame').screenshot({path:resolve(output,`slides/page-${slides[index].page}.png`)});
+    await frame.screenshot({path:resolve(output,`slides/page-${slides[index].page}.png`)});
     const record=preview ? null : timeline.pages[index];
     if(record && record.page!==slides[index].page) throw Error('Timeline page order mismatch');
     pages.push({page:slides[index].page,frames:record?.frames ?? Math.ceil((slides[index].previewSeconds??3)*meta.format.fps)});

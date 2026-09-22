@@ -77,3 +77,5 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 内容整理或台词修改后，执行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主动提供案例 `dist/script-review.html` 给用户。它从 `slides.json` 生成逐页对照与连续阅读模式，显示画面文字、主台词、补充旁白及语气；缺少主台词时明示，不自行拿画面文字充当旁白。
 
 `slides.json` 是唯一台词来源；检阅 HTML 是可重建的静态快照，不另外维护词稿或修改生成页。用户提出修订后更新来源，再重新生成。配音前提供当前版本供检阅，沿用已确认内容与既有授权，不新增重复确认关卡。检阅页生成不代表台词已确认，也不代替视觉审核。
+
+完整重建与交付前检查见[可重建验证](docs/REPRODUCIBILITY.zh-CN.md)，包含独立安装、分段旁白及 Canvas Commons 命令行导出。

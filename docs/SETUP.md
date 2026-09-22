@@ -6,7 +6,7 @@
 
 ## 系統工具
 
-本版以 macOS Apple Silicon、Python 3.12、Node 22 LTS 為安裝目標。macOS Intel 未實機驗證，且近期 PyTorch 的 macOS wheels 可能不支援 Intel；不可把 Apple Silicon 的 lockfile 當成已驗證 Intel 環境。若接手者使用 Intel，需另行解決並驗證相容依賴，不得靜默替換模型。
+本版以 macOS Apple Silicon、Python 3.12、Node >= 20.19.0 為安裝目標。macOS Intel 未實機驗證，且近期 PyTorch 的 macOS wheels 可能不支援 Intel；不可把 Apple Silicon 的 lockfile 當成已驗證 Intel 環境。若接手者使用 Intel，需另行解決並驗證相容依賴，不得靜默替換模型。
 
 先安裝 Apple Command Line Tools（若尚未安裝）：
 
@@ -17,8 +17,15 @@ xcode-select --install
 使用者自行安裝 [Homebrew](https://brew.sh/) 後：
 
 ```bash
-brew install node@22 python@3.12 ffmpeg sox
-export PATH="$(brew --prefix node@22)/bin:$(brew --prefix python@3.12)/bin:$PATH"
+# Reuse existing compatible tools; install only missing prerequisites.
+if ! command -v node >/dev/null; then brew install node; fi
+node -e 'const [a,b]=process.versions.node.split(".").map(Number); if(a<20 || (a===20 && b<19)) { console.error("Node >=20.19.0 required"); process.exit(1); }'
+if ! command -v python3.12 >/dev/null; then
+  brew install python@3.12
+  export PATH="$(brew --prefix python@3.12)/bin:$PATH"
+fi
+if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then brew install ffmpeg; fi
+if ! command -v sox >/dev/null; then brew install sox; fi
 node --version
 python3.12 --version
 ffmpeg -version
@@ -60,7 +67,7 @@ python3.12 -m venv "$PROJECT_ROOT/.venv"
 
 ## 版本維護
 
-Node dependencies 固定在 `package-lock.json`；Canvas Commons core、2d、editor、Vite plugin 與 FFmpeg exporter 均固定為 0.3.1。套件要求 Node >= 20.19.0；本包安裝目標仍為 Node 22 LTS。不要用 `npm audit fix --force` 直接改到不相容 major。開發伺服器只綁 `127.0.0.1`。
+Node dependencies 固定在 `package-lock.json`；Canvas Commons core、2d、editor、Vite plugin 與 FFmpeg exporter 均固定為 0.3.1。Node 的相容條件是 >= 20.19.0；保留任何符合範圍的既有版本，不指定或額外安裝特定 major。不要用 `npm audit fix --force` 直接改到不相容 major。開發伺服器只綁 `127.0.0.1`。
 
 Python 直接依賴在 `requirements.in`；完整依賴解析保存在 `requirements-macos.lock.txt`，針對 Python 3.12 / Apple Silicon。只有刻意升級時才用 uv 重新解析：
 

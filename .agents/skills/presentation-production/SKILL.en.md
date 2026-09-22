@@ -14,7 +14,7 @@ Use this skill with the accompanying handoff project. It does not assume a brand
 
 ## Start here
 
-1. Locate `AGENTS.md`, `README.md`, and `brand.json` in the user's chosen project. Set `PROJECT_ROOT` to an absolute path. Reset it after moving the project; do not retain another person's local paths.
+1. Read `AGENTS.md` and `README.md` in the user's chosen capability directory and set its absolute `PROJECT_ROOT`. Resolve the external `PRESENTATION_DATA_ROOT` according to the storage rules; read the active `brand.json` and cases from there. Reset paths after moving the project; do not retain another person's local paths.
 2. Read [workflow](references/workflow.en.md) first. If the environment is not ready, read [macOS setup](../../../docs/SETUP.en.md).
 3. Read the selected case's `case.json`, `content/draft.md`, and `content/slides.json`. For a new case, use the project's `tools/init_case.py`; do not copy dependencies from an old case manually.
 
@@ -44,3 +44,10 @@ Use this skill with the accompanying handoff project. It does not assume a brand
 Voice changes rebuild only affected audio, timing, subtitles, and video. Illustration changes rebuild illustrated HTML and video. Animation changes rebuild only video. Brand changes rebuild both HTML versions and video. Confirmed WAVs for pages outside the requested change must remain unchanged.
 
 - After organizing content or changing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide the case’s `dist/script-review.html`. It reads `slides.json` and offers page comparison and continuous script reading, showing screen text, main narration, background narration and tones. Missing main narration is explicit; never substitute screen text automatically. `slides.json` is the only script source. Review HTML is a regenerable static snapshot, not a separate editable manuscript. Apply requested changes to the source and regenerate. Provide the current version before speech production, preserving existing confirmations and authorization without redundant approval gates. Generation does not establish user approval or replace visual review.
+
+## Rebuild contracts
+
+- Brand palettes use semantic `primary`/`accent`/`surface`/`text` roles; see [workflow](references/workflow.en.md). Do not turn a case's colors into universal requirements.
+- For multiple tones on one page, use `narrationSegments` and the filenames and regeneration scope in [narration](references/voice.en.md).
+- `render-video.mjs` drives the Canvas Commons FFmpeg exporter; see [video](references/video.en.md). Muxing, technical checks, and visual/listening acceptance are still required.
+- After capability changes, follow [rebuild verification](../../../docs/REPRODUCIBILITY.en.md) for an independent installation and test. Record the tested version and actual unverified stages with the delivery.

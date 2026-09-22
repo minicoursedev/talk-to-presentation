@@ -6,7 +6,7 @@
 
 ## System tools
 
-The installation target is macOS on Apple Silicon, Python 3.12, and Node 22 LTS. Intel Macs have not been tested on hardware, and recent macOS PyTorch wheels may not support Intel. The Apple Silicon lockfile is not evidence of a verified Intel environment. Intel recipients must resolve and verify a compatible dependency set separately; do not silently substitute another model.
+The installation target is macOS on Apple Silicon, Python 3.12, and Node >= 20.19.0. Intel Macs have not been tested on hardware, and recent macOS PyTorch wheels may not support Intel. The Apple Silicon lockfile is not evidence of a verified Intel environment. Intel recipients must resolve and verify a compatible dependency set separately; do not silently substitute another model.
 
 Install Apple Command Line Tools if they are not already installed:
 
@@ -17,8 +17,15 @@ xcode-select --install
 After installing [Homebrew](https://brew.sh/):
 
 ```bash
-brew install node@22 python@3.12 ffmpeg sox
-export PATH="$(brew --prefix node@22)/bin:$(brew --prefix python@3.12)/bin:$PATH"
+# Reuse existing compatible tools; install only missing prerequisites.
+if ! command -v node >/dev/null; then brew install node; fi
+node -e 'const [a,b]=process.versions.node.split(".").map(Number); if(a<20 || (a===20 && b<19)) { console.error("Node >=20.19.0 required"); process.exit(1); }'
+if ! command -v python3.12 >/dev/null; then
+  brew install python@3.12
+  export PATH="$(brew --prefix python@3.12)/bin:$PATH"
+fi
+if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then brew install ffmpeg; fi
+if ! command -v sox >/dev/null; then brew install sox; fi
 node --version
 python3.12 --version
 ffmpeg -version
@@ -60,7 +67,7 @@ The generation script reads only that directory. It does not search a parent `.h
 
 ## Maintaining versions
 
-Node dependencies are locked in `package-lock.json`. Canvas Commons core, 2d, editor, Vite plugin, and FFmpeg exporter are pinned to 0.3.1. These packages require Node >= 20.19.0; the installation target remains Node 22 LTS. Do not use `npm audit fix --force` to introduce incompatible major versions. Development servers bind only to `127.0.0.1`.
+Node dependencies are locked in `package-lock.json`. Canvas Commons core, 2d, editor, Vite plugin, and FFmpeg exporter are pinned to 0.3.1. The Node compatibility range is >= 20.19.0. Retain an existing compatible version instead of installing a specific major alongside it. Do not use `npm audit fix --force` to introduce incompatible major versions. Development servers bind only to `127.0.0.1`.
 
 Direct Python dependencies are in `requirements.in`; the complete resolution is in `requirements-macos.lock.txt`, targeting Python 3.12 on Apple Silicon. Re-resolve with uv only when deliberately upgrading:
 

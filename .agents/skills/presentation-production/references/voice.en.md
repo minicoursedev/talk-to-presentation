@@ -45,3 +45,19 @@ Documentation language does not change speech language. The current generator fi
 - Lowering volume can keep output below a numerical peak threshold; it cannot repair clipping already present in a source. Do not call audio repaired merely because it passes the peak check. Listen and report recording problems when needed.
 - For speed-only requests, prefer pitch-preserving time stretching from retained original-speed WAVs over new synthesis. First preserve original WAVs and sidecar JSON; record source SHA-256, target speed, and processing method separately to prevent cumulative acceleration on reruns. Preserve TTS text/tone provenance and distinguish postprocessing from new model output.
 - Rebuild timing, subtitles, video inputs, and the final video from processed WAVs, then listen for pauses and endings. Existing per-page lead/tail pauses may remain unchanged, so total duration need not equal original duration divided by speed. Record the speed as a case decision; carrying it across topics requires user direction.
+
+## Multiple tones on one page
+
+Keep the complete `narration` in `slides.json` and add `narrationSegments` when a page needs multiple tones. Concatenating each segment's `text` in order must exactly reproduce `narration`, including punctuation and whitespace. Each `tone` must exist in the user's voice catalog. Segment tones take precedence over the page-level `tone`.
+
+```json
+{"page":1,"narration":"先說清楚問題。再說明方法。","narrationSegments":[{"text":"先說清楚問題。","tone":"平靜敘述"},{"text":"再說明方法。","tone":"平靜敘述"}]}
+```
+
+This is a schema example; users can change each tone. Omitting `narrationSegments` retains single-segment `narration`/`tone`. Empty arrays or mismatched text are rejected. `review-script.mjs` displays the full narration and each segment's tone without a separate manuscript.
+
+- Single speech uses `audio/main/page-1.wav`; segmented speech uses `audio/main/page-1-segment-1.wav`, `page-1-segment-2.wav`, etc. Each WAV has an adjacent JSON provenance record.
+- `voice.py check` validates all segments. `generate --kind main --pages 1` generates every segment on page 1. For authorized regeneration, back up existing files before adding `--replace`. Regeneration currently selects pages, not individual segments. Background narration remains a separate `--kind background` operation.
+- `case.json.timing.narrationGapSeconds` controls pauses between main segments, falling back to `backgroundGapSeconds` when omitted. Values are nonnegative seconds. The pause before background narration uses `backgroundGapSeconds`.
+- `timeline` concatenates segments in order, creates one caption per segment, then adds background narration. It only reads filenames corresponding to the current schema, so switching between single and segmented narration does not mix in old WAVs. Source WAVs remain unchanged.
+- After changing text, tone, segmentation, or gaps, rebuild affected audio (gap-only changes need no TTS), timeline, review HTML, preparation, and video. Listen to every changed segment and verify captions before delivery.

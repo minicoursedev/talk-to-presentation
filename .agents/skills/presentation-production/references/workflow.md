@@ -64,3 +64,15 @@ node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 內容整理或台詞修改後，執行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主動提供案件 `dist/script-review.html` 給使用者。它從 `slides.json` 產生逐頁對照與連續閱讀模式，顯示畫面文字、主台詞、補充旁白及語氣；缺少主台詞時明示，不自行拿畫面文字充當旁白。
 
 `slides.json` 是唯一台詞來源；檢閱 HTML 是可重建的靜態快照，不另外維護詞稿或修改生成頁。使用者提出修訂後更新來源，再重新產生。配音前提供目前版本供檢閱，沿用已確認內容與既有授權，不新增重複確認關卡。檢閱頁生成不代表台詞已確認，也不代替視覺審核。
+
+## 可替換品牌色與文字組成
+
+使用者資料根目錄的 `brand.json` 可設定四個用途欄位，顏色不限定特定色系：
+
+```json
+{"name":"示範品牌","logo":null,"colors":{"primary":"#963B32","accent":"#2F8A81","surface":"#FFF4E6","text":"#202D36"}}
+```
+
+`primary` 是主要品牌色，`accent` 是強調色，`surface` 是淺色底，`text` 是深色文字；均為六碼十六進位色碼。省略 `colors` 沿用內建配色；提供時須完整設定四項。兩種 HTML 使用同一組設定，影片取用美化 HTML。既有 `purple`、`yellow`、`cream`、`darkGreen` 分別相容映射至這四項，新設定採用途名稱；同時存在時用途欄位優先。修改配色後必須實際檢查對比，欄位合法不保證可讀性。
+
+`parts` 的一行可用 `runs: [{text, color}]` 設定行內強調，顯示文字依序連接；有 `runs` 時優先於 `text`。可選 `size: tight`，美化版另支援 `layout: art-story|art-cover`。版面是否適合內容仍需逐頁看圖驗收。分段旁白見[配音](voice.md)。

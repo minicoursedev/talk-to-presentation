@@ -2,6 +2,7 @@ import {realpathSync, existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {resolve, dirname, basename, isAbsolute, sep, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {resolvePalette} from './brand-palette.mjs';
 export const capabilityRoot = realpathSync(resolve(dirname(fileURLToPath(import.meta.url)), '..'));
 function physical(path) {
   path = resolve(path);
@@ -39,5 +40,6 @@ export async function readBrand() {
     if (isAbsolute(brand.logo)) throw Error('Brand logo must be data-root relative');
     dataPath(brand.logo);
   }
+  if (brand.colors != null) brand.colors = resolvePalette(brand.colors);
   return brand;
 }

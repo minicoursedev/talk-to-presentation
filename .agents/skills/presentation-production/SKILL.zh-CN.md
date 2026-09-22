@@ -14,7 +14,7 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 
 ## 开始
 
-1. 找到用户指定 project 的 `AGENTS.md`、`README.md`、`brand.json`，并以绝对路径设置 `PROJECT_ROOT`。搬移后重新设置，不沿用其他人的本机路径。
+1. 读取用户指定能力目录的 `AGENTS.md`、`README.md`，以绝对路径设置 `PROJECT_ROOT`；再依数据存放规则解析仓库外的 `PRESENTATION_DATA_ROOT`，从那里读取使用中的 `brand.json` 与案例。搬移后重新设置，不沿用其他人的本机路径。
 2. 先读 [工作流程](references/workflow.zh-CN.md)，环境未创建时读 [macOS 安装](../../../docs/SETUP.zh-CN.md)。
 3. 读指定案件的 `case.json`、`content/draft.md`、`content/slides.json`；新案件用 project 的 `tools/init_case.py`，不手动复制旧案件依赖。
 
@@ -44,3 +44,10 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 改语音只重建相关音频文件、时间轴、字幕及视频；改插图重建美化 HTML 与视频；改动画只重建视频；改品牌重建两种 HTML 与视频。未指定页面的已确认 WAV 不应改变。
 
 - 内容整理或台词修改后，执行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主动提供案例 `dist/script-review.html` 给用户。它从 `slides.json` 生成逐页对照与连续阅读模式，显示画面文字、主台词、补充旁白及语气；缺少主台词时明示，不自行拿画面文字充当旁白。 `slides.json` 是唯一台词来源；检阅 HTML 是可重建的静态快照，不另外维护词稿或修改生成页。用户提出修订后更新来源，再重新生成。配音前提供当前版本供检阅，沿用已确认内容与既有授权，不新增重复确认关卡。检阅页生成不代表台词已确认，也不代替视觉审核。
+
+## 可重建流程的契约
+
+- 品牌色使用 `primary`／`accent`／`surface`／`text` 等用途栏位，见[工作流程](references/workflow.zh-CN.md)；不得将案件品牌色系写成通用必要条件。
+- 同一页需要不同语气时使用 `narrationSegments`，依[配音](references/voice.zh-CN.md)的档名与重制范围执行。
+- 完整影片可使用 `render-video.mjs` 呼叫 Canvas Commons FFmpeg exporter，见[影片](references/video.zh-CN.md)；交付前仍要封装、技术检查及视听验收。
+- 能力修改后依[重建验证](../../../docs/REPRODUCIBILITY.zh-CN.md)在独立目录安装及测试；将通过版本与实际未验证项目记录在交付中。

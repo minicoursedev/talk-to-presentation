@@ -25,29 +25,47 @@ def stamp(t):
     ms=round(t*1000)
     return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}'
 
+def narration_parts(slide, kind):
+    page=slide['page']
+    if kind=='background':
+        return [(None,slide['backgroundNarration'],slide['backgroundTone'])] if slide.get('backgroundNarration') else []
+    text=slide.get('narration')
+    if not text: return []
+    parts=slide.get('narrationSegments')
+    if parts is None: return [(None,text,slide.get('tone'))]
+    if not isinstance(parts,list) or not parts or any(not isinstance(p,dict) or not isinstance(p.get('text'),str) or not p['text'].strip() or not isinstance(p.get('tone'),str) or not p['tone'].strip() for p in parts) or ''.join(p['text'] for p in parts)!=text:
+        raise ValueError(f'Page {page}: narrationSegments must exactly match narration')
+    return [(i,p['text'],p['tone']) for i,p in enumerate(parts,1)]
+
+def audio_path(case,page,kind,index):
+    suffix=f'-segment-{index}' if index is not None else ''
+    return case_file(case,f'audio/{kind}/page-{page}{suffix}.wav')
+
 def rebuild(case,meta,slides):
     fps=meta['format']['fps'];timing=meta['timing'];rate=None;combined=array.array('h');records=[];captions=[];cursor=0;inputs=[]
     for slide in slides:
         page=slide['page']; segments=[]
-        for kind,field in [('main','narration'),('background','backgroundNarration')]:
-            if not slide.get(field): continue
-            path=case_file(case,f'audio/{kind}/page-{page}.wav')
-            r,data=pcm(path)
-            provenance=path.with_suffix('.json')
-            if provenance.exists():
-                log=read(provenance)
-                expected=re.sub(r'\s+',' ',slide[field]).strip()
-                tone=slide['tone' if kind=='main' else 'backgroundTone']
-                if log.get('ttsText')!=expected or log.get('tone')!=tone:
-                    raise ValueError(f'{path}: narration or tone changed; regenerate this segment')
-            if rate is None: rate=r
-            if rate!=r: raise ValueError(f'Sample rate mismatch: {path}')
-            inputs.append({'file':str(path.relative_to(case)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
-            segments.append((kind,slide[field],data))
+        for kind in ('main','background'):
+            for index,text,tone in narration_parts(slide,kind):
+                path=audio_path(case,page,kind,index)
+                r,data=pcm(path)
+                provenance=path.with_suffix('.json')
+                if provenance.exists():
+                    log=read(provenance)
+                    expected=re.sub(r'\s+',' ',text).strip()
+                    if log.get('ttsText')!=expected or log.get('tone')!=tone:
+                        raise ValueError(f'{path}: narration or tone changed; regenerate this segment')
+                if rate is None: rate=r
+                if rate!=r: raise ValueError(f'Sample rate mismatch: {path}')
+                inputs.append({'file':str(path.relative_to(case)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+                segments.append((kind,text,data))
         if not segments: raise ValueError(f'Page {page}: missing narration')
         pageaudio=array.array('h'); local=[]
         for index,(kind,text,data) in enumerate(segments):
-            if index: pageaudio.extend([0]*round(timing['backgroundGapSeconds']*rate))
+            if index:
+                gap=timing.get('narrationGapSeconds',timing['backgroundGapSeconds']) if kind=='main' else timing['backgroundGapSeconds']
+                if not isinstance(gap,(int,float)) or not math.isfinite(gap) or gap<0: raise ValueError('Narration gaps must be nonnegative seconds')
+                pageaudio.extend([0]*round(gap*rate))
             local.append((text,len(pageaudio),len(data)))
             pageaudio.extend(data)
         frames=timing['voiceOffsetFrames']+math.ceil(len(pageaudio)*fps/rate)+timing['tailFrames']
@@ -75,25 +93,24 @@ def main():
     kinds=['main','background'] if a.action=='check' else [a.kind]
     for s in selected:
         for kind in kinds:
-            field,tonefield=('narration','tone') if kind=='main' else ('backgroundNarration','backgroundTone')
-            if not s.get(field):
-                if kind=='main': errors.append(f'Page {s["page"]}: missing narration')
-                continue
-            tone=s.get(tonefield)
-            if tone not in refs: errors.append(f'Page {s["page"]}: unknown tone {tone}');continue
-            wav,text=refs[tone]
-            if not wav.is_file(): errors.append(f'Page {s["page"]}: missing {wav.relative_to(DATA_ROOT)}');continue
-            if not text: errors.append(f'Empty reference transcript: {tone}')
-            try: pcm(wav)
-            except Exception as e: errors.append(str(e))
-            tts=re.sub(r'\s+',' ',s[field]).strip()
-            jobs.append((s,kind,tone,tts))
+            try: parts=narration_parts(s,kind)
+            except ValueError as e: errors.append(str(e));continue
+            if kind=='main' and not parts: errors.append(f'Page {s["page"]}: missing narration')
+            for index,part_text,tone in parts:
+                if tone not in refs: errors.append(f'Page {s["page"]}: unknown tone {tone}');continue
+                wav,ref_text=refs[tone]
+                if not wav.is_file(): errors.append(f'Page {s["page"]}: missing {wav.relative_to(DATA_ROOT)}');continue
+                if not ref_text: errors.append(f'Empty reference transcript: {tone}')
+                try: pcm(wav)
+                except Exception as e: errors.append(str(e))
+                tts=re.sub(r'\s+',' ',part_text).strip()
+                jobs.append((s,kind,index,tone,tts))
     if errors: raise SystemExit('\n'.join(errors))
     if a.action=='check': print('Voice inputs valid');return
     if not jobs: raise SystemExit('No selected narration to generate')
     # Preflight all targets before loading model or changing audio.
-    for s,kind,tone,tts in jobs:
-        target=case_file(case,f'audio/{kind}/page-{s["page"]}.wav')
+    for s,kind,index,tone,tts in jobs:
+        target=audio_path(case,s['page'],kind,index)
         if target.exists() and not a.replace: raise SystemExit(f'{target}: exists; use --replace only for authorized regeneration')
     config=read(ROOT/'model.json'); modeldir=data_path(config['directory'])
     if not (modeldir/'download-source.json').exists() or read(modeldir/'download-source.json') != config:
@@ -108,16 +125,20 @@ def main():
     torch.manual_seed(42);converter=OpenCC('t2s')
     model=Qwen3TTSModel.from_pretrained(str(modeldir),device_map='cpu',dtype=torch.float32,attn_implementation='eager')
     prompts={}
-    for s,kind,tone,tts in jobs:
+    for s,kind,index,tone,tts in jobs:
         if tone not in prompts:
             wav,text=refs[tone]
             prompts[tone]=model.create_voice_clone_prompt(ref_audio=str(wav),ref_text=converter.convert(text))
-        print(f'Page {s["page"]} {kind} [{tone}]: {tts}',flush=True)
+        print(f'Page {s["page"]} {kind}{f" segment {index}" if index is not None else ""} [{tone}]: {tts}',flush=True)
         wavs,rate=model.generate_voice_clone(text=converter.convert(tts),language='Chinese',voice_clone_prompt=prompts[tone],non_streaming_mode=True)
         data=np.asarray(wavs[0]).reshape(-1)
-        if not len(data) or not np.isfinite(data).all() or np.max(np.abs(data))<0.001 or np.max(np.abs(data))>=1: raise RuntimeError('Invalid/silent/clipped TTS output')
-        target=case_file(case,f'audio/{kind}/page-{s["page"]}.wav')
+        if not len(data) or not np.isfinite(data).all(): raise RuntimeError('Invalid TTS output')
+        peak=float(np.max(np.abs(data)))
+        if peak<0.001 or peak>1.2: raise RuntimeError('Silent or excessive TTS peak')
+        gain=min(1.0,0.98/peak)
+        if gain<1: data=data*gain
+        target=audio_path(case,s['page'],kind,index)
         save(target,int(rate),array.array('h',np.rint(data*32767).astype(np.int16)))
-        write(target.with_suffix('.json'),{'page':s['page'],'kind':kind,'tone':tone,'ttsText':tts,'model':config,'referenceSha256':hashlib.sha256(refs[tone][0].read_bytes()).hexdigest()})
+        write(target.with_suffix('.json'),{'page':s['page'],'kind':kind,'segment':index,'tone':tone,'ttsText':tts,'model':config,'referenceSha256':hashlib.sha256(refs[tone][0].read_bytes()).hexdigest(),'outputPeakBeforeGain':peak,'outputGain':gain})
     print('Generated selected WAVs only. Listen, then run timeline to rebuild captions and timing.')
 if __name__=='__main__': main()

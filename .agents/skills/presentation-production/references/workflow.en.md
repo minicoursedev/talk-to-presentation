@@ -64,3 +64,15 @@ Preserve existing authorization for requested outputs and clarify only unresolve
 After organizing content or changing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide the case’s `dist/script-review.html`. It reads `slides.json` and offers page comparison and continuous script reading, showing screen text, main narration, background narration and tones. Missing main narration is explicit; never substitute screen text automatically.
 
 `slides.json` is the only script source. Review HTML is a regenerable static snapshot, not a separate editable manuscript. Apply requested changes to the source and regenerate. Provide the current version before speech production, preserving existing confirmations and authorization without redundant approval gates. Generation does not establish user approval or replace visual review.
+
+## Replaceable brand colors and rich text
+
+The user data root's `brand.json` accepts four semantic roles, independent of hue:
+
+```json
+{"name":"Example brand","logo":null,"colors":{"primary":"#963B32","accent":"#2F8A81","surface":"#FFF4E6","text":"#202D36"}}
+```
+
+`primary` is the main brand color, `accent` highlights content, `surface` is a light background, and `text` is dark text. Values must be six-digit hexadecimal colors. Omit `colors` to use the built-in palette; when supplied, all four roles are required. Both HTML builders use the same palette; video uses the illustrated HTML. Legacy `purple`, `yellow`, `cream`, and `darkGreen` map to these roles for compatibility. Semantic keys take precedence when both exist. Recheck contrast after changing the palette; valid fields do not guarantee readability.
+
+A line in `parts` can use `runs: [{text, color}]` for inline emphasis. Run text is concatenated in order and takes precedence over `text`. `size: tight` is available; illustrated HTML also supports `layout: art-story|art-cover`. Inspect every page to assess suitability. See [narration](voice.en.md) for segmented speech.

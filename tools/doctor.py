@@ -9,7 +9,7 @@ for tool in ('node','npm','ffmpeg','ffprobe','sox'):
  if not path:issues.append('Install '+tool)
 if shutil.which('node'):
  version=tuple(map(int,subprocess.check_output(['node','-p','process.versions.node'],text=True).strip().split('.')[:2]))
- if version<(20,19):issues.append('Canvas Commons requires Node >= 20.19.0; install Node 22 LTS')
+ if version<(20,19):issues.append('Canvas Commons requires Node >= 20.19.0; keep an existing compatible Node installation')
 if platform.machine()!='arm64':issues.append('This lockfile is validated only for macOS Apple Silicon; Intel requires a separately verified dependency set')
 if not (ROOT/'node_modules/@canvas-commons/core').is_dir():issues.append('Run npm ci')
 print('User data:', DATA_ROOT)

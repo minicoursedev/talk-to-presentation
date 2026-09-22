@@ -16,8 +16,22 @@ const caseDir = casePath(caseId);
 const metadata = JSON.parse(await readFile(resolve(caseDir, 'case.json'), 'utf8'));
 const slides = JSON.parse(await readFile(resolve(caseDir, 'content/slides.json'), 'utf8'));
 const brand = await readBrand();
+const brandColors = brand.colors;
+const brandPaletteCss = brandColors ? `
+    .short-frame { --brand-primary: ${brandColors.primary}; --brand-accent: ${brandColors.accent}; --brand-surface: ${brandColors.surface}; --brand-text: ${brandColors.text}; background: var(--brand-text); }
+    .slide.light { background: var(--brand-surface); color: var(--brand-text); }
+    .slide.light .white { color: var(--brand-text); }
+    .highlight, .success, .mint { color: var(--brand-accent); }
+    .danger, .warning, .rose { color: color-mix(in srgb, var(--brand-primary) 45%, white); }
+    .slide.light .highlight, .slide.light .success, .slide.light .mint { color: var(--brand-primary); }
+    .slide.light .danger, .slide.light .warning, .slide.light .rose { color: color-mix(in srgb, var(--brand-accent) 43%, var(--brand-text)); }
+    .brand, .short-frame:has(.slide.light.active) .brand { padding: .65cqh 1cqw; border-radius: .35rem; background: var(--brand-text); }
+    .brand span { color: var(--brand-surface); }
+    .progress-bar::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--brand-accent) var(--progress), var(--brand-primary) var(--progress)); }
+    .progress-bar::-webkit-slider-thumb, .progress-bar::-moz-range-progress, .progress-bar::-moz-range-thumb { background: var(--brand-accent); }
+  ` : '';
 const outputPath = caseFile(caseDir, metadata.outputs.takahashiHtml);
-const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning']);
+const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning', 'mint', 'rose']);
 const canvasWidth = Number(metadata.format?.width ?? 1080);
 const canvasHeight = Number(metadata.format?.height ?? 1920);
 if (!Number.isFinite(canvasWidth) || !Number.isFinite(canvasHeight) || canvasWidth <= 0 || canvasHeight <= 0) {
@@ -35,11 +49,16 @@ const renderText = (value) => escapeHtml(value ?? '').replaceAll(/\r?\n/g, '<br>
 
 function renderParts(parts) {
   return parts.map((part) => {
-    const text = renderText(part.text);
     const colour = colours.has(part.color) ? part.color : 'white';
+    const text = Array.isArray(part.runs)
+      ? part.runs.map((run) => {
+        const runColour = colours.has(run.color) ? run.color : colour;
+        return `<span class="${runColour}">${renderText(run.text)}</span>`;
+      }).join('')
+      : renderText(part.text);
     return part.small
       ? `<div class="sub-text ${colour}">${text}</div>`
-      : `<div class="takahashi-text ${colour}${part.size === 'compact' ? ' compact' : ''}">${text}</div>`;
+      : `<div class="takahashi-text ${colour}${part.size === 'compact' ? ' compact' : part.size === 'tight' ? ' tight' : ''}">${text}</div>`;
   }).join('\n');
 }
 
@@ -67,8 +86,9 @@ const html = `<!DOCTYPE html>
     .slide.active { visibility: visible; opacity: 1; }
     .takahashi-text { font-size: clamp(3.5rem, min(13cqw, 12cqh), 11rem); font-weight: 900; letter-spacing: -.02em; line-height: 1.15; word-break: break-word; }
     .takahashi-text.compact { font-size: clamp(2rem, min(7cqw, 6cqh), 6rem); }
+    .takahashi-text.tight { font-size: clamp(1.8rem, min(5.4cqw, 5cqh), 5rem); }
     .sub-text { font-size: clamp(2rem, min(6cqw, 6cqh), 5rem); font-weight: 700; line-height: 1.3; }
-    .white { color: #fff; } .dark { color: #000; } .highlight { color: #38bdf8; } .danger { color: #f43f5e; } .success { color: #22c55e; } .warning { color: #fbbf24; }
+    .white { color: #fff; } .dark { color: #a1a1aa; } .highlight { color: #38bdf8; } .danger { color: #f43f5e; } .success { color: #22c55e; } .warning { color: #fbbf24; } .mint { color: #93cbb4; } .rose { color: #c9959d; }
     .slide.stack { gap: clamp(.5rem, 1.5cqh, 1.5rem); } .slide.stack .takahashi-text { font-size: clamp(2.25rem, min(10cqw, 9cqh), 7rem); line-height: 1.05; }
     .slide.light { background: #fff; color: #000; } .slide.light .white { color: #000; }
     .brand { position: absolute; z-index: 3; top: 2cqh; left: 3cqw; line-height: 0; }
@@ -80,6 +100,7 @@ const html = `<!DOCTYPE html>
     .progress-bar::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -6px; appearance: none; -webkit-appearance: none; border-radius: 50%; background: #38bdf8; }
     .progress-bar::-moz-range-track { height: 6px; background: #52525b; } .progress-bar::-moz-range-progress { height: 6px; background: #38bdf8; } .progress-bar::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: #38bdf8; }
     .progress-bar:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+    ${brandPaletteCss}
   </style>
 </head>
 <body>

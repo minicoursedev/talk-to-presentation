@@ -70,3 +70,19 @@ To verify only the silent technical example:
 ```
 
 verify_video checks H.264, dimensions, fps, required audio/subtitle streams, duration, and complete decoding, and writes the result to the case's verification/media.json. It does not replace watching or listening.
+
+## Repeatable command-line export
+
+After timeline, HTML, preparation, and build, run:
+
+```bash
+node "$PROJECT_ROOT/tools/render-video.mjs" my-talk
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PRESENTATION_DATA_ROOT/cases/my-talk/motion/output/presentation.mp4"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
+```
+
+`render-video.mjs` starts a temporary Vite server bound to `127.0.0.1` and uses Playwright to call the Canvas Commons `Renderer` with the `Video (FFmpeg)` exporter. It uses the dimensions, fps, range, and audio settings written by prepare. This is the editor's renderer and executes the case's scene. Failures return a nonzero status; the server and browser close on completion. `BROWSER_EXECUTABLE` is supported. Output is always `motion/output/presentation.mp4`; reruns replace this generated file.
+
+For silent testing, run `prepare-motion.mjs sample --preview`, then `render-video.mjs sample --preview`, producing `motion/output/preview.mp4`. Check it with `verify_video.py sample --preview --file <absolute-file-path>`. Do not pass silent output to finish_video, which requires narration. Rendering neither invokes TTS nor replaces visual/listening acceptance.
+
+For existing illustrated HTML, prepare supports a one-based `#progress` or `#progressBar` slider and a `.short-frame` or `.slide.active` frame. The slider's input event must select the corresponding slide, with order matching `slides.json`. Arbitrary HTML is not automatically importable.

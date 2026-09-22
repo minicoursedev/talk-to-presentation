@@ -7,6 +7,8 @@ cases/*/motion/dist/
 cases/*/motion/output/
 cases/*/motion/public/
 cases/*/motion/src/prepared.json
+cases/*/motion/src/project.meta
+cases/*/dist/
 verification/
 *.zip
 cases/*/motion/timeline.wav

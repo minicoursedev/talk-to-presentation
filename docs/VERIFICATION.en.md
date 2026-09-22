@@ -4,13 +4,32 @@
 
 # Handoff verification record
 
+## 2026-09-22: independent installation and actual narrated rebuild
+
+This run used an external directory containing spaces and Chinese characters, invoking packaged tools from /private/tmp. The neutral two-page case used two narrationSegments with different tones on page one and single narration on page two, plus a red/teal brand palette. Production cases and the user's brand were unchanged.
+
+- Full setup-macos.sh passed on the same macOS 26.6.2 Apple Silicon Mac, using existing Node 26.7.0, Python 3.12.14, FFmpeg 9.0.1, SoX, and Chrome 153.0.8010.53. npm ci, including install scripts, and the Python lockfile installation created independent node_modules and .venv directories without links to the original capability environment. Canvas Commons and its exporter remain 0.3.1; the exporter uses FFmpeg 6.1.1.
+- A complete existing local model was copied, checking model.json/download-source.json and SHA-256 for 14 model files at revision fd4b254389122332181a7c3db7f27e918eec64e3. This verifies model reuse and offline inference, not a fresh weight download.
+- Two user-supplied reference recordings were copied into the test data directory only. A stereo reference was converted to a separate mono PCM16 file without changing the original. voice.py check passed. Qwen in the independent .venv generated three new WAVs using CPU/float32/eager; each has text, tone, revision, and reference-hash provenance.
+- Script review, both HTML builders, segmented timeline/three captions, prepare, TypeScript/Vite build, command-line Canvas Commons FFmpeg export, muxing, and full decoding passed.
+- Final test video: 1080×1920, 30 fps, 231 frames, 7.700 seconds, H.264/AAC/mov_text. Frames 0, 159/160/161 at the page boundary, and 230 at the end were inspected. Branding and text are visible with no blank boundary.
+- Decoding AAC to 24 kHz produced the same 184800 samples as the source, with correlation 0.99832. This checks audio transport, not spoken-text or tone acceptance. Human listening was not performed.
+- A separate short case verified silent preview, rejection of mismatched audio mode, and nonzero exit on an intentionally failing scene. Production cases were unchanged; renderer failures are not reported as success.
+- Four Node tests, trilingual documentation checks (18 families/54 documents), skill quick_validate, and the isolated smoke test passed. Coverage includes semantic/legacy palettes, segmented tones/gaps/captions, unchanged source WAVs, stale-tone rejection, script review, and data-path boundaries. Smoke testing also reproduced and verified the fix for script review invocation through macOS path aliases.
+
+Final MP4 SHA-256: `03825c3f300e429474e51d24f6f924305dccd26b28f46a84e1f60b2e222ad8a4`. WAVs, models, MP4s, logs, and inspection images remain in external user data, outside the capability repository and source package. See [rebuild verification](REPRODUCIBILITY.en.md) to repeat the workflow.
+
+Scope: clean dependency installation and actual narrated output on the same Mac. This does not test a new physical Mac, Homebrew installation, Intel, other operating systems, other Node versions, or Playwright's bundled Chromium. System tools and Chrome were reused; naturalness still requires human listening.
+
+## Historical verification: 2026-09-21
+
 Date: 2026-09-21. These are technical checks of the handoff tools, not content or narration acceptance for a production presentation.
 
 ## Canvas Commons 0.3.1 migration verification
 
 The current handoff uses Canvas Commons 0.3.1 (core, 2d, editor, Vite plugin, and FFmpeg exporter), with Vite 4.5.14, TypeScript 5.2.2, and Playwright 1.58.2. The packages use ESM, so the project sets `type: module` and includes `@types/chroma-js` 3.1.2, required by the upstream type declarations.
 
-This migration was checked on the same Apple Silicon Mac, Node 26.7.0, and installed Chrome. Node 22 remains the installation target, not the version tested here. The Qwen model, speech generation script, content sources, and both HTML builders are unchanged.
+This migration was checked on the same Apple Silicon Mac, Node 26.7.0, and installed Chrome. The historical recommendation was Node 22; current setup guidance retains any installed version satisfying >= 20.19.0. The Qwen model, speech generation script, content sources, and both HTML builders are unchanged.
 
 - A full npm installation and the exporter’s FFmpeg 6.1.1/ffprobe binary downloads completed. Relocation checks used `npm ci --ignore-scripts`, followed by both HTML builders, Chrome screenshots, and TypeScript/Vite compilation. The relocated directory did not repeat binary downloads, so that check is not recorded as a full installation-script test.
 - npm reported 7 dependency audit findings (2 low, 2 moderate, 3 high). No forced upgrade was applied and no security-review pass is claimed. Development servers bind only to localhost.

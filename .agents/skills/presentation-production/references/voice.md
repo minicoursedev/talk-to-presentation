@@ -45,3 +45,19 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 - 降低音量可避免輸出碰到數值上限，無法修復原始音檔已發生的削波。不得為了通過峰值檢查就稱為音質已修復；仍需抽聽，必要時回報錄音問題。
 - 僅要求語速變更時，優先對保留的原速 WAV 做保音高時間伸縮，不重新合成文稿。先備份原速 WAV 與旁邊的 JSON，另記來源 SHA-256、目標倍速及處理方式，避免重跑時在已加速檔上再次加速。沿用 TTS 的文字／語氣 provenance，不把後處理誤標成新模型輸出。
 - 依處理後 WAV 重建時間軸、字幕、影片來源與成片；抽聽變速後的停頓與結尾。每頁原有進場／尾段停留未必同步縮短，因此總片長不一定是原片長除以倍速。將倍速記入案件決策，跨主題沿用需有使用者指示。
+
+## 同一頁的分段語氣
+
+需要在一頁內改變語氣時，在 `slides.json` 保留完整 `narration`，並增加 `narrationSegments`。所有段落的 `text` 依序連接必須與 `narration` 完全相同，包含標點與空白；每段 `tone` 都須存在於使用者語氣表。分段時每段語氣優先於頁面 `tone`。
+
+```json
+{"page":1,"narration":"先說清楚問題。再說明方法。","narrationSegments":[{"text":"先說清楚問題。","tone":"平靜敘述"},{"text":"再說明方法。","tone":"平靜敘述"}]}
+```
+
+這只是欄位示例；使用者可以替換各段語氣。省略 `narrationSegments` 時維持單段 `narration`／`tone`；空陣列或文字不一致會拒絕。`review-script.mjs` 同時呈現完整台詞及每段語氣，不維護第二份詞稿。
+
+- 單段音檔是 `audio/main/page-1.wav`；分段改為 `audio/main/page-1-segment-1.wav`、`page-1-segment-2.wav`，每個 WAV 旁皆有同名 JSON provenance。
+- `voice.py check` 檢查所有段落，`generate --kind main --pages 1` 生成第 1 頁的全部段落。已存在時，經授權備份後加 `--replace`；目前重製範圍是頁面，沒有單一段落 CLI 選項。背景旁白仍用 `--kind background` 獨立產生。
+- `case.json.timing.narrationGapSeconds` 設定主旁白段落間隔；省略時沿用 `backgroundGapSeconds`。數值為非負秒數。主旁白至補充旁白仍用 `backgroundGapSeconds`。
+- `timeline` 依段落順序串接，逐段建立字幕，再追加補充旁白。只引用目前 schema 對應的檔名，切換單段／分段後不會混用舊 WAV；來源 WAV 不被覆寫。
+- 修改文字、語氣、分段或間隔後，重建受影響音檔（僅間隔變更不需 TTS）、timeline、檢閱頁、prepare 及影片。輸出前逐段抽聽並核對字幕。

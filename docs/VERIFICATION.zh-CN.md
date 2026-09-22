@@ -4,13 +4,32 @@
 
 # 本次交接包验证
 
+## 2026-09-22：独立安装与真实旁白重建
+
+本次验证使用仓库外、含中文与空格的独立目录，从 /private/tmp 呼叫打包后的工具。测试用两页中性内容，第一页包含两种语气的两个 narrationSegments，第二页使用单段主旁白；品牌色换成红／青绿组合。原案件与使用者品牌未修改。
+
+- 在同一台 macOS 26.6.2 Apple Silicon，以现有 Node 26.7.0、Python 3.12.14、FFmpeg 9.0.1、SoX、Chrome 153.0.8010.53 执行完整 setup-macos.sh。npm ci（含安装脚本）与 Python lockfile 安装成功，使用新建 node_modules 与 .venv；没有连结原能力环境。Canvas Commons 与 exporter 维持 0.3.1，exporter 使用 FFmpeg 6.1.1。
+- 从已存在的本机模型复制完整目录，核对 model.json／download-source.json 及 14 个模型档案 SHA-256；revision 为 fd4b254389122332181a7c3db7f27e918eec64e3。这是模型沿用与离线推论验证，未重新下载权重。
+- 两份使用者参考声音只复制到测试资料目录。立体声录音另存 mono PCM16 副本，原录音不变。voice.py check 通过，独立 .venv 的 Qwen 以 CPU/float32/eager 实际生成三个新 WAV；每个 WAV 有文字、语气、revision、参考声音杂凑记录。
+- 台词检阅、两种 HTML、分段时间轴／三段字幕、prepare、TypeScript/Vite build、命令列 Canvas Commons FFmpeg exporter、封装及完整解码通过。
+- 最终测试片：1080×1920、30 fps、231 帧、7.700 秒；H.264、AAC、mov_text。首帧、159／160／161 换页交界及第 230 尾帧实际查看，品牌与文字可见，没有空白交界。
+- AAC 解码回 24 kHz 后，来源与输出同为 184800 个取样，相关系数 0.99832。这验证音讯传递，不等于已抽听文字与语气；本次未做人类听觉验收。
+- 用另一个短案例验证静音 preview、音讯模式不符拒绝、场景故意抛出错误时非零结束。错误测试不改正式案件；新工具不把渲染失败回报成成功。
+- 4 项 Node 测试、三语文件检查（18 组／54 份）、skill quick_validate 与隔离 smoke test 通过。回归涵盖用途色栏位／旧栏位相容、分段语气和停顿、逐段字幕、原 WAV 不变、过期语气拒绝、台词检阅与资料路径边界。台词检阅的 macOS 路径别名问题亦由 smoke test 重现并修正。
+
+最终测试片 SHA-256：`03825c3f300e429474e51d24f6f924305dccd26b28f46a84e1f60b2e222ad8a4`。音档、模型、MP4、测试日志与检查图保存在外部资料目录，不放入能力仓库或来源交接包。重跑方式见[可重建验证](REPRODUCIBILITY.zh-CN.md)。
+
+范围：这是同一台 Mac 上的干净依赖安装与实际旁白成片重建，没有验证全新实体 Mac、Homebrew 安装、Intel、其他作业系统、其他 Node 版本或 Playwright 配套 Chromium。系统工具与 Chrome 沿用既有安装；语音自然度仍需人类抽听。
+
+## 2026-09-21 历史验证
+
 日期：2026-09-21。这是交接工具的技术验证，不是任何正式演示文稿的内容或配音验收。
 
 ## Canvas Commons 0.3.1 迁移验证
 
 目前交接包使用 Canvas Commons 0.3.1（core、2d、editor、Vite plugin、FFmpeg exporter），搭配 Vite 4.5.14、TypeScript 5.2.2 与 Playwright 1.58.2。套件使用 ESM，project 已设置 `type: module`，并补入上游类型声明所需的 `@types/chroma-js` 3.1.2。
 
-本次在同一台 Apple Silicon Mac、Node 26.7.0 与既有 Chrome 验证；Node 22 仍是安装目标，并非本次实测版本。Qwen 模型、语音生成脚本、内容来源与两种 HTML 生成器未变更。
+本次在同一台 Apple Silicon Mac、Node 26.7.0 与既有 Chrome 验证；此历史记录当时尚推荐 Node 22；目前安装指引已改为沿用符合 >= 20.19.0 的已有版本。Qwen 模型、语音生成脚本、内容来源与两种 HTML 生成器未变更。
 
 - 新版完整 npm 安装与 exporter 的 FFmpeg 6.1.1／ffprobe 二进制下载成功。迁移后的锁定文件检查使用 `npm ci --ignore-scripts`，另验证两种 HTML、Chrome 截图与 TypeScript/Vite 编译；迁移目录不重复下载二进制，因此不把该次检查列为完整安装脚本验证。
 - 本次 npm 安装回报 7 项依赖 audit 结果（2 low、2 moderate、3 high）；未执行强制升级或宣称安全审查通过。开发服务器只绑定本机。

@@ -5,7 +5,7 @@ if [ "$(uname -s)" != Darwin ]; then echo 'This release targets macOS.' >&2; exi
 for command in node npm python3.12 ffmpeg ffprobe sox; do
   command -v "$command" >/dev/null || { echo "Missing $command. Read docs/SETUP.md." >&2; exit 1; }
 done
-node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 20 || (major === 20 && minor < 19)) { console.error("Canvas Commons requires Node >= 20.19.0; install Node 22 LTS."); process.exit(1); }'
+node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 20 || (major === 20 && minor < 19)) { console.error("Canvas Commons requires Node >= 20.19.0. Keep an existing compatible Node installation."); process.exit(1); }'
 cd "$PROJECT_ROOT"
 npm ci
 if [ -n "${BROWSER_EXECUTABLE:-}" ]; then

@@ -78,3 +78,5 @@ Maintain all document languages together. After changes, run this check for tran
 After organizing content or changing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide the case’s `dist/script-review.html`. It reads `slides.json` and offers page comparison and continuous script reading, showing screen text, main narration, background narration and tones. Missing main narration is explicit; never substitute screen text automatically.
 
 `slides.json` is the only script source. Review HTML is a regenerable static snapshot, not a separate editable manuscript. Apply requested changes to the source and regenerate. Provide the current version before speech production, preserving existing confirmations and authorization without redundant approval gates. Generation does not establish user approval or replace visual review.
+
+See [rebuild verification](docs/REPRODUCIBILITY.en.md) for independent installation, segmented narration, and Canvas Commons command-line export before delivery.

@@ -21,6 +21,14 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  run('node',root/'tools/visual-html/build.mjs','sample',cwd='/tmp')
  for p in (case/'dist').glob('*.html'):
   assert '示範品牌' in p.read_text() and str(ROOT) not in p.read_text()
+ # Reusable palettes must work through both builders, including legacy user data.
+ palette={'primary':'#963B32','accent':'#2F8A81','surface':'#FFF4E6','text':'#202D36'}
+ for colors in (palette,dict(zip(('purple','yellow','cream','darkGreen'),palette.values()))):
+  (data/'brand.json').write_text(json.dumps({'name':'Portable brand','logo':None,'colors':colors}))
+  for builder in ('takahashi-html','visual-html'):
+   run('node',root/f'tools/{builder}/build.mjs','sample',cwd='/tmp')
+  for p in (case/'dist').glob('*.html'):
+   assert 'Portable brand' in p.read_text() and all(v in p.read_text() for v in palette.values())
  r=run(sys.executable,root/'tools/voice.py','check','sample',ok=False,cwd='/tmp')
  assert r.returncode != 0
  # Non-contiguous pages, main/background separation, fractional durations and repeated pages.
@@ -38,6 +46,32 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
   assert abs(w.getnframes()/w.getframerate()-timeline['durationInFrames']/30)<1/24000
  assert [p['page'] for p in timeline['pages']]==[3,8]
  assert (case/'content/narration.srt').read_text().count('-->')==3
+ assert all(hashlib.sha256(p.read_bytes()).hexdigest()==digest for p,digest in originals.items())
+ # Segments replace the single-page main WAV, retain separate captions, and honor their own gap.
+ slides[0]['narration']='先理解。再解決。'
+ slides[0]['narrationSegments']=[{'text':'先理解。','tone':'平靜敘述'},{'text':'再解決。','tone':'平靜敘述'}]
+ (case/'content/slides.json').write_text(json.dumps(slides,ensure_ascii=False))
+ meta=json.loads((case/'case.json').read_text());meta['timing']['narrationGapSeconds']=.25
+ (case/'case.json').write_text(json.dumps(meta))
+ for index in (1,2):
+  path=case/f'audio/main/page-3-segment-{index}.wav'
+  shutil.copy2(case/'audio/main/page-3.wav',path)
+  path.with_suffix('.json').write_text(json.dumps({'ttsText':slides[0]['narrationSegments'][index-1]['text'],'tone':'平靜敘述'}))
+ run(sys.executable,root/'tools/voice.py','timeline','sample',cwd='/tmp')
+ with wave.open(str(case/'audio/combined/page-3.wav')) as w:
+  assert w.getnframes()==10317*2+round(.25*24000)+round(meta['timing']['backgroundGapSeconds']*24000)+6159
+ srt=(case/'content/narration.srt').read_text()
+ assert srt.count('-->')==4 and srt.index('先理解。')<srt.index('再解決。')<srt.index('背景測試。')
+ inputs=json.loads((case/'content/timeline.json').read_text())['inputs']
+ assert not any(i['file']=='audio/main/page-3.wav' for i in inputs)
+ run('node',root/'tools/review-script.mjs','sample',cwd='/tmp')
+ assert '分段台詞與語氣' in (case/'dist/script-review.html').read_text()
+ slides[0]['narrationSegments'][0]['tone']='changed'
+ (case/'content/slides.json').write_text(json.dumps(slides))
+ assert 'regenerate this segment' in run(sys.executable,root/'tools/voice.py','timeline','sample',ok=False).stderr
+ slides[0]['narrationSegments']=[]
+ (case/'content/slides.json').write_text(json.dumps(slides))
+ assert 'exactly match narration' in run(sys.executable,root/'tools/voice.py','timeline','sample',ok=False).stderr
  assert all(hashlib.sha256(p.read_bytes()).hexdigest()==digest for p,digest in originals.items())
  run(sys.executable,root/'tools/init_case.py','新案例',cwd='/tmp')
  assert (data/'cases/新案例/motion/src/scenes/Slides.tsx').exists()
@@ -74,4 +108,4 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  run('node',root/'tools/visual-html/build.mjs','sample',ok=False)
  run(sys.executable,root/'tools/voice.py','timeline','sample',ok=False)
  assert not (data/'outside.html').exists()
- print('PASS: relocation, absolute invocation from unrelated cwd, both HTML builders, missing voices, independent new case, non-contiguous pages, separate captions, frame-aligned timing, unchanged source WAVs')
+ print('PASS: relocation, external data isolation, semantic and legacy palettes, both HTML builders, missing voices, independent cases, segmented narration/review/captions/gaps, stale-tone rejection, frame-aligned timing, unchanged source WAVs')

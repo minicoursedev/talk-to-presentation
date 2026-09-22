@@ -21,7 +21,26 @@ const brand = await readBrand();
 const outputPath = caseFile(caseDir, metadata.outputs.visualHtml);
 const width = Number(metadata.format?.width ?? 1080);
 const height = Number(metadata.format?.height ?? 1920);
-const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning']);
+const darkTextOnArt = metadata.visual?.textContrast === 'dark';
+const brandColors = brand.colors;
+const brandPaletteCss = brandColors ? `
+    .short-frame { --brand-primary: ${brandColors.primary}; --brand-accent: ${brandColors.accent}; --brand-surface: ${brandColors.surface}; --brand-text: ${brandColors.text}; }
+    .slide:not(.with-art) { background: linear-gradient(145deg, var(--brand-text), color-mix(in srgb, var(--brand-primary) 30%, var(--brand-text))); }
+    .slide.light:not(.with-art) { background: var(--brand-surface); }
+    .abstract-orb { background: radial-gradient(circle, var(--brand-accent), var(--brand-primary) 40%, transparent 70%); }
+    .white { color: var(--brand-surface); }
+    .highlight, .success, .mint { color: var(--brand-accent); }
+    .light .white, .with-art .white, .with-art .dark { color: ${darkTextOnArt ? 'var(--brand-text)' : 'var(--brand-surface)'}; }
+    .light:not(.with-art) .white { color: var(--brand-text); }
+    .light .highlight, .light .success, .light .mint { color: var(--brand-primary); }
+    ${darkTextOnArt ? '.with-art .white, .with-art .dark {text-shadow: none;} .with-art .mint, .with-art .highlight, .with-art .success {color: var(--brand-primary); text-shadow: none;}' : ''}
+    .with-art .rose, .with-art .danger, .with-art .warning { color: color-mix(in srgb, var(--brand-accent) 43%, var(--brand-text)); text-shadow: none; }
+    .brand, .short-frame:has(.light.active) .brand { padding: .65cqh 1cqw; border-radius: .35rem; background: var(--brand-text); }
+    .brand span { color: var(--brand-surface); }
+    .progress::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--brand-accent) var(--progress), color-mix(in srgb, var(--brand-text) 38%, transparent) var(--progress)); }
+    .progress::-webkit-slider-thumb, .progress::-moz-range-progress, .progress::-moz-range-thumb { background: var(--brand-accent); }
+  ` : '';
+const colours = new Set(['white', 'dark', 'highlight', 'danger', 'success', 'warning', 'mint', 'rose']);
 
 if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
   throw new Error('case.json format.width and format.height must be positive numbers');
@@ -39,10 +58,15 @@ const renderText = (value) => escapeHtml(value ?? '').replaceAll(/\r?\n/g, '<br>
 function renderParts(parts) {
   return parts.map((part) => {
     const colour = colours.has(part.color) ? part.color : 'white';
-    const text = renderText(part.text);
+    const text = Array.isArray(part.runs)
+      ? part.runs.map((run) => {
+        const runColour = colours.has(run.color) ? run.color : colour;
+        return `<span class="${runColour}">${renderText(run.text)}</span>`;
+      }).join('')
+      : renderText(part.text);
     return part.small
       ? `<div class="sub-text ${colour}">${text}</div>`
-      : `<div class="main-text ${colour}${part.size === 'compact' ? ' compact' : ''}">${text}</div>`;
+      : `<div class="main-text ${colour}${part.size === 'compact' ? ' compact' : part.size === 'tight' ? ' tight' : ''}">${text}</div>`;
   }).join('\n');
 }
 
@@ -54,6 +78,8 @@ function renderSlide(slide) {
   const classes = ['slide'];
   if (slide.layout === 'light') classes.push('light');
   if (slide.layout === 'stack') classes.push('stack');
+  if (slide.layout === 'art-story') classes.push('art-story');
+  if (slide.layout === 'art-cover') classes.push('art-cover');
   if (asset) classes.push('with-art');
   const art = asset
     ? `<img class="art" src="../${encodeURI(asset)}" alt="${escapeHtml(slide.visual.notes || '')}">`
@@ -75,17 +101,22 @@ const html = `<!doctype html>
     .slide.active { visibility: visible; opacity: 1; }
     .abstract-orb { position: absolute; width: 54cqw; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 34% 32%, #6fd3ff 0, #256d9e 22%, #0f3152 48%, transparent 70%); filter: blur(1px); opacity: .45; transform: translate(28cqw, -28cqh); }
     .content { position: relative; z-index: 2; display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: min(2.2cqh, 1.5rem); padding: 16cqh 7cqw 14cqh; text-align: center; }
-    .main-text { font-size: clamp(3.2rem, min(13cqw, 11.5cqh), 10rem); font-weight: 900; letter-spacing: -.035em; line-height: 1.12; word-break: break-word; text-shadow: 0 4px 24px rgba(0, 0, 0, .22); }
+    .main-text { font-size: clamp(3.2rem, min(13cqw, 11.5cqh), 10rem); font-weight: 900; letter-spacing: -.035em; line-height: 1.12; word-break: keep-all; overflow-wrap: normal; text-shadow: 0 4px 24px rgba(0, 0, 0, .22); }
     .main-text.compact { font-size: clamp(2rem, min(7.4cqw, 6.5cqh), 5.8rem); }
     .sub-text { font-size: clamp(1.7rem, min(6.2cqw, 5.6cqh), 4.6rem); font-weight: 750; line-height: 1.28; text-shadow: 0 3px 18px rgba(0, 0, 0, .25); }
-    .white { color: #fff; } .dark { color: #07182e; } .highlight { color: #7dddff; } .danger { color: #ff6b7b; } .success { color: #79efaa; } .warning { color: #ffd46e; }
+    .white { color: #fff; } .dark { color: #cbd5e1; } .highlight { color: #7dddff; } .danger { color: #ff6b7b; } .success { color: #79efaa; } .warning { color: #ffd46e; } .mint { color: #93cbb4; } .rose { color: #c9959d; }
     .with-art .art { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    .with-art .content { justify-content: flex-start; align-items: flex-start; padding-top: 19cqh; text-align: left; } .with-art .sub-text, .with-art .main-text { max-width: 88cqw; }
+    .with-art .content { justify-content: flex-start; align-items: flex-start; padding-top: 19cqh; text-align: left; } .with-art .sub-text, .with-art .main-text { max-width: 88cqw; } .with-art .dark { color: #dbeafe; }
+    .with-art.art-story .content { padding: 17cqh 41cqw 12cqh 7cqw; } .with-art.art-story .sub-text, .with-art.art-story .main-text { max-width: 52cqw; overflow-wrap: anywhere; word-break: break-word; } .with-art.art-story .main-text { font-size: clamp(3rem, min(8.4cqw, 7.5cqh), 6.7rem); } .with-art.art-story .main-text.compact { font-size: clamp(3rem, min(6.6cqw, 6cqh), 5.8rem); }
+    .with-art.art-story .main-text.tight { font-size: clamp(2.6rem, min(5.2cqw, 5cqh), 5rem); }
+    .with-art.art-cover .content { padding: 17cqh 25cqw 12cqh 7cqw; } .with-art.art-cover .sub-text, .with-art.art-cover .main-text { max-width: 68cqw; } .with-art.art-cover .main-text { font-size: clamp(3.5rem, min(10cqw, 9cqh), 8rem); }
+    ${darkTextOnArt ? '.with-art .white { color: #263239; text-shadow: none; } .with-art .mint { color: #3a806e; text-shadow: none; } .with-art .rose { color: #a35d68; text-shadow: none; } .short-frame .brand span { color: #263239; }' : ''}
     .stack .content { gap: min(1.5cqh, 1rem); } .stack .main-text { font-size: clamp(2.35rem, min(10cqw, 8.8cqh), 6.8rem); }
     .light { background: #f8fafc; color: #07182e; } .light .abstract-orb { background: radial-gradient(circle, #facc15 0, #fb7185 35%, transparent 72%); opacity: .28; } .light .white { color: #07182e; }
     .brand { position: absolute; z-index: 5; top: 2cqh; left: 3cqw; line-height: 0; } .brand span { color: #fff; font: 700 min(4cqw, 3cqh) sans-serif; line-height: 1.2; } .brand img { width: min(27cqw, 18cqh); height: auto; } .short-frame:has(.light.active) .brand { padding: .35rem .5rem; border-radius: .35rem; background: rgba(0, 0, 0, .58); }
     .counter { position: absolute; z-index: 5; right: 4cqw; bottom: 4cqh; color: #cbd5e1; font-size: min(4cqw, 3cqh); font-weight: 750; text-shadow: 0 2px 8px rgba(0,0,0,.5); } .light.active ~ .counter { color: #334155; text-shadow: none; }
     .progress { position: absolute; z-index: 6; bottom: 0; left: 0; width: 100%; height: 24px; appearance: none; -webkit-appearance: none; background: transparent; cursor: ew-resize; } .progress::-webkit-slider-runnable-track { height: 6px; background: linear-gradient(to right, #7dddff var(--progress), rgba(226,232,240,.38) var(--progress)); } .progress::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -6px; appearance: none; -webkit-appearance: none; border-radius: 50%; background: #7dddff; } .progress::-moz-range-track { height: 6px; background: rgba(226,232,240,.38); } .progress::-moz-range-progress { height: 6px; background: #7dddff; } .progress::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: #7dddff; }
+    ${brandPaletteCss}
   </style>
 </head>
 <body>

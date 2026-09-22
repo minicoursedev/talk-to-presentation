@@ -10,3 +10,12 @@ test('review preserves spoken text, page order and missing fields; escapes conte
  assert.ok(html.includes('1 頁尚未填寫主台詞'));assert.equal(JSON.stringify(slides),before);
  assert.throws(()=>renderReview({},[{page:1},{page:1}],'',''));
 });
+test('review shows rich text and segmented narration with their own tones',()=>{
+ const slides=[{page:1,parts:[{runs:[{text:'先理解',color:'white'},{text:'<問題>',color:'highlight'}]}],narration:'先理解。再解決。',narrationSegments:[{text:'先理解。',tone:'平靜敘述'},{text:'再解決。',tone:'堅定'}]}];
+ const html=renderReview({},slides,'','');
+ assert.ok(html.includes('先理解&lt;問題&gt;'));
+ assert.ok(html.includes('<span>先理解。</span><strong>平靜敘述</strong>'));
+ assert.ok(html.includes('<span>再解決。</span><strong>堅定</strong>'));
+ assert.throws(()=>renderReview({},[{...slides[0],narration:'已修改。'}],'',''),/segments/);
+ assert.throws(()=>renderReview({},[{...slides[0],narrationSegments:[]}],'',''),/segments/);
+});
