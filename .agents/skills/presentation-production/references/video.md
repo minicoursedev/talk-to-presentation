@@ -4,76 +4,22 @@
 
 # Canvas Commons 輸出
 
-以下命令皆使用絕對 `PROJECT_ROOT`；`my-talk` 換成案件 ID。
+先設定能力目錄的絕對 `PROJECT_ROOT` 與倉庫外的 `PRESENTATION_DATA_ROOT`；`my-talk` 換成案件 ID。以下正式與靜音流程分開執行。
 
-## 準備及預覽
+## 正式影片：準備來源
 
-美化 HTML 是構圖基準。先重建美化 HTML，再截取畫布形成影片所用的逐頁圖片。不要修改圖片當成內容來源。
-
-沒有參考 WAV 時可做**靜音技術預覽**：
-
-```bash
-node "$PROJECT_ROOT/tools/visual-html/build.mjs" sample
-node "$PROJECT_ROOT/tools/prepare-motion.mjs" sample --preview
-node "$PROJECT_ROOT/tools/motion.mjs" build sample
-node "$PROJECT_ROOT/tools/motion.mjs" start sample --port 9002
-```
-
-每頁預覽秒數來自 `previewSeconds`（預設 3 秒）；不代表正式旁白時間。正式影片使用已確認 WAV 重建時間軸：
+美化 HTML 是構圖基準。使用最終 WAV 重建時間軸，再由 HTML 擷取逐頁畫布。若 `slides.json` 或 `case.json` 變更，即使只改圖片引用，也須重跑 timeline 更新來源雜湊；不因此重製旁白。
 
 ```bash
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 node "$PROJECT_ROOT/tools/prepare-motion.mjs" my-talk
 node "$PROJECT_ROOT/tools/motion.mjs" build my-talk
-node "$PROJECT_ROOT/tools/motion.mjs" start my-talk --port 9002
 ```
 
-瀏覽器開啟 `http://127.0.0.1:9002/`。端口有占用時換空閒端口。本機預覽不是公開部署。
+prepare 使用短期本機 HTTP 服務與 Chromium，完成後關閉。它更新截圖、`prepared.json`、`motion/timeline.wav` 及匹配 case.format 的 `project.meta`，不覆寫案件 scene。`build` 只做 TypeScript/Vite 編譯，不產生最終 MP4。
 
-prepare-motion 使用自己啟動的短期 HTTP 伺服器與 Chromium，結束即關閉。它只更新生成的截圖、prepared.json、工程音軌（motion/timeline.wav，供 Vite 與 FFmpeg exporter 同時讀取）及渲染設定，不覆寫自訂 scene。HTML 寬高與截圖像素來自 case.format。
-
-## 動畫及構圖
-
-預設模板是真正的 Canvas Commons scene，逐頁圖片直接切換。它不包含物件分層動畫。需要動畫時依使用者指定修改案件 scene，使用原生 Layout/Txt/Img 與 tween；不要宣稱整頁圖片就是分層動畫。
-
-- 首幀內容及品牌即須可見；不要以全透明 fade-in 或空白等待初始化。
-- 換頁前頁可見直到下一頁接手；不可先全部淡出造成空白。
-- 累積動畫承接前一頁狀態，不重播已存在物件。
-- 既有 HTML 圖片占位、裁切、文字位置、遮罩與留白都保留；不自動加底板、縮放或其他效果。
-- 原生文字多行用明確垂直 Layout 或適當換行；lineHeight 數值是像素，比例請用百分比字串。
-- 自訂場景維持 prepared 中各頁 frames 與總長度，不以裁音或刪幀掩蓋畫面問題。
-
-## 渲染
-
-`build` 只完成 TypeScript/Vite 編譯。正式 MP4 由 Canvas Commons 編輯器渲染：
-
-1. Exporter 選 `Video (FFmpeg)`。
-2. 沿用 prepare-motion 設定的 range（0 至總幀數／fps 秒；新版 exporter 以此差值限制 MP4 時長，不再減一幀），尺寸、fps 依 case.format，scale 1、audio offset 0。
-3. 正式影片啟用 Include audio 與 Fast start。靜音預覽不開音訊，且只以 preview 名稱交付。
-4. 按 RENDER 等待完成；輸出在 `cases/my-talk/motion/output/`，以實際檔名為準。
-
-prepare-motion 會寫入匹配 case.format 的 project.meta，仍需在 UI 核對設定。source 修改後必須重新 prepare/build/render，不能沿用舊 MP4。
-
-將 exporter 本次輸出的影片與已確認字幕封裝：
-
-```bash
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/finish_video.py" my-talk "$PRESENTATION_DATA_ROOT/cases/my-talk/motion/output/presentation.mp4"
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
-```
-
-finish_video 強制需要音軌，不會把靜音範例包裝成 narrated MP4。
-若只驗證靜音技術範例：
-
-```bash
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PRESENTATION_DATA_ROOT/cases/sample/motion/output/presentation.mp4"
-```
-
-verify_video 檢查 H.264、尺寸、fps、正式音軌與字幕、長度及完整解碼，將結果寫入案件 verification/media.json。它不代替觀看或抽聽。
-
-## 可重跑的命令列匯出
-
-完成上面的 timeline、HTML、prepare 與 build 後，可直接執行：
+## 命令列匯出與檢查
 
 ```bash
 node "$PROJECT_ROOT/tools/render-video.mjs" my-talk
@@ -81,8 +27,51 @@ node "$PROJECT_ROOT/tools/render-video.mjs" my-talk
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" my-talk
 ```
 
-`render-video.mjs` 啟動只綁 `127.0.0.1` 的臨時 Vite 服務，以 Playwright 呼叫 Canvas Commons 的 `Renderer` 與 `Video (FFmpeg)` exporter，沿用 prepare 寫入的尺寸、幀率、範圍與音軌。它與編輯器走同一個渲染器，會執行案件的 scene；失敗回傳非零狀態，完成即關閉服務與瀏覽器。支援 `BROWSER_EXECUTABLE`，輸出固定為 `motion/output/presentation.mp4`，重跑會替換此生成檔。
+`render-video.mjs` 啟動只綁 `127.0.0.1` 的臨時 Vite 服務，以 Playwright 呼叫 Canvas Commons `Renderer` 與 `Video (FFmpeg)` exporter，執行案件 scene 並沿用 prepare 的尺寸、fps、range 及音軌設定。支援 `BROWSER_EXECUTABLE`；完成或失敗後關閉服務與瀏覽器，失敗以非零狀態回報。
 
-靜音測試需先 `prepare-motion.mjs sample --preview`，再 `render-video.mjs sample --preview`，產生 `motion/output/preview.mp4`。用 `verify_video.py sample --preview --file <該檔絕對路徑>` 檢查；不要交給要求正式音軌的 finish_video。這條命令不執行 TTS，也不代替視覺與聽覺驗收。
+本命令固定產生 `motion/output/presentation.mp4`，重跑會替換此生成檔。finish_video 封裝字幕後，正式交付位置由 `case.json.outputs.video` 決定。verify_video 檢查 H.264、尺寸、fps、影格數、音軌、mov_text 字幕、長度及完整解碼，記錄於 `verification/media.json`；不代替觀看與抽聽。
 
-沿用已有美化 HTML 時，prepare 支援 `#progress`／`#progressBar` 滑桿（從 1 開始）及 `.short-frame`／`.slide.active` 畫布。滑桿 input 事件須切到對應頁，頁序須與 `slides.json` 一致；任意 HTML 不保證可直接匯入。
+## 選用編輯器匯出
+
+需要在編輯器預覽或操作時，完成準備後另外執行：
+
+```bash
+node "$PROJECT_ROOT/tools/motion.mjs" start my-talk --port 9002
+```
+
+瀏覽器開啟 `http://127.0.0.1:9002/`。這是持續執行的本機服務，結束後用 Ctrl+C 關閉；執行其他命令可使用另一個終端。端口被占用時換空閒端口。
+
+1. Exporter 選 `Video (FFmpeg)`。
+2. 尺寸與 fps 依 case.format，scale 1、audio offset 0；range 為 0 到總幀數／fps 秒，不減一幀。
+3. 正式影片啟用 Include audio 與 Fast start；靜音預覽不開音訊。
+4. 按 RENDER 並等候完成，輸出位於案件 `motion/output/`。以編輯器實際產生的檔名傳給 finish_video；靜音影片則只執行 preview 驗證。
+
+編輯器與命令列走同一個渲染器。來源修改後重新執行受影響的準備、建置與匯出，不能沿用舊 MP4。
+
+## 無配音的技術預覽
+
+先依[工作流程](workflow.md)在資料目錄建立 sample；已有案件時不重複初始化。靜音預覽不需要模型或參考 WAV，每頁秒數取自 `previewSeconds`（預設 3 秒）。
+
+```bash
+node "$PROJECT_ROOT/tools/visual-html/build.mjs" sample
+node "$PROJECT_ROOT/tools/prepare-motion.mjs" sample --preview
+node "$PROJECT_ROOT/tools/motion.mjs" build sample
+node "$PROJECT_ROOT/tools/render-video.mjs" sample --preview
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/verify_video.py" sample --preview --file "$PRESENTATION_DATA_ROOT/cases/sample/motion/output/preview.mp4"
+```
+
+命令列靜音輸出為 `motion/output/preview.mp4`，與正式檔名不同。不要交給要求音軌的 finish_video，也不能稱為配音交付。切換正式／靜音模式時，prepare 與 render 必須使用相同模式。
+
+## 動畫及構圖
+
+預設 scene 以逐頁圖片直接換頁，保持美化 HTML 的構圖。它不包含物件分層動畫；需要動畫時依使用者要求修改案件 scene，使用原生 Layout/Txt/Img 與 tween，保留 prepared 中各頁 frames 與總長度。
+
+- 首幀內容與品牌須可見；換頁前保留前頁直到下一頁接手，避免空白。
+- 累積動畫承接已有物件，不重播已完成部分。
+- 保留已確認的圖片裁切、文字、遮罩與留白；不自動加底板、縮放或效果。
+- 原生文字用垂直 Layout 或換行；lineHeight 數值為像素，比例使用百分比字串。
+- 自訂場景依[驗收](acceptance.md)逐頁查看、檢查交界並抽聽，不以刪幀或裁音掩蓋問題。
+
+## 沿用既有 HTML
+
+prepare 支援從 1 開始的 `#progress`／`#progressBar` 滑桿及 `.short-frame`／`.slide.active` 畫布。滑桿 input 事件須切換對應頁，頁序與 `slides.json` 一致；任意 HTML 不保證可直接匯入。擷取前核對實際畫布尺寸與 case.format 一致，並依[驗收](acceptance.md)確認成片構圖。

@@ -1,6 +1,6 @@
 [繁體中文](GETTING_STARTED.md) | [简体中文](GETTING_STARTED.zh-CN.md) | [English](GETTING_STARTED.en.md)
 
-[Data storage rules](DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # First use of Talk to Presentation
 
@@ -10,7 +10,7 @@ The default core template is Storyteller: the whole presentation’s narrative g
 
 ## 1. After cloning: check the environment
 
-Place the project in a directory of your choice; its name is unrestricted. Open the directory containing the workspace instructions. If you obtained only the production capability package, you may open that package directly. The capability root contains `tools/`, `brand.json`, and `.agents/skills/presentation-production/`; do not copy another user's local paths.
+Place the project in a directory of your choice; its name is unrestricted. Open the directory containing the workspace instructions. If you obtained only the production capability package, you may open that package directly. The capability root contains `tools/`, `model.json`, and `.agents/skills/presentation-production/`; do not copy another user's local paths.
 
 Start by telling the assistant:
 
@@ -42,7 +42,7 @@ Decide through conversation. Do not repeat answered questions or add approval ga
 
 ## 4. Prepare reference recordings only when narration is needed
 
-Place recordings under `shared/voice/reference-voice/` relative to the user data root. Record tones, filenames, and exact transcripts in the [voice catalog](../templates/voice-catalog.en.md). Supply only tones used by the case and reuse existing mapped resources when available.
+Place reference WAVs in `$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/` and record tones, filenames, and exact transcripts in that directory's `README.md`. `init_data.py` creates it from the [voice catalog template](../templates/voice-catalog.en.md). Edit the data-directory copy, preserving the repository template. Tools read `README.md` regardless of documentation language. Supply only tones used by the case and reuse existing mappings when available.
 
 The assistant should check recordings and the model before narration, report missing inputs early, and preserve originals during format conversion. See [voice production](../.agents/skills/presentation-production/references/voice.en.md) for formats and commands. Missing recordings need not block content development or unaffected authorized work.
 

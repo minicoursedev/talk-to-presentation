@@ -4,6 +4,8 @@
 
 Separate source checks, clean dependency installation, actual speech/video export, and human visual/listening acceptance. Record this version, commands, tool versions, and results. Historical videos do not validate a new version.
 
+Choose checks for the changed layer: documentation edits need translation, link, and command review; case-template edits also need a newly initialized case; tools need relevant regression checks; dependency or full production-flow changes need the independent installation and end-to-end steps below. Preserve dates and versions of historical results. Documentation updates do not imply a new speech-generation or render run.
+
 ## Fast regression checks
 
 ```bash

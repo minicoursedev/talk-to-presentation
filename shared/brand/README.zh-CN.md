@@ -4,12 +4,12 @@
 
 # 使用自己的品牌
 
-本包不附 Logo。将你的 Logo 放在此目录，然后修改 project 根目录的 `brand.json`：
+先依[资料存放规则](../../docs/DATA_LAYOUT.zh-CN.md)初始化使用者资料目录。将 Logo 放到 `$PRESENTATION_DATA_ROOT/shared/brand/`，再编辑 `$PRESENTATION_DATA_ROOT/brand.json`；本文件所在的能力仓库不存放使用者品牌素材。
 
 ```json
 {"name":"你的品牌","logo":"shared/brand/logo.svg"}
 ```
 
-`logo` 是相对交接 project 的路径，脚本解析为执行用路径；不要填原作者机器的绝对路径。
-SVG、PNG 等浏览器可加载的格式皆可。图片内容由用户提供。`logo: null` 显示品牌名称文字，适用中性最小示例。
-修改后重建两种 HTML、prepare-motion 与视频；不重制声音。
+`logo` 相对于使用者资料根目录，支援 SVG、PNG 等浏览器可载入的格式。`logo: null` 显示品牌名称文字。配色栏位与相容规则见[工作流程](../../.agents/skills/presentation-production/references/workflow.zh-CN.md)。
+
+修改品牌后重建两种 HTML、prepare 与影片，沿用既有旁白。

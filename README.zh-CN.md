@@ -12,12 +12,12 @@
 
 阅读[用户入门指南](docs/GETTING_STARTED.zh-CN.md)，了解 clone 后的环境检查、需要回答的问题、配音素材准备与可直接复制的开始模板。
 
-## 第一次使用
+## 安装后：创建数据与示例
 
-1. 阅读 [macOS 环境创建](docs/SETUP.zh-CN.md)，安装依赖。
-2. 设置 `PROJECT_ROOT` 为本目录的实际**绝对路径**。不要照抄他人的 `/Users/...`。所有命令可从任意工作目录执行。
-3. 编辑数据根目录的 `brand.json`；`name` 是品牌名称，`logo` 是相对用户数据根目录 的文件路径，例如 `shared/brand/logo.svg`。将自己的 Logo 放到该位置。默认 `null` 只显示中性品牌文字，本包未附特定品牌 Logo。
-4. 先试中性最小示例，再用工具创建自己的案件。
+1. 阅读[macOS 环境建立](docs/SETUP.zh-CN.md)，先检查并沿用符合需求的既有工具，再安装缺少的依赖。
+2. 设定 `PROJECT_ROOT` 为能力目录的实际绝对路径。以下命令可从任意工作目录执行；先用 `init_data.py` 建立仓库外的资料目录，再建立中性范例。
+3. 正式制作前编辑 `$PRESENTATION_DATA_ROOT/brand.json`。`name` 是品牌名称；`logo` 是相对资料根目录的路径，例如 `shared/brand/logo.svg`，预设 `null` 只显示名称。使用者 Logo 放在资料目录，仓库根目录的 brand.json 是中性范例。
+4. `sample` 已存在时沿用既有案件或改用新的 ID；`init_case.py` 不会覆写案件。
 
 ```bash
 PROJECT_ROOT="/absolute/path/to/public"
@@ -29,6 +29,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 ```
 
 浏览器开启：
+
 - `http://127.0.0.1:4173/cases/sample/dist/sample.html`
 - `http://127.0.0.1:4173/cases/sample/dist/sample-v.html`
 
@@ -42,7 +43,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 - [验收](.agents/skills/presentation-production/references/acceptance.zh-CN.md)：从 HTML 到最终视频的技术及视听检查。
 - [本次验证记录](docs/VERIFICATION.zh-CN.md)：实际完成及未完成的验证范围。
 
-语气参考 WAV **不在交接范围**。保留的 [语气 README](templates/voice-catalog.zh-CN.md) 是可替换的语气／档名／逐字稿契约。用户提供案件所需 WAV 后才能生成旁白。`voice.py check` 会逐项列出缺档，不自动替换声线。
+语气参考 WAV **不在交接范围**。保留的 [语气清单模板](templates/voice-catalog.zh-CN.md) 是可替换的语气／档名／逐字稿契约。用户提供案件所需 WAV 后才能生成旁白。`voice.py check` 会逐项列出缺档，不自动替换声线。
 
 本包包含中性的两页文字与程序绘制 SVG，不含旧案件、原品牌 Logo、人声 WAV、模型权重、node_modules 或虚拟环境。模型以固定 revision 下载；依赖以 lockfile 安装。字体使用 macOS 系统字体，首次验收需记录 macOS 版本；不同 macOS 的字体细节未承诺像素完全一致。
 

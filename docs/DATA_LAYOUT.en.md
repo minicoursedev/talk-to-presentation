@@ -6,12 +6,17 @@ The capability repository contains tools, skills, built-in templates and neutral
 
 The default is `presentations/` beside the capability repository. Set `PRESENTATION_DATA_ROOT` to another independent absolute path if desired. It cannot be inside or contain the capability repository. Initialize with:
 
+First create `.venv` using [setup](SETUP.en.md). These commands work from any directory. For custom storage, set `PRESENTATION_DATA_ROOT` to the chosen absolute path before running `init_data.py`; otherwise it uses the default location.
+
 ```sh
-export PRESENTATION_DATA_ROOT="$(.venv/bin/python tools/init_data.py)"
-.venv/bin/python tools/init_case.py my-talk
+PROJECT_ROOT="/absolute/path/to/talk-to-presentation"
+export PRESENTATION_DATA_ROOT="$("$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_data.py")"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk
 ```
 
 All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root.
+
+The repository's `cases/sample/` and root `brand.json` are neutral examples. Production reads cases and branding from the data root. `model.json` is capability configuration; its model directory is still relative to the data root.
 
 ```text
 <data-root>/

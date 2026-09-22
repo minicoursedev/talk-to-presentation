@@ -4,9 +4,9 @@
 
 # 配音與時間軸
 
-先依 project 的 `docs/SETUP.md` 安裝 `.venv` 與下載指定 Qwen revision。macOS 首版使用 CPU/float32/eager；不假設 CUDA 或 MPS 可用。生成耗時依機器、文字與模型而異，不承諾固定速度。
+只有要生成新語音時，才需依[環境建立](../../../../docs/SETUP.md)安裝 `.venv` 並備妥指定 Qwen revision。沿用既有 WAV 重建時間軸不需要載入模型。現行 macOS 流程使用 CPU/float32/eager；生成耗時依機器、文字與模型而異。
 
-參考 WAV 不隨交接包提供。使用者將音檔放入 `shared/voice/reference-voice/`，檔名、語氣名、逐字稿須與該目錄 README 表格完全一致。接手者可以修改表格，提供自己的語氣，不限既有清單。只需備齊案件實際使用的語氣。
+參考 WAV 不隨交接包提供。使用者將音檔放入資料根目錄的 `shared/voice/reference-voice/`，檔名、語氣名、逐字稿須與該目錄 `README.md` 表格完全一致。工具固定讀取 `README.md`，不依文件語言切換。接手者可編輯自己的清單，只需備齊案件實際使用的語氣。
 本版工具要求單聲道 PCM16 WAV。來源格式不同時另存副本：
 
 ```bash
@@ -25,7 +25,7 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 
 沒有背景旁白時省略第二行。使用 `--pages 2 5` 只生成指定頁；已存在音檔預設拒絕覆寫。只有使用者要求重製時加 `--replace`，並先保留欲替換檔的副本。沒有指定頁的 WAV 不改動。主／背景生成各自獨立，不會合併或改寫文稿。
 
-畫面文字換行不能成為 TTS 停頓指令。工具將輸入空白折疊成一個空格，再以 OpenCC t2s 轉換給模型；保留顯示文稿與字幕的繁體中文。每個 WAV 旁的 JSON 記錄實際單行輸入、語氣、模型 revision 與參考音檔雜湊。沿用 WAV 時亦應保存這些記錄；語音合成可能不是逐 byte 可重現。
+畫面文字換行不能成為 TTS 停頓指令。工具先將旁白空白折疊成單一空格，再以 OpenCC t2s 轉換給模型；顯示文稿與字幕保留來源文字。每個 WAV 旁的 JSON 以 `ttsText` 記錄折疊空白後、繁簡轉換前的文字，另記語氣、模型 revision、參考音檔雜湊及輸出增益。沿用 WAV 時也保留這些記錄；語音合成不保證逐位元組相同。
 
 逐頁抽聽文字、語氣、停頓和結尾後，重建時間軸，不呼叫 Qwen：
 
@@ -33,9 +33,9 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 ```
 
-此步使用 Python 標準庫，驗證 mono PCM16、非靜音、非削波、相同 sample rate。主旁白和背景旁白間隔依案件 timing；每頁長度由實際 WAV 對齊影片幀，尾段補齊到精確頁面邊界，避免跨頁漂移。字幕分別對應主旁白和背景旁白，不用標題代替。
+此步使用 Python 標準庫，檢查 mono PCM16、非空且非全靜音、峰值未達 PCM16 上限，以及相同 sample rate。主旁白和背景旁白間隔依案件 timing；每頁長度由實際 WAV 對齊影片幀，尾段補齊到精確頁面邊界，避免跨頁漂移。字幕分別對應主旁白和背景旁白，不用標題代替。
 
-修改旁白、語氣或 WAV 後要重新生成受影響段落，重建 timeline 和影片。prepare-motion 會拒絕來源／WAV 雜湊與 timeline 不符的狀況。音檔存在或技術檢查通過不代表朗讀已驗收。
+修改旁白、語氣或分段後，依已授權範圍重製受影響頁，再重建 timeline 與影片。僅替換 WAV 或做音量／語速後製時，直接使用處理後音檔重建，不因此再次執行 TTS。prepare-motion 會拒絕來源或 WAV 雜湊與 timeline 不符的狀況；檔案存在或技術檢查通過不代表朗讀已驗收。
 
 文件語言不會改變配音語言。現行生成腳本固定使用 `language="Chinese"`，不因閱讀英文文件就改為英文配音；若需其他配音語言，須另行修改並驗證生成流程。
 

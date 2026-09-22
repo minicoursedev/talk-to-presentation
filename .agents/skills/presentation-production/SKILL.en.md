@@ -4,50 +4,44 @@ name: presentation-production
 description: Create and revise a presentation from human discussion into Takahashi HTML, illustrated HTML, and a narrated Canvas Commons MP4 using the accompanying portable macOS project. Use for content, narration, illustration, animation, rebuilding, and output verification.
 ---
 
-[Data storage rules](../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](../../../docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
 # Presentation and narrated video production
 
-Use this skill with the accompanying handoff project. It does not assume a brand or speaker. Installing the skill alone does not install Qwen, Canvas Commons, or the project tools.
+Use this skill with the capability project. It assumes no brand, topic, or speaker. Copying the skill alone does not install Qwen, Canvas Commons, or project tools.
 
 ## Start here
 
-1. Read `AGENTS.md` and `README.md` in the user's chosen capability directory and set its absolute `PROJECT_ROOT`. Resolve the external `PRESENTATION_DATA_ROOT` according to the storage rules; read the active `brand.json` and cases from there. Reset paths after moving the project; do not retain another person's local paths.
-2. Read [workflow](references/workflow.en.md) first. If the environment is not ready, read [macOS setup](../../../docs/SETUP.en.md).
-3. Read the selected case's `case.json`, `content/draft.md`, and `content/slides.json`. For a new case, use the project's `tools/init_case.py`; do not copy dependencies from an old case manually.
+1. Read the capability directory's `AGENTS.md` and `README.md` and set its absolute `PROJECT_ROOT`. Resolve external `PRESENTATION_DATA_ROOT` using the [storage rules](../../../docs/DATA_LAYOUT.en.md); read active `brand.json` and cases from that data directory.
+2. Read [workflow](references/workflow.en.md). For first use, provide the [getting-started guide](../../../docs/GETTING_STARTED.en.md). Address missing prerequisites through [setup](../../../docs/SETUP.en.md), retaining compatible installed tools.
+3. For an existing case, read `case.json`, `content/draft.md`, and `content/slides.json`. Create new cases with `tools/init_case.py`.
+4. Read the case's style snapshot at `case.json.style.snapshot` and preserve its narrative, voice, visuals, and pacing. New cases default to the replaceable [Storyteller template](../../../shared/styles/default/style.en.md). Preserve confirmed choices in older cases without a style record instead of changing their style automatically.
 
-4. Read the case template snapshot identified by `case.json.style` (usually `content/style/style.en.md`) and follow its narrative, voice, visuals, and pacing. `init_case.py` snapshots the selected template for new cases; see the [core style template](../../../shared/styles/default/style.en.md) for defaults and replacement. Preserve confirmed decisions for older cases without a style record rather than applying a new template automatically.
+## Production principles
 
-## Core rules
-
-- Develop the topic through conversation. Screen text, main narration, background narration, tones, illustrations, and animation are separate decisions. Change only what the user requests.
-- When the topic, page order, or screen text changes, first rebuild Takahashi HTML and show it over local HTTP for human confirmation. Do not generate downstream illustrations, speech, or video before confirmation. Technical testing of the sample does not approve a production case's content.
-- Preserve existing confirmations and execution permissions across tasks. Record confirmations in `draft.md`, while following the latest user instructions.
-- Approving narration text does not authorize TTS execution. Generate or regenerate speech only when explicitly requested. Reuse existing WAVs for ordinary rebuilds.
-- Read the brand name and logo from `brand.json`. If no logo is configured, the neutral sample displays brand text. Production delivery uses the recipient's confirmed brand settings.
-- Do not edit `dist/` directly to change HTML or video. Sources are slides, assets, and scenes; illustrated HTML may serve as the visual composition reference for video.
-- Invoke scripts using absolute paths formed from `PROJECT_ROOT`; never hard-code an installation location.
-
-- Image coverage, voice speed, and batch style are case decisions recorded in `draft.md`. When every page needs an image, set `case.json.visual.requireImages`; do not exempt titles, questions, or closing pages. See [images](references/images.en.md) for page planning and checks.
-- Beautification and image changes preserve confirmed page order, text, and narration. Data presence does not prove visibility; follow [acceptance](references/acceptance.en.md) before delivery.
+- Build a connected story across the deck: page content, visuals, and narration jointly advance understanding. Topic, brand, speed, and image coverage are case decisions recorded in `content/draft.md`.
+- Store and edit screen text, main narration, background narration, tones, images, and animation separately. `slides.json` is the shared source; `dist/` contains rebuildable outputs.
+- After changing topic, page order, or screen text, rebuild Takahashi HTML and provide a preview. Continue under existing confirmations and authorization. Clarify only unresolved choices affecting the next step; changing tasks or using a template does not reset approval gates.
+- Record content confirmation and execution authorization separately. Text approval alone does not authorize speech generation; retain existing authorization for full production and follow the latest user instructions. Generated drafts are not approval. Ordinary rebuilds reuse existing images and WAVs; generation and regeneration stay within the user's authorized scope.
+- Read the brand name, logo, and semantic palette from the data root's `brand.json`. Explain neutral defaults when branding is undecided; do not inherit another case's brand.
+- If every page needs an image, set `case.json.visual.requireImages`, including titles, questions, and closing pages. File presence or compilation cannot replace visual review.
+- Invoke tools with absolute paths based on `PROJECT_ROOT`. Do not hard-code installation locations or write production data into the capability repository.
 
 ## Read for the current task
 
-- New cases, schemas, rebuild commands: [workflow](references/workflow.en.md).
-- Text, Qwen, reference voices, WAVs, timing, and subtitles: [voice production](references/voice.en.md).
-- Illustrations and image changes: [images](references/images.en.md).
-- Canvas Commons, composition, and rendering: [video production](references/video.en.md).
-- Before delivery: [acceptance](references/acceptance.en.md).
+- New cases, schemas, branding, script review: [workflow](references/workflow.en.md).
+- Qwen, reference voices, `narrationSegments`, selected regeneration, timing, captions: [voice](references/voice.en.md).
+- Illustration, image replacement, per-page coverage: [images](references/images.en.md).
+- Canvas Commons composition, command-line/editor export, muxing: [video](references/video.en.md).
+- Technical checks and audiovisual review before delivery: [acceptance](references/acceptance.en.md).
 
-Voice changes rebuild only affected audio, timing, subtitles, and video. Illustration changes rebuild illustrated HTML and video. Animation changes rebuild only video. Brand changes rebuild both HTML versions and video. Confirmed WAVs for pages outside the requested change must remain unchanged.
+After organizing content or editing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide `dist/script-review.html`. It shows page comparison, continuous narration, and segment tones. Apply revisions to `slides.json` and regenerate instead of maintaining a second editable manuscript. Creating the review page does not establish content approval.
 
-- After organizing content or changing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide the case’s `dist/script-review.html`. It reads `slides.json` and offers page comparison and continuous script reading, showing screen text, main narration, background narration and tones. Missing main narration is explicit; never substitute screen text automatically. `slides.json` is the only script source. Review HTML is a regenerable static snapshot, not a separate editable manuscript. Apply requested changes to the source and regenerate. Provide the current version before speech production, preserving existing confirmations and authorization without redundant approval gates. Generation does not establish user approval or replace visual review.
+## Rebuild after changes
 
-## Rebuild contracts
-
-- Brand palettes use semantic `primary`/`accent`/`surface`/`text` roles; see [workflow](references/workflow.en.md). Do not turn a case's colors into universal requirements.
-- For multiple tones on one page, use `narrationSegments` and the filenames and regeneration scope in [narration](references/voice.en.md).
-- `render-video.mjs` drives the Canvas Commons FFmpeg exporter; see [video](references/video.en.md). Muxing, technical checks, and visual/listening acceptance are still required.
-- After capability changes, follow [rebuild verification](../../../docs/REPRODUCIBILITY.en.md) for an independent installation and test. Record the tested version and actual unverified stages with the delivery.
+- Speech changes: regenerate only authorized pages, then rebuild timing, captions, and video. Keep other pages' WAVs unchanged.
+- Image changes: rebuild illustrated HTML and video. Animation changes: rebuild video. Brand changes: rebuild both HTML versions and video. Reuse confirmed narration for these operations.
+- After any `slides.json` or `case.json` change, run `voice.py timeline` with existing WAVs before narrated preparation to refresh source hashes. This invokes no TTS; unchanged WAVs and timing settings preserve duration.
+- After shared-capability changes, select relevant checks from [rebuild verification](../../../docs/REPRODUCIBILITY.en.md). Documentation-only proofreading checks translations, links, examples, and the skill. Dependency or production-flow changes need the corresponding independent installation or end-to-end checks. Report actual results and unverified stages.

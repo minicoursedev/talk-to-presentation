@@ -10,7 +10,7 @@
 
 ## 1. Clone 后：先检查环境
 
-将下载的专案放在自己选择的目录，目录名称不限。以包含工作区指引的目录开启任务；如果只取得制作能力包，也可直接开启该包。能力根目录是包含 `tools/`、`brand.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用别人的本机路径。
+将下载的专案放在自己选择的目录，目录名称不限。以包含工作区指引的目录开启任务；如果只取得制作能力包，也可直接开启该包。能力根目录是包含 `tools/`、`model.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用别人的本机路径。
 
 可以先对助手说：
 
@@ -42,7 +42,7 @@
 
 ## 4. 只有需要配音时，才准备参考录音
 
-参考录音放在用户数据根目录下的 `shared/voice/reference-voice/`，并在 [语气清单](../templates/voice-catalog.zh-CN.md) 记录语气、档名与实际逐字稿。只需提供会用到的语气；已有对应资料时直接沿用。
+参考录音放在 `$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/`，在同目录的 `README.md` 记录语气、档名与实际逐字稿。`init_data.py` 会从[语气清单模板](../templates/voice-catalog.zh-CN.md)建立这份档案；编辑资料目录中的副本，保留仓库模板。工具只读取 `README.md`，即使阅读其他语言文件也相同。只需提供会用到的语气；已有对应资料时直接沿用。
 
 助手应在开始配音前检查录音及模型，及早列出缺项。需要转换格式时保留原档。详细格式与操作见 [配音流程](../.agents/skills/presentation-production/references/voice.zh-CN.md)。若尚缺录音，仍可先整理内容与完成已授权、不受影响的部分。
 

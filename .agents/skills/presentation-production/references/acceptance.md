@@ -27,7 +27,7 @@
 
 - 在另一個目錄（含空格及中文）從任意 cwd 執行 tools，不能引用原專案路徑、其他案件 node_modules 或原 venv。
 - npm ci 與 Python lock 安裝可重建依賴；模型取得命令有固定 revision。
-- 語氣 README 存在，沒有參考 WAV；沒有原品牌 Logo、原案件或原使用者絕對路徑。
+- 包內有 `templates/voice-catalog.md`，初始化後資料目錄才有實際 `shared/voice/reference-voice/README.md`。包內不含參考 WAV、使用者品牌、使用者案件或私有絕對路徑。
 - 中性範例可建置兩種 HTML 與靜音 Canvas Commons 工程。未提供聲音時不宣稱完整 Qwen/narrated MP4 驗收。
 - 交付列出實際通過命令、未驗證項目與接手者必要輸入。
 

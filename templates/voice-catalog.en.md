@@ -2,7 +2,7 @@
 
 # Reference voice catalog
 
-Enter the actual recording transcript, keeping tone, WAV filename and transcript columns. The empty transcript below is not usable for narration.
+Enter the actual recording transcript and retain the tone, WAV filename, and transcript columns. The active catalog is `$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/README.md`, which tools always read. Keep recordings and the catalog in user storage. The empty transcript below cannot be used for narration.
 
 | # | Tone | WAV | Transcript |
 | --- | --- | --- | --- |

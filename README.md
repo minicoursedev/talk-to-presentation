@@ -12,12 +12,12 @@
 
 閱讀[使用者入門指南](docs/GETTING_STARTED.md)，了解 clone 後的環境檢查、需要回答的問題、配音素材準備與可直接複製的開始範本。
 
-## 第一次使用
+## 安裝後：建立資料與範例
 
-1. 閱讀 [macOS 環境建立](docs/SETUP.md)，安裝依賴。
-2. 設定 `PROJECT_ROOT` 為本目錄的實際**絕對路徑**。不要照抄他人的 `/Users/...`。所有命令可從任意工作目錄執行。
-3. 編輯資料根目錄的 `brand.json`；`name` 是品牌名稱，`logo` 是相對使用者資料根目錄 的檔案路徑，例如 `shared/brand/logo.svg`。將自己的 Logo 放到該位置。預設 `null` 只顯示中性品牌文字，本包未附特定品牌 Logo。
-4. 先試中性最小範例，再用工具建立自己的案件。
+1. 閱讀[macOS 環境建立](docs/SETUP.md)，先檢查並沿用符合需求的既有工具，再安裝缺少的依賴。
+2. 設定 `PROJECT_ROOT` 為能力目錄的實際絕對路徑。以下命令可從任意工作目錄執行；先用 `init_data.py` 建立倉庫外的資料目錄，再建立中性範例。
+3. 正式製作前編輯 `$PRESENTATION_DATA_ROOT/brand.json`。`name` 是品牌名稱；`logo` 是相對資料根目錄的路徑，例如 `shared/brand/logo.svg`，預設 `null` 只顯示名稱。使用者 Logo 放在資料目錄，倉庫根目錄的 brand.json 是中性範例。
+4. `sample` 已存在時沿用既有案件或改用新的 ID；`init_case.py` 不會覆寫案件。
 
 ```bash
 PROJECT_ROOT="/absolute/path/to/public"
@@ -29,6 +29,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 ```
 
 瀏覽器開啟：
+
 - `http://127.0.0.1:4173/cases/sample/dist/sample.html`
 - `http://127.0.0.1:4173/cases/sample/dist/sample-v.html`
 
@@ -42,7 +43,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 - [驗收](.agents/skills/presentation-production/references/acceptance.md)：從 HTML 到最終影片的技術及視聽檢查。
 - [本次驗證記錄](docs/VERIFICATION.md)：實際完成及未完成的驗證範圍。
 
-語氣參考 WAV **不在交接範圍**。保留的 [語氣 README](templates/voice-catalog.md) 是可替換的語氣／檔名／逐字稿契約。使用者提供案件所需 WAV 後才能生成旁白。`voice.py check` 會逐項列出缺檔，不自動替換聲線。
+語氣參考 WAV **不在交接範圍**。保留的 [語氣清單模板](templates/voice-catalog.md) 是可替換的語氣／檔名／逐字稿契約。使用者提供案件所需 WAV 後才能生成旁白。`voice.py check` 會逐項列出缺檔，不自動替換聲線。
 
 本包包含中性的兩頁文字與程式繪製 SVG，不含舊案件、原品牌 Logo、人聲 WAV、模型權重、node_modules 或虛擬環境。模型以固定 revision 下載；依賴以 lockfile 安裝。字型使用 macOS 系統字型，首次驗收需記錄 macOS 版本；不同 macOS 的字型細節未承諾像素完全一致。
 

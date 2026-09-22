@@ -1,28 +1,33 @@
 [繁體中文](workflow.md) | [简体中文](workflow.zh-CN.md) | [English](workflow.en.md)
 
-[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # Cases and workflow
 
 The project's README is the execution entry point. Keep this skill under the project's `.agents/skills/` so its documentation links resolve. If installing the skill globally, change its documentation links to absolute paths in the user's selected project; do not infer another project from the global skill directory.
 
 ```text
-brand.json                  Shared brand name and logo path
-model.json                  Qwen repository, pinned revision, local download directory
-templates/voice-catalog.md  Tone/transcript contract; no WAVs included
-cases/<case-id>/
-  case.json                 id, format, timing, outputs
-  content/draft.md           Draft, user confirmations, scope of local changes
-  content/slides.json        Shared per-page content source
-  content/timeline.json      Timing rebuilt from WAVs
-  content/narration.srt      Rebuilt from separate main/background narration
-  assets/illustrations/      Confirmed illustrations
-  audio/main/               Main narration: page-<page>.wav
-  audio/background/         Background narration: page-<page>.wav
-  audio/combined/           Per-page main/background combination
-  audio/timeline.wav        Complete audio aligned to frame boundaries
-  motion/src/               Editable Canvas Commons scene for this case
-  dist/                     Three deliverables
+<capability-root>/
+  model.json                  Qwen repo, pinned revision, model location under data root
+  templates/voice-catalog.md   Initial voice catalog template; no WAVs
+  tools/                      Production and verification tools
+<data-root>/
+  brand.json                  Active brand name, logo path, and palette
+  shared/voice/reference-voice/README.md   Active tone/transcript catalog
+  cases/<case-id>/
+    case.json                 id, format, timing, outputs, style
+    content/draft.md           Decisions, confirmations, and authorization
+    content/slides.json        Shared source for screen text and narration
+    content/style/             Selected style snapshot
+    content/timeline.json      Timing and source hashes rebuilt from WAVs
+    content/narration.srt       Captions rebuilt from narration segments
+    assets/illustrations/     Illustrations
+    audio/main/               Main: page-<page>.wav or page-<page>-segment-<n>.wav
+    audio/background/         Background: page-<page>.wav
+    audio/combined/           Per-page combined audio
+    audio/timeline.wav        Complete frame-aligned audio
+    motion/src/               Case-specific Canvas Commons scenes
+    dist/                     HTML, script review, and MP4
 ```
 
 `slides.json` is an array, played in array order. Each `page` is a unique positive integer; there is no fixed page range inherited from an older case.
@@ -41,7 +46,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 
 Open `http://127.0.0.1:4173/cases/my-talk/dist/my-talk.html` in an available browser. Use the Codex In-app Browser when available; otherwise use a normal browser. Reload after a rebuild. If the port is occupied, choose another free port without stopping somebody else's service.
 
-After confirming screen content, continue under the separate illustration and narration permissions:
+Continue within existing content confirmations and production authorization. Clarify only unresolved choices affecting the next step. For example, rebuild illustrated HTML:
 
 ```bash
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
@@ -75,4 +80,4 @@ The user data root's `brand.json` accepts four semantic roles, independent of hu
 
 `primary` is the main brand color, `accent` highlights content, `surface` is a light background, and `text` is dark text. Values must be six-digit hexadecimal colors. Omit `colors` to use the built-in palette; when supplied, all four roles are required. Both HTML builders use the same palette; video uses the illustrated HTML. Legacy `purple`, `yellow`, `cream`, and `darkGreen` map to these roles for compatibility. Semantic keys take precedence when both exist. Recheck contrast after changing the palette; valid fields do not guarantee readability.
 
-A line in `parts` can use `runs: [{text, color}]` for inline emphasis. Run text is concatenated in order and takes precedence over `text`. `size: tight` is available; illustrated HTML also supports `layout: art-story|art-cover`. Inspect every page to assess suitability. See [narration](voice.en.md) for segmented speech.
+A line in `parts` can use `runs: [{text, color}]` for inline emphasis. Run text is concatenated in order and takes precedence over `text`. Additional colors are `mint` and `rose`, and `size` also accepts `tight`. Illustrated HTML supports `layout: art-story|art-cover`. For artwork that needs dark text, set `case.json.visual.textContrast` to `dark` and verify contrast on every page. See [narration](voice.en.md) for segmented speech.

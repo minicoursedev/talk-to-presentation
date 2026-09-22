@@ -6,12 +6,17 @@
 
 預設為能力倉庫旁的 `presentations/`；可用 `PRESENTATION_DATA_ROOT` 指定任何獨立的絕對路徑。路徑不得位於能力倉庫內，也不得包含能力倉庫。首次使用先執行：
 
+先依[安裝說明](SETUP.md)建立 `.venv`，以下命令可從任意工作目錄執行。若使用自訂資料位置，先將 `PRESENTATION_DATA_ROOT` 設為選定的絕對路徑，再執行 `init_data.py`；否則使用預設位置。
+
 ```sh
-export PRESENTATION_DATA_ROOT="$(.venv/bin/python tools/init_data.py)"
-.venv/bin/python tools/init_case.py my-talk
+PROJECT_ROOT="/absolute/path/to/talk-to-presentation"
+export PRESENTATION_DATA_ROOT="$("$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_data.py")"
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk
 ```
 
 所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路徑均相對於使用者資料根目錄；`tools/`、`templates/` 與內建 `shared/styles/default/` 相對於能力根目錄。
+
+能力倉庫內的 `cases/sample/` 與根目錄 `brand.json` 是中性範例來源；實際製作讀取資料根目錄中的案件與品牌。`model.json` 則是能力設定，其中的模型目錄仍相對於資料根目錄。
 
 ```text
 <data-root>/

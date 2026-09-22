@@ -1,6 +1,6 @@
 [繁體中文](README.md) | [简体中文](README.zh-CN.md) | [English](README.en.md)
 
-[Data storage rules](docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # Presentation production handoff (macOS)
 
@@ -12,12 +12,12 @@ This directory is the handoff project. Move it as a whole without relying on the
 
 Read the [user getting-started guide](docs/GETTING_STARTED.en.md) for post-clone environment checks, questions to answer, narration inputs, and a copyable starter.
 
-## Getting started
+## After setup: initialize data and an example
 
-1. Read [macOS setup](docs/SETUP.en.md) and install the dependencies.
-2. Set `PROJECT_ROOT` to this directory's actual **absolute path**. Do not copy somebody else's `/Users/...` path. Commands can run from any working directory.
-3. Edit `brand.json` in the data root: `name` is your brand name, and `logo` is a path relative to the user data root, such as `shared/brand/logo.svg`. Put your own logo there. The default `null` displays neutral brand text only; no organization-specific logo is included.
-4. Try the neutral minimal example before creating your own case.
+1. Read [macOS setup](docs/SETUP.en.md). Check and retain compatible tools, then install missing dependencies.
+2. Set `PROJECT_ROOT` to the capability directory's actual absolute path. The commands below work from any directory. Initialize external storage with `init_data.py` before creating the neutral example.
+3. Before production, edit `$PRESENTATION_DATA_ROOT/brand.json`. `name` is the brand name; `logo` is relative to the data root, such as `shared/brand/logo.svg`. The default `null` displays the name only. User logos belong in the data directory; the repository's root brand.json is a neutral example.
+4. If `sample` already exists, reuse it or choose another case ID. `init_case.py` does not overwrite cases.
 
 ```bash
 PROJECT_ROOT="/absolute/path/to/public"

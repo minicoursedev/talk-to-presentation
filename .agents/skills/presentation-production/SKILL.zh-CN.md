@@ -8,46 +8,40 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 
 [繁體中文](SKILL.md) | [简体中文](SKILL.zh-CN.md) | [English](SKILL.en.md)
 
-# 演示文稿与旁白视频制作
+# 简报与旁白影片制作
 
-本 skill 与交接 project 一起使用；不绑定品牌或说话者。单独安装 skill 不会安装 Qwen、Canvas Commons 或项目工具。
+本 skill 与能力专案一起使用；不绑定品牌、题材或说话者。单独复制 skill 不会安装 Qwen、Canvas Commons 或专案工具。
 
 ## 开始
 
-1. 读取用户指定能力目录的 `AGENTS.md`、`README.md`，以绝对路径设置 `PROJECT_ROOT`；再依数据存放规则解析仓库外的 `PRESENTATION_DATA_ROOT`，从那里读取使用中的 `brand.json` 与案例。搬移后重新设置，不沿用其他人的本机路径。
-2. 先读 [工作流程](references/workflow.zh-CN.md)，环境未创建时读 [macOS 安装](../../../docs/SETUP.zh-CN.md)。
-3. 读指定案件的 `case.json`、`content/draft.md`、`content/slides.json`；新案件用 project 的 `tools/init_case.py`，不手动复制旧案件依赖。
+1. 读取能力目录的 `AGENTS.md`、`README.md`，将其绝对路径设为 `PROJECT_ROOT`。依[资料存放规则](../../../docs/DATA_LAYOUT.zh-CN.md)解析仓库外的 `PRESENTATION_DATA_ROOT`，从资料目录读取使用中的 `brand.json` 与案件。
+2. 读[工作流程](references/workflow.zh-CN.md)；首次使用先提供[入门指南](../../../docs/GETTING_STARTED.zh-CN.md)，环境缺项依[安装说明](../../../docs/SETUP.zh-CN.md)处理，沿用符合需求的既有工具。
+3. 既有案件先读 `case.json`、`content/draft.md` 与 `content/slides.json`；新案件用 `tools/init_case.py` 建立。
+4. 依 `case.json.style.snapshot` 读取案件的风格快照，延续叙事、口吻、视觉及节奏。新案件预设使用可替换的[说书人样板](../../../shared/styles/default/style.zh-CN.md)；没有 style 设定的旧案件沿用已确认方向，不自动换风格。
 
-4. 读取 `case.json.style` 指定的案件模板快照（通常为 `content/style/style.zh-CN.md`），依其叙事、口吻、视觉与节奏制作。新案件由 `init_case.py` 保存选定模板；默认与替换方式见[核心风格模板](../../../shared/styles/default/style.zh-CN.md)。既有案件未设置时先沿用其已确认决策，不自动套用新模板。
+## 制作原则
 
-## 核心规则
-
-- 对话形成主题；画面文字、主旁白、补背景旁白、语气、插图与动画是分开的决策。只改用户指定项目。
-- 修改主题、页序或画面文字时，先重建高桥流 HTML，以本机 HTTP 预览交人确认；确认前不生成下游插图、语音或视频。示例的技术测试不等于正式案件内容确稿。
-- 延续已有确认与执行授权，不因换 task 重设全部关卡。记录确认于 `draft.md`，但以最新指示为准。
-- 旁白文字确认不等于执行 TTS；只有明确要求生成／重制语音才执行。一般重建使用既有 WAV。
-- 品牌名称和 Logo 都由 `brand.json` 决定。Logo 未设置时，中性示例显示品牌文字；正式交付使用接手者确认的品牌设置。
-- HTML 与视频不直接修改 `dist/`。来源是 slides、资产和场景；美化 HTML 可作视频构图比对基准。
-- 呼叫 scripts 时使用由 `PROJECT_ROOT` 组成的绝对路径，不写死安装位置。
-
-- 图片覆盖范围、语速与批次风格是案件决策，记在 `draft.md`；每页需图时设定 `case.json.visual.requireImages`，不可自行排除标题、提问或结尾页。逐页规划与检查见 [图片](references/images.zh-CN.md)。
-- 美化与换图保留已确认页序、文字与旁白；资料仍在不等于画面可见，交付前依 [验收](references/acceptance.zh-CN.md) 核对。
+- 整份简报有连贯的故事线；逐页内容、画面、旁白共同推进理解。题材、品牌、语速与图片覆盖范围是案件决策，记在 `content/draft.md`。
+- 画面文字、主旁白、补充旁白、语气、插图与动画分开保存及修改。`slides.json` 是共同来源，`dist/` 是可重建的输出。
+- 主题、页序或画面文字改动后，先重建高桥流 HTML 并提供预览。依已有确认与授权继续制作；只有尚未决定且会影响下一步的内容才需厘清，不因更换任务或文件范本重设确认关卡。
+- 内容确认与执行授权分别记录；台词确认本身不等于授权配音，已有完整制作授权则沿用，依最新用户指示处理。生成草稿不等于已确认；一般重建沿用已有图片及 WAV，生成或重制依使用者授权范围执行。
+- 品牌名称、Logo 与用途配色读取资料根目录的 `brand.json`。未选品牌时明示中性预设，不套用其他案件的品牌。
+- 每页需图时设定 `case.json.visual.requireImages`，含标题、提问及结尾页；实际看图验收不能由档案存在或建置成功代替。
+- 呼叫工具使用由 `PROJECT_ROOT` 组成的绝对路径。不得写死使用者安装位置，也不得把制作资料写入能力仓库。
 
 ## 按任务阅读
 
-- 新案件、schema、重建命令：[工作流程](references/workflow.zh-CN.md)。
-- 文稿、Qwen、参考语音、WAV、时间轴与字幕：[配音](references/voice.zh-CN.md)。
-- 插图及图片修改：[图片](references/images.zh-CN.md)。
-- Canvas Commons、构图与渲染：[视频](references/video.zh-CN.md)。
-- 交付前：[验收](references/acceptance.zh-CN.md)。
+- 新案件、schema、品牌、台词检阅：[工作流程](references/workflow.zh-CN.md)。
+- Qwen、参考声音、`narrationSegments`、局部重制、时间轴与字幕：[配音](references/voice.zh-CN.md)。
+- 插图、图片替换与逐页覆盖：[图片](references/images.zh-CN.md)。
+- Canvas Commons 构图、命令列／编辑器汇出、封装：[影片](references/video.zh-CN.md)。
+- 交付前的技术检查与视听审核：[验收](references/acceptance.zh-CN.md)。
 
-改语音只重建相关音频文件、时间轴、字幕及视频；改插图重建美化 HTML 与视频；改动画只重建视频；改品牌重建两种 HTML 与视频。未指定页面的已确认 WAV 不应改变。
+内容整理或台词修改后，执行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主动提供 `dist/script-review.html`。它显示逐页对照、连续台词及分段语气；修订仍回写 `slides.json` 再生成，不另建可编辑词稿。生成检阅页不代表台词已确认。
 
-- 内容整理或台词修改后，执行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主动提供案例 `dist/script-review.html` 给用户。它从 `slides.json` 生成逐页对照与连续阅读模式，显示画面文字、主台词、补充旁白及语气；缺少主台词时明示，不自行拿画面文字充当旁白。 `slides.json` 是唯一台词来源；检阅 HTML 是可重建的静态快照，不另外维护词稿或修改生成页。用户提出修订后更新来源，再重新生成。配音前提供当前版本供检阅，沿用已确认内容与既有授权，不新增重复确认关卡。检阅页生成不代表台词已确认，也不代替视觉审核。
+## 修改后重建
 
-## 可重建流程的契约
-
-- 品牌色使用 `primary`／`accent`／`surface`／`text` 等用途栏位，见[工作流程](references/workflow.zh-CN.md)；不得将案件品牌色系写成通用必要条件。
-- 同一页需要不同语气时使用 `narrationSegments`，依[配音](references/voice.zh-CN.md)的档名与重制范围执行。
-- 完整影片可使用 `render-video.mjs` 呼叫 Canvas Commons FFmpeg exporter，见[影片](references/video.zh-CN.md)；交付前仍要封装、技术检查及视听验收。
-- 能力修改后依[重建验证](../../../docs/REPRODUCIBILITY.zh-CN.md)在独立目录安装及测试；将通过版本与实际未验证项目记录在交付中。
+- 配音变更：只重制授权范围内的页面，再更新时间轴、字幕与影片；其他页 WAV 保持不变。
+- 图片变更：重建美化 HTML 与影片；动画变更：重建影片；品牌变更：重建两种 HTML 与影片。这些操作沿用已确认旁白。
+- 任何 `slides.json` 或 `case.json` 变更后，正式影片 prepare 前先以既有 WAV 执行 `voice.py timeline` 更新来源杂凑。这不呼叫 TTS；WAV 与 timing 未变时，时间长度不变。
+- 修改共用能力后，依[重建验证](../../../docs/REPRODUCIBILITY.zh-CN.md)选择受影响的检查。纯文件校稿检查三语、连结、范例及 skill；依赖或产制流程变更才需对应的独立安装／端到端验证。回报实际通过项目与未验证阶段。

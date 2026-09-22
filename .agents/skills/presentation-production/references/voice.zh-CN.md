@@ -4,9 +4,9 @@
 
 # 配音与时间轴
 
-先依 project 的 `docs/SETUP.md` 安装 `.venv` 与下载指定 Qwen revision。macOS 首版使用 CPU/float32/eager；不假设 CUDA 或 MPS 可用。生成耗时依机器、文字与模型而异，不承诺固定速度。
+只有要生成新语音时，才需依[环境建立](../../../../docs/SETUP.zh-CN.md)安装 `.venv` 并备妥指定 Qwen revision。沿用既有 WAV 重建时间轴不需要载入模型。现行 macOS 流程使用 CPU/float32/eager；生成耗时依机器、文字与模型而异。
 
-参考 WAV 不随交接包提供。用户将音频文件放入 `shared/voice/reference-voice/`，档名、语气名、逐字稿须与该目录 README 表格完全一致。接手者可以修改表格，提供自己的语气，不限既有清单。只需备齐案件实际使用的语气。
+参考 WAV 不随交接包提供。使用者将音档放入资料根目录的 `shared/voice/reference-voice/`，档名、语气名、逐字稿须与该目录 `README.md` 表格完全一致。工具固定读取 `README.md`，不依文件语言切换。接手者可编辑自己的清单，只需备齐案件实际使用的语气。
 本版工具要求单声道 PCM16 WAV。来源格式不同时另存副本：
 
 ```bash
@@ -25,7 +25,7 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 
 没有背景旁白时省略第二行。使用 `--pages 2 5` 只生成指定页；已存在音频文件默认拒绝覆写。只有用户要求重制时加 `--replace`，并先保留欲替换档的副本。没有指定页的 WAV 不改动。主／背景生成各自独立，不会合并或改写文稿。
 
-画面文字换行不能成为 TTS 停顿指令。工具将输入空白折叠成一个空格，再以 OpenCC t2s 转换给模型；保留显示文稿与字幕的繁体中文。每个 WAV 旁的 JSON 记录实际单行输入、语气、模型 revision 与参考音频文件杂凑。沿用 WAV 时亦应保存这些记录；语音合成可能不是逐 byte 可重现。
+画面文字换行不能成为 TTS 停顿指令。工具先将旁白空白折叠成单一空格，再以 OpenCC t2s 转换给模型；显示文稿与字幕保留来源文字。每个 WAV 旁的 JSON 以 `ttsText` 记录折叠空白后、繁简转换前的文字，另记语气、模型 revision、参考音档杂凑及输出增益。沿用 WAV 时也保留这些记录；语音合成不保证逐位元组相同。
 
 逐页抽听文字、语气、停顿和结尾后，重建时间轴，不呼叫 Qwen：
 
@@ -33,9 +33,9 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk
 ```
 
-此步使用 Python 标准库，验证 mono PCM16、非静音、非削波、相同 sample rate。主旁白和背景旁白间隔依案件 timing；每页长度由实际 WAV 对齐视频帧，尾段补齐到精确页面边界，避免跨页漂移。字幕分别对应主旁白和背景旁白，不用标题代替。
+此步使用 Python 标准库，检查 mono PCM16、非空且非全静音、峰值未达 PCM16 上限，以及相同 sample rate。主旁白和背景旁白间隔依案件 timing；每页长度由实际 WAV 对齐视频帧，尾段补齐到精确页面边界，避免跨页漂移。字幕分别对应主旁白和背景旁白，不用标题代替。
 
-修改旁白、语气或 WAV 后要重新生成受影响段落，重建 timeline 和视频。prepare-motion 会拒绝来源／WAV 杂凑与 timeline 不符的状况。音频文件存在或技术检查通过不代表朗读已验收。
+修改旁白、语气或分段后，依已授权范围重制受影响页，再重建 timeline 与影片。仅替换 WAV 或做音量／语速后制时，直接使用处理后音档重建，不因此再次执行 TTS。prepare-motion 会拒绝来源或 WAV 杂凑与 timeline 不符的状况；档案存在或技术检查通过不代表朗读已验收。
 
 文件语言不会改变配音语言。现行生成脚本固定使用 `language="Chinese"`，不因阅读英文文件就改为英文配音；若需其他配音语言，须另行修改并验证生成流程。
 
@@ -51,7 +51,7 @@ ffmpeg -i "/absolute/path/reference.wav" -ac 1 -c:a pcm_s16le "$PRESENTATION_DAT
 需要在一页内改变语气时，在 `slides.json` 保留完整 `narration`，并增加 `narrationSegments`。所有段落的 `text` 依序连接必须与 `narration` 完全相同，包含标点与空白；每段 `tone` 都须存在于使用者语气表。分段时每段语气优先于页面 `tone`。
 
 ```json
-{"page":1,"narration":"先说清楚问题。再说明方法。","narrationSegments":[{"text":"先说清楚问题。","tone":"平靜敘述"},{"text":"再说明方法。","tone":"平靜敘述"}]}
+{"page":1,"narration":"先說清楚問題。再說明方法。","narrationSegments":[{"text":"先說清楚問題。","tone":"平靜敘述"},{"text":"再說明方法。","tone":"平靜敘述"}]}
 ```
 
 这只是栏位示例；使用者可以替换各段语气。省略 `narrationSegments` 时维持单段 `narration`／`tone`；空阵列或文字不一致会拒绝。`review-script.mjs` 同时呈现完整台词及每段语气，不维护第二份词稿。

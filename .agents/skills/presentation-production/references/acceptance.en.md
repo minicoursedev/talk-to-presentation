@@ -1,6 +1,6 @@
 [繁體中文](acceptance.md) | [简体中文](acceptance.zh-CN.md) | [English](acceptance.en.md)
 
-[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # Acceptance
 
@@ -27,7 +27,7 @@ Keep technical testing separate from human content approval. Record sources, out
 
 - Run tools from another directory containing spaces and Chinese characters, with an unrelated current working directory. They must not refer to the original project, another case's node_modules, or the original venv.
 - npm ci and the Python lockfile can recreate dependencies; the model download command uses a fixed revision.
-- The voice catalog README exists and reference WAVs do not. There is no original brand logo, old case, or original user's absolute path.
+- The package contains `templates/voice-catalog.md`. Initialization creates the active `shared/voice/reference-voice/README.md` in user storage. The package contains no reference WAVs, user brands, production cases, or private absolute paths.
 - The neutral example can build both HTML versions and a silent Canvas Commons project. Without voice inputs, do not claim full Qwen/narrated MP4 acceptance.
 - List actual passing commands, unverified items, and required recipient inputs at delivery.
 

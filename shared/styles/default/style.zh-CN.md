@@ -1,6 +1,6 @@
 [繁體中文](style.md) | [简体中文](style.zh-CN.md) | [English](style.en.md)
 
-[数据存放规则](../../../docs/DATA_LAYOUT.zh-CN.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
+数据存放规则（`$PROJECT_ROOT/docs/DATA_LAYOUT.zh-CN.md`）：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
 
 # 预设风格参考
 
@@ -23,10 +23,10 @@
 
 先复制本目录到用户数据根目录的 `shared/styles/default/`，再编辑副本的 `style.md` 三语文件、`reference.html` 及其他参考资产，并更新 `style.json` 的 `version`。这份样板同时承载叙事、口吻、视觉与节奏，并不限于色彩或排版。
 
-若要保留多套风格，复制本目录到用户数据根目录的 `shared/styles/<名称>/`，调整内容与 `style.json` 的 `id`／`version`，用下列命令选用；省略 `--style` 时使用 `default`：
+若要保留多套风格，复制本目录到用户数据根目录的 `shared/styles/my-style/`，调整内容与 `style.json` 的 `id`／`version`，用下列命令选用；省略 `--style` 时使用 `default`：
 
 ```bash
-python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --style default
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --style my-style
 ```
 
 新案件会把整套样板复制到 `content/style/`，并在 `case.json.style` 保存识别字、版本、来源与快照位置。制作时以案件快照为准，因此更新共用样板不会改动既有案件。自订参考资产应放在样板目录内，以相对路径连结；外部连结内容不属于快照。
@@ -46,7 +46,7 @@ python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --style default
 
 在案件 `draft.md` 记录选用的参考路径、保留特征、使用者指定的变更，以及已接受的代表页。每次制图同时使用风格参考与该页的内容规划；接续页面也查看同案已接受的图片。需要新风格时，保存其文字规格及实际参考资产，让后续任务可以重用。
 
-目前这是代理制图与排版的共同参考；HTML 工具仍使用既有内建样式，尚未提供读取风格设定后自动换肤的功能。若选定风格超出现有版型，须明确调整排版来源并预览验证，不能只改风格名称就宣称已套用。语速、声线、字幕与转场另外记在案件制作设定。
+此样板是代理制图与排版的共同参考。HTML 工具会读取 `brand.json` 配色，仍使用内建版型；`style.md`／`style.json` 不会自动转换为 CSS 或场景。选定风格超出版型能力时，须调整排版来源并预览验证。语速、声线、字幕与转场另外记在案件制作设定。
 
 ## 连贯叙事示例
 

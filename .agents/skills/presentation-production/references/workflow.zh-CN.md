@@ -7,22 +7,27 @@
 交接 project 的 README 是执行入口。此 skill 必须保留在 project 的 `.agents/skills/`，以下文件链接才有效。若全域安装 skill，需将文件链接改为用户指定 project 的绝对路径；不要依赖 skill 目录反推另一个 project。
 
 ```text
-brand.json                  共用品牌名稱、Logo 路徑
-model.json                  Qwen repo、固定 revision、本地下載目錄
-templates/voice-catalog.md  語氣與逐字稿契約，不附 WAV
-cases/<case-id>/
-  case.json                 id、format、timing、outputs
-  content/draft.md           草稿、使用者確認及局部修改範圍
-  content/slides.json        各頁內容的共同來源
-  content/timeline.json      從 WAV 重建的時間資料
-  content/narration.srt      從分開的主／背景旁白重建
-  assets/illustrations/     已確認的插圖
-  audio/main/               主旁白 page-<page>.wav
-  audio/background/         補背景旁白 page-<page>.wav
-  audio/combined/           每頁主／背景合成
-  audio/timeline.wav        與幀邊界對齊的總音軌
-  motion/src/               此案件可修改的 Canvas Commons 場景
-  dist/                     三種交付物
+<capability-root>/
+  model.json                  Qwen repo、固定 revision、资料根目录下的模型位置
+  templates/voice-catalog.md   初始化使用的语气清单模板，不附 WAV
+  tools/                      制作与验证工具
+<data-root>/
+  brand.json                  使用中的品牌名称、Logo 路径与配色
+  shared/voice/reference-voice/README.md   工具读取的语气与逐字稿清单
+  cases/<case-id>/
+    case.json                 id、format、timing、outputs、style
+    content/draft.md           决策、确认与授权
+    content/slides.json        画面与台词的共同来源
+    content/style/             选定风格的快照
+    content/timeline.json      从 WAV 重建的时间资料与来源杂凑
+    content/narration.srt       从旁白段落重建的字幕
+    assets/illustrations/     插图
+    audio/main/               主旁白：page-<page>.wav 或 page-<page>-segment-<n>.wav
+    audio/background/         补充旁白：page-<page>.wav
+    audio/combined/           每页组合音轨
+    audio/timeline.wav        对齐影片帧的总音轨
+    motion/src/               此案件的 Canvas Commons 场景
+    dist/                     HTML、台词检阅与 MP4
 ```
 
 `slides.json` 是阵列，依阵列顺序播放。`page` 为唯一正整数，无旧案件固定页码限制。
@@ -41,7 +46,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 
 在可用浏览器开启 `http://127.0.0.1:4173/cases/my-talk/dist/my-talk.html`。Codex In-app Browser 可用时直接开启；没有时用一般浏览器。重建后重新整理。端口被占用时换空闲端口，不停止别人的服务。
 
-画面内容确认后，依独立的插图／旁白授权继续：
+画面内容已有确认、制作已有授权时，依该范围继续；只厘清尚未决定且影响下一步的项目。例如重建美化 HTML：
 
 ```bash
 node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
@@ -75,4 +80,4 @@ node "$PROJECT_ROOT/tools/visual-html/build.mjs" my-talk
 
 `primary` 是主要品牌色，`accent` 是强调色，`surface` 是浅色底，`text` 是深色文字；均为六码十六进位色码。省略 `colors` 沿用内建配色；提供时须完整设定四项。两种 HTML 使用同一组设定，影片取用美化 HTML。既有 `purple`、`yellow`、`cream`、`darkGreen` 分别相容映射至这四项，新设定采用途名称；同时存在时用途栏位优先。修改配色后必须实际检查对比，栏位合法不保证可读性。
 
-`parts` 的一行可用 `runs: [{text, color}]` 设定行内强调，显示文字依序连接；有 `runs` 时优先于 `text`。可选 `size: tight`，美化版另支援 `layout: art-story|art-cover`。版面是否适合内容仍需逐页看图验收。分段旁白见[配音](voice.zh-CN.md)。
+`parts` 的一行可用 `runs: [{text, color}]` 设定行内强调，显示文字依序连接；有 `runs` 时优先于 `text`。`color` 另支援 `mint`、`rose`，`size` 另支援 `tight`；美化版另支援 `layout: art-story|art-cover`。插图背景适合深色文字时，设定 `case.json.visual.textContrast` 为 `dark`，仍需逐页检查对比。分段旁白见[配音](voice.zh-CN.md)。

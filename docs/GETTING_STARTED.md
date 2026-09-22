@@ -10,7 +10,7 @@
 
 ## 1. Clone 後：先檢查環境
 
-將下載的專案放在自己選擇的目錄，目錄名稱不限。以包含工作區指引的目錄開啟任務；如果只取得製作能力包，也可直接開啟該包。能力根目錄是包含 `tools/`、`brand.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用別人的本機路徑。
+將下載的專案放在自己選擇的目錄，目錄名稱不限。以包含工作區指引的目錄開啟任務；如果只取得製作能力包，也可直接開啟該包。能力根目錄是包含 `tools/`、`model.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用別人的本機路徑。
 
 可以先對助手說：
 
@@ -42,7 +42,7 @@
 
 ## 4. 只有需要配音時，才準備參考錄音
 
-參考錄音放在使用者資料根目錄下的 `shared/voice/reference-voice/`，並在 [語氣清單](../templates/voice-catalog.md) 記錄語氣、檔名與實際逐字稿。只需提供會用到的語氣；已有對應資料時直接沿用。
+參考錄音放在 `$PRESENTATION_DATA_ROOT/shared/voice/reference-voice/`，在同目錄的 `README.md` 記錄語氣、檔名與實際逐字稿。`init_data.py` 會從[語氣清單模板](../templates/voice-catalog.md)建立這份檔案；編輯資料目錄中的副本，保留倉庫模板。工具只讀取 `README.md`，即使閱讀其他語言文件也相同。只需提供會用到的語氣；已有對應資料時直接沿用。
 
 助手應在開始配音前檢查錄音及模型，及早列出缺項。需要轉換格式時保留原檔。詳細格式與操作見 [配音流程](../.agents/skills/presentation-production/references/voice.md)。若尚缺錄音，仍可先整理內容與完成已授權、不受影響的部分。
 

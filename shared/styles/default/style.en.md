@@ -1,6 +1,6 @@
 [繁體中文](style.md) | [简体中文](style.zh-CN.md) | [English](style.en.md)
 
-[Data storage rules](../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+Data storage rules (`$PROJECT_ROOT/docs/DATA_LAYOUT.en.md`): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # Default style reference
 
@@ -23,10 +23,10 @@ A presentation is a connected narrative. We act as storytellers, taking the audi
 
 First copy this directory to `shared/styles/default/` under the user data root. In that copy, edit the three language versions of `style.md`, `reference.html`, and other reference assets in this directory, and update `version` in `style.json`. The template covers narrative, voice, visuals, and pacing, not just colors or layout.
 
-To keep multiple styles, copy the directory under the user data root at `shared/styles/<name>/`, update its content and `style.json` id/version, and select it when creating a case. Omitting `--style` selects `default`:
+To keep multiple styles, copy the directory under the user data root at `shared/styles/my-style/`, update its content and `style.json` id/version, and select it when creating a case. Omitting `--style` selects `default`:
 
 ```bash
-python3 "$PROJECT_ROOT/tools/init_case.py" my-talk --style default
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --style my-style
 ```
 
 New cases copy the entire template to `content/style/` and record its id, version, source, and snapshot location in `case.json.style`. Production uses that snapshot, so shared-template updates do not alter existing cases. Keep custom reference assets inside the template directory with relative links; external linked content is not part of the snapshot.
@@ -46,7 +46,7 @@ For existing cases without a template record, retain current outputs and decisio
 
 Record reference paths, retained traits, requested changes, and accepted representative pages in the case's `draft.md`. Combine the style reference with each page's content plan when producing images, and inspect accepted images from the same case when continuing. For a new style, save its written specification and actual reference assets for reuse by later tasks.
 
-This currently guides agent-led image production and layout. HTML tools still use built-in styles and do not automatically load a style configuration to switch themes. If the chosen style exceeds those layouts, explicitly update layout sources and preview the results; changing a style name alone does not apply it. Record voice speed, voice identity, subtitles, and transitions separately as case production settings.
+This template guides agent-led image production and layout. HTML tools read `brand.json` palettes while retaining built-in layouts; `style.md`/`style.json` are not automatically converted into CSS or scenes. If the selected style exceeds those layouts, update layout sources and preview the results. Record speed, voice identity, subtitles, and transitions separately as case settings.
 
 ## Connected narrative example
 

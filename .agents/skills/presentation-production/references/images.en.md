@@ -1,6 +1,6 @@
 [繁體中文](images.md) | [简体中文](images.zh-CN.md) | [English](images.en.md)
 
-[Data storage rules](../../../../docs/DATA_LAYOUT.en.md)：All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
+[Data storage rules](../../../../docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
 # Creating and updating images
 
@@ -24,7 +24,7 @@ This workflow covers new illustrations, edits, and replacements. Preserve conten
 
 - Store images in the case's `assets/illustrations/`. Keep the original when replacing an image and save the new version under a distinguishable filename so comparisons remain possible.
 - Update affected `slides.json[].visual.illustrations` references and relevant `visual.notes`. Record selected pages, requested changes, asset paths, and confirmation status in `content/draft.md`. Successful generation does not mean user approval.
-- HTML and video must use the same updated asset references. Rebuild only affected illustrated HTML and video. Image-only changes do not regenerate narration or change timing or Takahashi text.
+- HTML and video use the same updated asset references. Image changes do not regenerate narration or alter Takahashi text. If `slides.json` or `case.json` changes, run `voice.py timeline` with existing WAVs to refresh source hashes before prepare and render. This invokes no TTS; unchanged WAVs and timing settings retain the same duration.
 - If illustrated HTML is correct and only video is wrong, fix and rebuild only the video.
 
 ## Verify
