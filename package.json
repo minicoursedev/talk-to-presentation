@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build:sample": "node tools/takahashi-html/build.mjs sample && node tools/visual-html/build.mjs sample",
-    "check": "python3 tools/doctor.py"
+    "check": "python3 tools/doctor.py",
+    "test": "node tools/presentation.mjs check"
   },
   "dependencies": {
     "@canvas-commons/2d": "0.3.1",

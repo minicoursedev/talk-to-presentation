@@ -1,5 +1,5 @@
 from pathlib import Path
-import json, re, os
+import json, re, os, subprocess
 ROOT = Path(__file__).resolve().parents[1]
 configured = os.environ.get('PRESENTATION_DATA_ROOT')
 if configured and not Path(configured).is_absolute():
@@ -27,20 +27,15 @@ def write(path, data):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 def load(case_id):
-    if not re.fullmatch(r'[\w-]+', case_id) or case_id.startswith(('.', '-')):
-        raise ValueError('Invalid case id')
-    case = case_path(case_id)
-    meta, slides = read(case/'case.json'), read(case/'content/slides.json')
-    pages = [s['page'] for s in slides]
-    if not pages or len(set(pages)) != len(pages) or any(not isinstance(p,int) or p < 1 for p in pages):
-        raise ValueError('Pages must be unique positive integers; array order controls playback')
-    fmt = meta['format']
-    if any(not isinstance(fmt[k],int) or fmt[k] <= 0 for k in ('width','height','fps')):
-        raise ValueError('format width, height, fps must be positive integers')
-    for name in ('audio', 'content', 'dist', 'verification', 'motion/public', 'motion/src'):
-        case_file(case, name)
-    for output in meta['outputs'].values(): case_file(case, output)
-    return case, meta, slides
+    value = source_contract(case_id)
+    return Path(value['dir']), value['meta'], value['slides']
+
+def source_contract(case_id):
+    # One validator and one semantic hash implementation across both runtimes.
+    result = subprocess.run(['node', str(ROOT/'tools/contract.mjs'), case_id], capture_output=True, text=True)
+    if result.returncode:
+        raise ValueError(result.stderr.strip() or 'Source contract validation failed')
+    return json.loads(result.stdout)
 
 def catalog(folder=None):
     folder=Path(folder) if folder is not None else data_path('shared/voice/reference-voice')

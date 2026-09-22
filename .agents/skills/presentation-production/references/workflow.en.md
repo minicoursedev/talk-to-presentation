@@ -4,7 +4,7 @@
 
 # Cases and workflow
 
-The project's README is the execution entry point. Keep this skill under the project's `.agents/skills/` so its documentation links resolve. If installing the skill globally, change its documentation links to absolute paths in the user's selected project; do not infer another project from the global skill directory.
+The project README is the entry point. Shared commands, executable validation and rebuild status are defined in the [operations contract](../../../../docs/OPERATIONS.en.md); this document describes case fields and content workflow. The skill ships under `.agents/skills/`, which its relative documentation links assume.
 
 ```text
 <capability-root>/

@@ -1,17 +1,16 @@
 import {dataRoot, dataPath, casePath, caseFile} from './data-paths.mjs';
-import {readFile, writeFile, mkdir, copyFile, stat} from 'node:fs/promises';
-import {resolve, dirname, extname, sep} from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {readFile, writeFile, mkdir, copyFile} from 'node:fs/promises';
+import {resolve, extname, sep} from 'node:path';
 import {createServer} from 'node:http';
-import {createHash} from 'node:crypto';
 import {chromium} from 'playwright';
 import {checkVisuals} from './check-visuals.mjs';
+import {loadCase, assertTimeline} from './contract.mjs';
 const root=dataRoot;
 const id=process.argv[2], preview=process.argv.includes('--preview');
 if(!id || !/^[\p{L}\p{N}_-]+$/u.test(id)) throw Error('Usage: node tools/prepare-motion.mjs <case-id> [--preview]');
 const caseDir=casePath(id);
 const json=async p=>JSON.parse(await readFile(p,'utf8'));
-const meta=await json(resolve(caseDir,'case.json')), slides=await json(resolve(caseDir,'content/slides.json'));
+const context=loadCase(id), {meta, slides}=context;
 for (const path of Object.values(meta.outputs)) caseFile(caseDir,path);
 caseFile(caseDir,'motion/src');
 caseFile(caseDir,'motion/timeline.wav');
@@ -19,12 +18,7 @@ await checkVisuals(caseDir, meta, slides);
 let timeline;
 if(!preview){
   timeline=await json(resolve(caseDir,'content/timeline.json'));
-  const source=createHash('sha256').update(await readFile(resolve(caseDir,'content/slides.json'))).update(await readFile(resolve(caseDir,'case.json'))).digest('hex');
-  if(timeline.source!==source) throw Error('Timeline stale: rebuild with tools/voice.py timeline');
-  for(const input of timeline.inputs){
-    const hash=createHash('sha256').update(await readFile(caseFile(caseDir,input.file))).digest('hex');
-    if(hash!==input.sha256) throw Error('WAV changed: rebuild timeline');
-  }
+  assertTimeline(context, timeline);
 }
 const output=caseFile(caseDir,'motion/public');await mkdir(resolve(output,'slides'),{recursive:true});
 const errors=[];
@@ -63,6 +57,6 @@ try{
   if(errors.length) throw Error(errors.join('\n'));
   if(!preview) await copyFile(resolve(caseDir,'audio/timeline.wav'),resolve(caseDir,'motion/timeline.wav'));
   await writeFile(resolve(caseDir,'motion/src/prepared.json'),JSON.stringify({...meta.format,audio:!preview,pages},null,2)+'\n');
-  await writeFile(resolve(caseDir,'motion/src/project.meta'),JSON.stringify({version:0,shared:{background:null,range:[0,pages.reduce((sum,p)=>sum+p.frames,0)/meta.format.fps],size:{x:meta.format.width,y:meta.format.height},audioOffset:0},preview:{fps:meta.format.fps,resolutionScale:1},rendering:{fps:meta.format.fps,resolutionScale:1,colorSpace:'srgb',exporter:{name:'@canvas-commons/ffmpeg',options:{fastStart:true,includeAudio:!preview}}}},null,2)+'\n');
+  await writeFile(resolve(caseDir,'motion/src/project.meta'),JSON.stringify({version:0,shared:{background:null,range:[0,pages.reduce((sum,p)=>sum+p.frames,0)/meta.format.fps],size:{x:meta.format.width,y:meta.format.height},audioOffset:0},preview:{fps:meta.format.fps,resolutionScale:1},rendering:{fps:meta.format.fps,resolutionScale:1,colorSpace:'srgb',exporter:{name:'@canvas-commons/ffmpeg',options:{fastStart:true,includeAudio:!preview,audioSampleRate:48000}}}},null,2)+'\n');
   console.log(`Prepared ${pages.length} pages (${preview?'SILENT PREVIEW ONLY':'with narration'}).`);
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

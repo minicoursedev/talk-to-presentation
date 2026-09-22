@@ -9,10 +9,10 @@ Choose checks for the changed layer: documentation edits need translation, link,
 ## Fast regression checks
 
 ```bash
-node --test "$PROJECT_ROOT"/tools/*.test.mjs
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/check_docs.py"
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/smoke_test.py"
+node "$PROJECT_ROOT/tools/presentation.mjs" check
 ```
+The unified entry runs Node tests, trilingual document checks and the isolated smoke test, including source validation, selective rebuilding and existing HTML protection. See the [operations contract](OPERATIONS.en.md).
+
 
 The smoke test extracts sources into a temporary directory containing spaces and Chinese characters, uses a separate data root, and invokes tools from an unrelated cwd. It checks both HTML builders, semantic and legacy palettes, script review, segmented audio/captions/gaps, unchanged source WAVs, stale-tone rejection, and path boundaries. It does not run Qwen, install dependencies, or render video.
 

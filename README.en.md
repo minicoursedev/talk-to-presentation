@@ -2,11 +2,13 @@
 
 [Data storage rules](docs/DATA_LAYOUT.en.md): All `cases/`, `shared/voice/`, `models/` and active `brand.json` paths are relative to the user data root. `tools/`, `templates/` and built-in `shared/styles/default/` are relative to the capability root. The capability repository contains tools, skills, built-in templates and neutral examples only. Production must not edit built-in styles, examples or reference websites. User recordings, transcripts, brands, custom styles, cases and outputs belong outside this repository.
 
-# Presentation production handoff (macOS)
+# Talk to Presentation (talk-to-presentation)
 
 Turn a conversation between a person and AI into shared presentation sources, then produce Takahashi-style HTML, illustrated HTML, and a narrated [Canvas Commons](https://github.com/canvas-commons/canvas-commons) MP4. The brand, voice, and case content are replaceable; no particular event or organization is required.
 
-This directory is the handoff project. Move it as a whole without relying on the original workspace, older cases, the original user account, or a pre-existing virtual environment. The bundled skill is in `.agents/skills/presentation-production/`. In the Talk to Presentation workspace, start conversations at the workspace root containing this capability directory and use these capabilities. When moving this capability package independently, open it as a standalone project or run scripts according to the documentation.
+This reusable presentation production project includes tools, an AI skill, replaceable default styles, case templates and operating documentation. The default storyteller style connects visuals, narration and pacing through one coherent story; each case chooses its topic, brand, voice and style.
+
+Move the whole project or clone and open it directly. `.agents/skills/presentation-production/` is the AI operating entry point provided by the project. Presentation data lives outside the repository under `PRESENTATION_DATA_ROOT`, without depending on an enclosing workspace name or a particular existing deck.
 
 ## First use: start here
 
@@ -20,11 +22,10 @@ Read the [user getting-started guide](docs/GETTING_STARTED.en.md) for post-clone
 4. If `sample` already exists, reuse it or choose another case ID. `init_case.py` does not overwrite cases.
 
 ```bash
-PROJECT_ROOT="/absolute/path/to/public"
+PROJECT_ROOT="/absolute/path/to/talk-to-presentation"
 export PRESENTATION_DATA_ROOT="$("$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_data.py")"
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" sample
-node "$PROJECT_ROOT/tools/takahashi-html/build.mjs" sample
-node "$PROJECT_ROOT/tools/visual-html/build.mjs" sample
+node "$PROJECT_ROOT/tools/presentation.mjs" rebuild sample --target html
 python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROOT"
 ```
 
@@ -35,6 +36,16 @@ Open these addresses in a browser:
 
 Create a case with `"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"`.
 See [workflow](.agents/skills/presentation-production/references/workflow.en.md) for commands, source schemas, and confirmation steps.
+
+## Project operations
+
+[Operations and rebuild contract](docs/OPERATIONS.en.md) defines the unified interface, source validation, status meanings and protection for existing HTML. Query with `presentation.mjs status`, inspect required steps with `plan`, then `rebuild` within existing authorization. The production skill refers to this tool contract; case decisions remain in `content/draft.md`.
+
+```bash
+node "$PROJECT_ROOT/tools/presentation.mjs" status my-talk --json
+node "$PROJECT_ROOT/tools/presentation.mjs" plan my-talk --target video
+node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target video
+```
 
 ## Voice and video
 

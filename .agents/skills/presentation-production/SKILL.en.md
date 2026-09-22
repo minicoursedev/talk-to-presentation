@@ -29,6 +29,8 @@ Use this skill with the capability project. It assumes no brand, topic, or speak
 - If every page needs an image, set `case.json.visual.requireImages`, including titles, questions, and closing pages. File presence or compilation cannot replace visual review.
 - Invoke tools with absolute paths based on `PROJECT_ROOT`. Do not hard-code installation locations or write production data into the capability repository.
 
+- Before checking progress or rebuilding, use `presentation.mjs status` / `plan` as defined in the [operations contract](../../../docs/OPERATIONS.en.md); execute necessary `rebuild` steps within existing authorization. Status is derived from sources and outputs; decisions remain in case records.
+
 ## Read for the current task
 
 - New cases, schemas, branding, script review: [workflow](references/workflow.en.md).
@@ -43,5 +45,5 @@ After organizing content or editing narration, run `node "$PROJECT_ROOT/tools/re
 
 - Speech changes: regenerate only authorized pages, then rebuild timing, captions, and video. Keep other pages' WAVs unchanged.
 - Image changes: rebuild illustrated HTML and video. Animation changes: rebuild video. Brand changes: rebuild both HTML versions and video. Reuse confirmed narration for these operations.
-- After any `slides.json` or `case.json` change, run `voice.py timeline` with existing WAVs before narrated preparation to refresh source hashes. This invokes no TTS; unchanged WAVs and timing settings preserve duration.
+- Timeline freshness depends on narration, tone, page order, fps, gaps and WAVs; screen, image, brand or dimension changes alone can reuse it. Legacy timelines still check the full source hash and may need one refresh with existing WAVs. Detailed status and rebuild rules are defined in the [operations contract](../../../docs/OPERATIONS.en.md).
 - After shared-capability changes, select relevant checks from [rebuild verification](../../../docs/REPRODUCIBILITY.en.md). Documentation-only proofreading checks translations, links, examples, and the skill. Dependency or production-flow changes need the corresponding independent installation or end-to-end checks. Report actual results and unverified stages.

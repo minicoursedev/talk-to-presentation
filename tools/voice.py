@@ -1,7 +1,7 @@
 """Validate, generate selected main/background narration, or rebuild existing WAVs."""
 import argparse, math, re, wave, array, sys, hashlib
 from pathlib import Path
-from common import ROOT, DATA_ROOT, data_path, case_file, read, write, load, catalog
+from common import ROOT, DATA_ROOT, data_path, case_file, read, write, load, catalog, source_contract
 
 def pcm(path):
     with wave.open(str(path),'rb') as w:
@@ -33,8 +33,7 @@ def narration_parts(slide, kind):
     if not text: return []
     parts=slide.get('narrationSegments')
     if parts is None: return [(None,text,slide.get('tone'))]
-    if not isinstance(parts,list) or not parts or any(not isinstance(p,dict) or not isinstance(p.get('text'),str) or not p['text'].strip() or not isinstance(p.get('tone'),str) or not p['tone'].strip() for p in parts) or ''.join(p['text'] for p in parts)!=text:
-        raise ValueError(f'Page {page}: narrationSegments must exactly match narration')
+    # common.load validates segments using the shared executable contract.
     return [(i,p['text'],p['tone']) for i,p in enumerate(parts,1)]
 
 def audio_path(case,page,kind,index):
@@ -42,6 +41,7 @@ def audio_path(case,page,kind,index):
     return case_file(case,f'audio/{kind}/page-{page}{suffix}.wav')
 
 def rebuild(case,meta,slides):
+    narration_source=source_contract(case.name)['timelineSource']
     fps=meta['format']['fps'];timing=meta['timing'];rate=None;combined=array.array('h');records=[];captions=[];cursor=0;inputs=[]
     for slide in slides:
         page=slide['page']; segments=[]
@@ -79,7 +79,7 @@ def rebuild(case,meta,slides):
         records.append({'page':page,'startFrame':cursor,'frames':frames,'voiceStartFrame':cursor+timing['voiceOffsetFrames']})
         cursor+=frames
     save(case/'audio/timeline.wav',rate,combined)
-    write(case/'content/timeline.json',{'fps':fps,'durationInFrames':cursor,'pages':records,'source':hashlib.sha256((case/'content/slides.json').read_bytes()+(case/'case.json').read_bytes()).hexdigest(),'inputs':inputs})
+    write(case/'content/timeline.json',{'fps':fps,'durationInFrames':cursor,'pages':records,'source':hashlib.sha256((case/'content/slides.json').read_bytes()+(case/'case.json').read_bytes()).hexdigest(),'narrationSource':narration_source,'inputs':inputs})
     (case/'content/narration.srt').write_text('\n'.join(captions),encoding='utf-8')
     print(f'Rebuilt {len(records)} pages, {cursor} frames, {len(combined)/rate:.3f}s; no TTS called')
 

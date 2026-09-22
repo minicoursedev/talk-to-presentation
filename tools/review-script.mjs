@@ -4,21 +4,12 @@ import {realpathSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {casePath, caseFile} from './data-paths.mjs';
+import {caseFile} from './data-paths.mjs';
+import {loadCase, validateSlides} from './contract.mjs';
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const present = value => typeof value === 'string' && value.trim().length > 0;
 export function renderReview(meta, slides, hash, generatedAt) {
-  const seen = new Set();
-  if (!Array.isArray(slides) || !slides.length) throw Error('No slides to review');
-  for (const slide of slides) {
-    if (!Number.isInteger(slide.page) || slide.page < 1 || seen.has(slide.page)) throw Error('Invalid or duplicate page');
-    seen.add(slide.page);
-    for (const field of ['screen','narration','backgroundNarration','tone','backgroundTone']) {
-      if (slide[field] != null && typeof slide[field] !== 'string') throw Error(`Page ${slide.page}: invalid ${field}`);
-    }
-    if (slide.parts != null && (!Array.isArray(slide.parts) || slide.parts.some(p => !p || (typeof p.text !== 'string' && (!Array.isArray(p.runs) || p.runs.some(r => !r || typeof r.text !== 'string')))))) throw Error('Invalid screen parts');
-    if (slide.narrationSegments != null && (!Array.isArray(slide.narrationSegments) || !slide.narrationSegments.length || slide.narrationSegments.some(segment => !segment || !present(segment.text) || !present(segment.tone)) || slide.narrationSegments.map(segment => segment.text).join('') !== slide.narration)) throw Error(`Page ${slide.page}: invalid narration segments`);
-  }
+  validateSlides(slides);
   const field = (label, value, fallback, cls='') => `<div class="field ${cls}"><h3>${label}</h3><div class="text${present(value)?'':' missing'}">${escape(present(value)?value:fallback)}</div></div>`;
   const cards = slides.map(s => {
     const screen = s.parts?.length ? s.parts.map(p => Array.isArray(p.runs) ? p.runs.map(r => r.text).join('') : p.text).join('\n') : s.screen;
@@ -34,10 +25,9 @@ compare.addEventListener('click',()=>mode(false));continuous.addEventListener('c
 </script></body></html>`;
 }
 export async function buildReview(id) {
-  const dir=casePath(id);
+  const {dir, meta, slides}=loadCase(id);
   const raw=await readFile(caseFile(dir,'content/slides.json'));
-  const meta=JSON.parse(await readFile(caseFile(dir,'case.json'),'utf8'));
-  const result=renderReview(meta,JSON.parse(raw),createHash('sha256').update(raw).digest('hex'),new Date().toISOString());
+  const result=renderReview(meta,slides,createHash('sha256').update(raw).digest('hex'),new Date().toISOString());
   const output=caseFile(dir,'dist/script-review.html');
   await mkdir(caseFile(dir,'dist'),{recursive:true});
   await writeFile(output,result);

@@ -8,7 +8,7 @@ Set absolute `PROJECT_ROOT` for the capability and external `PRESENTATION_DATA_R
 
 ## Prepare narrated video sources
 
-Illustrated HTML is the composition reference. Rebuild timing from final WAVs, then capture page frames from HTML. Any `slides.json` or `case.json` change, including image references alone, requires rerunning timeline to refresh source hashes. This does not regenerate speech.
+Illustrated HTML is the composition reference. Refresh stale timing from final WAVs before capturing page frames. New timelines can be reused for changes limited to screen text, images, brand or dimensions; legacy compatibility and precise rebuild rules are defined in the [operations contract](../../../../docs/OPERATIONS.en.md). These rebuilds do not invoke TTS.
 
 ```bash
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk

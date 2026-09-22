@@ -29,6 +29,8 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 - 每页需图时设定 `case.json.visual.requireImages`，含标题、提问及结尾页；实际看图验收不能由档案存在或建置成功代替。
 - 呼叫工具使用由 `PROJECT_ROOT` 组成的绝对路径。不得写死使用者安装位置，也不得把制作资料写入能力仓库。
 
+- 查询现况或重建前，依[操作与重建契约](../../../docs/OPERATIONS.zh-CN.md)使用 `presentation.mjs status`／`plan`；已有授权时执行必要的 `rebuild`。状态由来源及产物计算，决策仍读案例记录。
+
 ## 按任务阅读
 
 - 新案件、schema、品牌、台词检阅：[工作流程](references/workflow.zh-CN.md)。
@@ -43,5 +45,5 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 
 - 配音变更：只重制授权范围内的页面，再更新时间轴、字幕与影片；其他页 WAV 保持不变。
 - 图片变更：重建美化 HTML 与影片；动画变更：重建影片；品牌变更：重建两种 HTML 与影片。这些操作沿用已确认旁白。
-- 任何 `slides.json` 或 `case.json` 变更后，正式影片 prepare 前先以既有 WAV 执行 `voice.py timeline` 更新来源杂凑。这不呼叫 TTS；WAV 与 timing 未变时，时间长度不变。
+- 时间轴依旁白、语气、页序、fps、停顿与 WAV 判断是否过期；只改画面、图片、品牌或画幅时可沿用。旧版时间轴仍检查完整来源哈希，必要时以既有 WAV 更新一次。详细状态与重建规则以[操作与重建契约](../../../docs/OPERATIONS.zh-CN.md)为准。
 - 修改共用能力后，依[重建验证](../../../docs/REPRODUCIBILITY.zh-CN.md)选择受影响的检查。纯文件校稿检查三语、连结、范例及 skill；依赖或产制流程变更才需对应的独立安装／端到端验证。回报实际通过项目与未验证阶段。

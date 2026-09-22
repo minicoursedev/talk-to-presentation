@@ -4,7 +4,7 @@
 
 # 案件與工作流程
 
-交接 project 的 README 是執行入口。此 skill 必須保留在 project 的 `.agents/skills/`，以下文件連結才有效。若全域安裝 skill，需將文件連結改為使用者指定 project 的絕對路徑；不要依賴 skill 目錄反推另一個 project。
+本專案 README 是使用入口。通用操作、可執行來源驗證與重建狀態見[操作契約](../../../../docs/OPERATIONS.md)；本文件說明案件欄位與內容流程。skill 隨專案保存在 `.agents/skills/`，相對文件連結以這個配置為準。
 
 ```text
 <capability-root>/

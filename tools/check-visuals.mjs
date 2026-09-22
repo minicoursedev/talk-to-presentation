@@ -1,6 +1,6 @@
-import {casePath} from './data-paths.mjs';
-import {readFile, stat, realpath} from 'node:fs/promises';
-import {dirname, resolve, isAbsolute, sep} from 'node:path';
+import {loadCase} from './contract.mjs';
+import {stat, realpath} from 'node:fs/promises';
+import {resolve, isAbsolute, sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 // Asset coverage is measurable; relevance and readability still need visual review.
@@ -56,10 +56,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         flags.some(flag => flag !== '--require-images')) {
       throw new Error('Usage: node tools/check-visuals.mjs <case-id> [--require-images]');
     }
-    const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-    const caseDir = casePath(id);
-    const read = async path => JSON.parse(await readFile(resolve(caseDir, path), 'utf8'));
-    const result = await checkVisuals(caseDir, await read('case.json'), await read('content/slides.json'), flags.includes('--require-images'));
+    const {dir: caseDir, meta, slides} = loadCase(id);
+    const result = await checkVisuals(caseDir, meta, slides, flags.includes('--require-images'));
     console.log(JSON.stringify(result, null, 2));
     console.log('Asset references checked. Image relevance, decoding and text visibility still require rendered review.');
   } catch (error) {

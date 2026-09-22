@@ -2,11 +2,13 @@
 
 [数据存放规则](docs/DATA_LAYOUT.zh-CN.md)：所有 `cases/`、`shared/voice/`、`models/` 及使用中的 `brand.json` 路径均相对于用户数据根目录；`tools/`、`templates/` 与内置 `shared/styles/default/` 相对于能力根目录。 能力仓库只保存工具、skill、内置模板与中性示例。一般制作不得修改内置风格、示例或参考网站。用户录音、逐字稿、品牌、自定义风格、案例与输出都放在仓库外。
 
-# 演示文稿制作交接包（macOS）
+# 说说变简报（talk-to-presentation）
 
 从人与 AI 的对话整理共同内容来源，制作高桥流 HTML、美化 HTML 与旁白 [Canvas Commons](https://github.com/canvas-commons/canvas-commons) MP4。品牌、声音及案件内容可替换，不限定任何活动或组织。
 
-这个目录就是交接 project。整个目录可搬移；不需原工作区、旧案件、原用户帐号或原虚拟环境。`.agents/skills/presentation-production/` 是随项目交付的 skill。在“说说变简报”工作区中，从包含本能力目录的工作区根目录开始对话并调用本目录能力；若单独移动本能力包，也可将本目录开成项目，或依文件操作 scripts。
+这是一个可重用的演示文稿制作项目，包含制作工具、AI skill、可替换的默认风格、案例模板与操作文档。默认“说书人”以整个故事统整画面、台词与节奏；题材、品牌、声音与风格由每个案例决定。
+
+整个项目可以移动，也可直接 clone 后打开使用。`.agents/skills/presentation-production/` 是项目提供的 AI 操作入口；各演示文稿资料保存在仓库外的 `PRESENTATION_DATA_ROOT`，不依赖外层工作区名称或某一份既有演示文稿。
 
 ## 第一次使用：从这里开始
 
@@ -20,11 +22,10 @@
 4. `sample` 已存在时沿用既有案件或改用新的 ID；`init_case.py` 不会覆写案件。
 
 ```bash
-PROJECT_ROOT="/absolute/path/to/public"
+PROJECT_ROOT="/absolute/path/to/talk-to-presentation"
 export PRESENTATION_DATA_ROOT="$("$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_data.py")"
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" sample
-node "$PROJECT_ROOT/tools/takahashi-html/build.mjs" sample
-node "$PROJECT_ROOT/tools/visual-html/build.mjs" sample
+node "$PROJECT_ROOT/tools/presentation.mjs" rebuild sample --target html
 python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROOT"
 ```
 
@@ -35,6 +36,16 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory "$PRESENTATION_DATA_ROO
 
 新案件：`"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --title "My talk"`。
 完整命令、来源 schema 与确认关卡见 [工作流程](.agents/skills/presentation-production/references/workflow.zh-CN.md)。
+
+## 项目操作
+
+[操作与重建契约](docs/OPERATIONS.zh-CN.md)定义统一入口、来源验证、状态语义及既有 HTML 的保护方式。使用 `presentation.mjs status` 查询、`plan` 查看必要步骤，再依已有授权执行 `rebuild`。制作 skill 引用这份工具契约；案例决策仍记在 `content/draft.md`。
+
+```bash
+node "$PROJECT_ROOT/tools/presentation.mjs" status my-talk --json
+node "$PROJECT_ROOT/tools/presentation.mjs" plan my-talk --target video
+node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target video
+```
 
 ## 配音与视频
 

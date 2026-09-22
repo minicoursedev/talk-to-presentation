@@ -29,6 +29,8 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 - 每頁需圖時設定 `case.json.visual.requireImages`，含標題、提問及結尾頁；實際看圖驗收不能由檔案存在或建置成功代替。
 - 呼叫工具使用由 `PROJECT_ROOT` 組成的絕對路徑。不得寫死使用者安裝位置，也不得把製作資料寫入能力倉庫。
 
+- 查詢現況或重建前，依[操作與重建契約](../../../docs/OPERATIONS.md)使用 `presentation.mjs status`／`plan`；已有授權時執行必要的 `rebuild`。狀態由來源及產物計算，決策仍讀案件紀錄。
+
 ## 按任務閱讀
 
 - 新案件、schema、品牌、台詞檢閱：[工作流程](references/workflow.md)。
@@ -43,5 +45,5 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 
 - 配音變更：只重製授權範圍內的頁面，再更新時間軸、字幕與影片；其他頁 WAV 保持不變。
 - 圖片變更：重建美化 HTML 與影片；動畫變更：重建影片；品牌變更：重建兩種 HTML 與影片。這些操作沿用已確認旁白。
-- 任何 `slides.json` 或 `case.json` 變更後，正式影片 prepare 前先以既有 WAV 執行 `voice.py timeline` 更新來源雜湊。這不呼叫 TTS；WAV 與 timing 未變時，時間長度不變。
+- 時間軸依旁白、語氣、頁序、fps、停頓與 WAV 判斷是否過期；只改畫面、圖片、品牌或畫幅時可沿用。舊版時間軸仍檢查完整來源雜湊，必要時以既有 WAV 更新一次。詳細狀態與重建規則以[操作與重建契約](../../../docs/OPERATIONS.md)為準。
 - 修改共用能力後，依[重建驗證](../../../docs/REPRODUCIBILITY.md)選擇受影響的檢查。純文件校稿檢查三語、連結、範例及 skill；依賴或產製流程變更才需對應的獨立安裝／端到端驗證。回報實際通過項目與未驗證階段。

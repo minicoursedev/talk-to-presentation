@@ -4,6 +4,16 @@
 
 # Handoff verification record
 
+## 2026-09-23: Project commands and dependency tracking
+
+- Added one source validator shared by Python and Node production tools. All eight cases visible in the workspace passed read-only source and image-reference checks. Existing cases were not rewritten and no case narration was generated.
+- The unified entry provides validate, status, plan, rebuild and check. Seven Node tests passed, covering read-only queries, extension-field preservation, existing HTML protection, narration/tone mismatch rejection, unchanged source WAVs, new/legacy timeline compatibility, changed-WAV rejection and selective rebuild behavior.
+- Trilingual documentation checks (19 families / 57 documents), skill format validation and the isolated package smoke test passed. The smoke test uses paths containing spaces/Chinese and an unrelated cwd; no new dependencies were installed.
+- A separate temporary directory outside the repository exercised the complete unified video flow from /private/tmp using existing Chrome, Node, Python and Canvas Commons dependencies. Two synthetic audio segments produced a 360×640, 30 fps, 24-frame, 0.800-second H.264/AAC/mov_text MP4, passing ffprobe and full decode.
+- Verified initial production, unchanged-output reuse, screen-only edits preserving the timeline WAV hash, silent preview, and switching back to narrated mode. Canvas Commons metadata formatting saves no longer cause false stale results.
+
+Scope: tool behavior and technical output only. No full environment reinstall, Qwen generation or human visual/listening acceptance was performed. Build receipts establish tracked-file consistency; case decisions remain in `content/draft.md`. See [OPERATIONS](OPERATIONS.en.md).
+
 ## 2026-09-22: independent installation and actual narrated rebuild
 
 This run used an external directory containing spaces and Chinese characters, invoking packaged tools from /private/tmp. The neutral two-page case used two narrationSegments with different tones on page one and single narration on page two, plus a red/teal brand palette. Production cases and the user's brand were unchanged.

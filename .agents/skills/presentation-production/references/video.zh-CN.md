@@ -8,7 +8,7 @@
 
 ## 正式影片：准备来源
 
-美化 HTML 是构图基准。使用最终 WAV 重建时间轴，再由 HTML 撷取逐页画布。若 `slides.json` 或 `case.json` 变更，即使只改图片引用，也须重跑 timeline 更新来源杂凑；不因此重制旁白。
+美化 HTML 是构图基准。时间轴过期时以最终 WAV 重建，再由 HTML 擷取逐页画布。新版时间轴可沿用于纯画面、图片、品牌或画幅变更；旧版兼容及精确重建规则见[操作契约](../../../../docs/OPERATIONS.zh-CN.md)。这些重建不调用 TTS。
 
 ```bash
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/voice.py" timeline my-talk

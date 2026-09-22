@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {casePath, caseFile, readBrand} from '../data-paths.mjs';
+import {loadCase} from '../contract.mjs';
 
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
@@ -13,8 +14,7 @@ if (!caseId || !/^[\p{L}\p{N}][\p{L}\p{N}_-]*$/u.test(caseId)) {
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(scriptDir, '../..');
 const caseDir = casePath(caseId);
-const metadata = JSON.parse(await readFile(resolve(caseDir, 'case.json'), 'utf8'));
-const slides = JSON.parse(await readFile(resolve(caseDir, 'content/slides.json'), 'utf8'));
+const {meta: metadata, slides} = loadCase(caseId);
 const brand = await readBrand();
 const brandColors = brand.colors;
 const brandPaletteCss = brandColors ? `

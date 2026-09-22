@@ -5,11 +5,12 @@ import {chromium} from 'playwright';
 import {existsSync, symlinkSync} from 'node:fs';
 import {readFile, stat} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {capabilityRoot, casePath, caseFile} from './data-paths.mjs';
+import {capabilityRoot, caseFile} from './data-paths.mjs';
+import {loadCase} from './contract.mjs';
 
 const [id, ...flags] = process.argv.slice(2);
 if (!id || flags.some(f => f !== '--preview')) throw Error('Usage: node tools/render-video.mjs <case-id> [--preview]');
-const dir = casePath(id), motion = caseFile(dir, 'motion');
+const {dir} = loadCase(id), motion = caseFile(dir, 'motion');
 const prepared = JSON.parse(await readFile(caseFile(dir, 'motion/src/prepared.json'), 'utf8'));
 const preview = flags.includes('--preview');
 if (prepared.audio === preview) throw Error('Prepared audio mode differs: run prepare-motion with the same --preview setting');

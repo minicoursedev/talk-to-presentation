@@ -9,10 +9,10 @@
 ## 快速回归
 
 ```bash
-node --test "$PROJECT_ROOT"/tools/*.test.mjs
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/check_docs.py"
-"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/smoke_test.py"
+node "$PROJECT_ROOT/tools/presentation.mjs" check
 ```
+统一入口包含 Node 测试、三语文档检查与隔离 smoke test。来源验证、精确重建与既有 HTML 保护的回归一并执行；用法见[操作契约](OPERATIONS.zh-CN.md)。
+
 
 smoke test 在含空格及中文的临时目录解压原始码，使用另一个资料根目录，从无关 cwd 执行工具。它检查两种 HTML、用途品牌色与旧栏位相容、台词检阅、分段音讯／字幕／间隔、来源音档不变、过期语气拒绝及路径边界；不呼叫 Qwen，不安装依赖，不渲染影片。
 
