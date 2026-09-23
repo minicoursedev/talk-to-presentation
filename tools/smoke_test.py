@@ -16,6 +16,12 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  root=folder/'public';data=folder/'user data';test_env['PRESENTATION_DATA_ROOT']=str(data)
  run(sys.executable,root/'tools/init_case.py','sample',cwd='/tmp')
  case=data/'cases/sample'
+ assert [p.name for p in (case/'content').glob('draft*.md')]==['draft.md']
+ assert [p.name for p in (case/'content/style').glob('style*.md')]==['style.md']
+ catalog_path=data/'shared/voice/reference-voice/README.md'
+ assert [p.name for p in catalog_path.parent.glob('README*.md')]==['README.md']
+ assert 'draft.en.md' not in (case/'content/draft.md').read_text()
+ assert 'README.en.md' not in catalog_path.read_text()
  before={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
  run('node',root/'tools/takahashi-html/build.mjs','sample',cwd='/tmp')
  run('node',root/'tools/visual-html/build.mjs','sample',cwd='/tmp')
@@ -81,16 +87,29 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  saved=(snapshot/'style.md').read_bytes()
  # User customization must not change the built-in template.
  assert (snapshot/'style.md').read_bytes()==saved
- import shutil
- shutil.copytree(root/'shared/styles/default',data/'shared/styles/custom')
+ (data/'shared/styles/custom').mkdir()
+ (data/'shared/styles/custom/style.md').write_text('# Custom style\nOne user-authored document.\n')
  (data/'shared/styles/custom/style.json').write_text(json.dumps({'id':'custom','version':'2.0'}))
  run(sys.executable,root/'tools/init_case.py','custom-case','--style','custom',cwd='/tmp')
  assert json.loads((data/'cases/custom-case/case.json').read_text())['style']['id']=='custom'
+ assert (data/'cases/custom-case/content/style/style.md').read_text()==(data/'shared/styles/custom/style.md').read_text()
  run(sys.executable,root/'tools/init_case.py','bad-style','--style','missing',ok=False,cwd='/tmp')
  assert not (data/'cases/bad-style').exists()
- for suffix in ('','.zh-CN','.en'):
-  doc=data/f'cases/新案例/content/draft{suffix}.md'
-  assert doc.is_file() and '{{title}}' not in doc.read_text()
+ doc=data/'cases/新案例/content/draft.md'
+ assert doc.is_file() and '{{title}}' not in doc.read_text()
+ assert not (doc.parent/'draft.en.md').exists() and not (doc.parent/'draft.zh-CN.md').exists()
+ for language,marker in [('en','## Purpose and content'),('zh-CN','## 目的与内容')]:
+  run(sys.executable,root/'tools/init_case.py',f'language-{language}','--doc-language',language,cwd='/tmp')
+  content=data/f'cases/language-{language}/content'
+  assert marker in (content/'draft.md').read_text()
+  assert [p.name for p in content.glob('draft*.md')]==['draft.md']
+  assert [p.name for p in (content/'style').glob('style*.md')]==['style.md']
+ # Reinitialization preserves user-authored catalogs and legacy translations.
+ catalog_path.write_text(catalog_path.read_text()+'\nUser note\n')
+ legacy=catalog_path.parent/'README.en.md';legacy.write_text('Existing user translation\n')
+ catalog_before=catalog_path.read_bytes()
+ run(sys.executable,root/'tools/init_data.py','--doc-language','en',cwd='/tmp')
+ assert catalog_path.read_bytes()==catalog_before and legacy.read_text()=='Existing user translation\n'
  run(sys.executable,root/'tools/init_case.py','新案例',ok=False,cwd='/tmp')
  after={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
  assert before==after, 'Production changed capability repository'
@@ -108,4 +127,4 @@ with tempfile.TemporaryDirectory(prefix='handoff 測試 ') as temp:
  run('node',root/'tools/visual-html/build.mjs','sample',ok=False)
  run(sys.executable,root/'tools/voice.py','timeline','sample',ok=False)
  assert not (data/'outside.html').exists()
- print('PASS: relocation, external data isolation, semantic and legacy palettes, both HTML builders, missing voices, independent cases, segmented narration/review/captions/gaps, stale-tone rejection, frame-aligned timing, unchanged source WAVs')
+ print('PASS: relocation, external data isolation, semantic and legacy palettes, both HTML builders, missing voices, independent cases, single-language user documents and styles, preserved existing records, segmented narration/review/captions/gaps, stale-tone rejection, frame-aligned timing, unchanged source WAVs')

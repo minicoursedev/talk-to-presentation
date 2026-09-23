@@ -21,7 +21,7 @@
 
 ## 修改、替換與保存版本
 
-先複製本目錄到使用者資料根目錄的 `shared/styles/default/`，再編輯副本的 `style.md` 三語文件、`reference.html` 及其他參考資產，並更新 `style.json` 的 `version`。這份樣板同時承載敘事、口吻、視覺與節奏，並不限於色彩或排版。
+先複製本目錄到使用者資料根目錄的 `shared/styles/default/`，再依自己的工作語言編輯副本的一份 `style.md`（不要求翻譯）、`reference.html` 及其他參考資產，並更新 `style.json` 的 `version`。這份樣板同時承載敘事、口吻、視覺與節奏，並不限於色彩或排版。
 
 若要保留多套風格，複製本目錄到使用者資料根目錄的 `shared/styles/my-style/`，調整內容與 `style.json` 的 `id`／`version`，用下列命令選用；省略 `--style` 時使用 `default`：
 
@@ -29,7 +29,7 @@
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --style my-style
 ```
 
-新案件會把整套樣板複製到 `content/style/`，並在 `case.json.style` 保存識別字、版本、來源與快照位置。製作時以案件快照為準，因此更新共用樣板不會改動既有案件。自訂參考資產應放在樣板目錄內，以相對路徑連結；外部連結內容不屬於快照。
+新案件在 `content/style/` 保存樣板與參考資產；內建樣板只複製所選語言的 `style.md`，自訂樣板保留使用者提供的檔案，不要求補譯。另在 `case.json.style` 保存識別字、版本、來源與快照位置。製作時以案件快照為準，因此更新共用樣板不會改動既有案件。自訂參考資產應放在樣板目錄內，以相對路徑連結；外部連結內容不屬於快照。
 
 既有案件未記錄樣板時，保留目前成果與選擇，不自動套用預設。只有使用者要求遷移時才保留舊快照、建立新快照並更新案件記錄，逐項確認受影響的文稿、圖片、旁白與版面。沒有自動更新既有案件的命令。
 

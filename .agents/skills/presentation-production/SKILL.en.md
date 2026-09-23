@@ -31,6 +31,8 @@ Use this skill with the capability project. It assumes no brand, topic, or speak
 
 - Before checking progress or rebuilding, use `presentation.mjs status` / `plan` as defined in the [operations contract](../../../docs/OPERATIONS.en.md); execute necessary `rebuild` steps within existing authorization. Status is derived from sources and outputs; decisions remain in case records.
 
+- Multilingual maintenance applies only to this repository's project documentation, skill and built-in templates. User case drafts, delivery notes, custom styles and voice catalogs use one working-language document; add translations only when explicitly requested.
+
 ## Read for the current task
 
 - New cases, schemas, branding, script review: [workflow](references/workflow.en.md).

@@ -31,6 +31,8 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 
 - 查询现况或重建前，依[操作与重建契约](../../../docs/OPERATIONS.zh-CN.md)使用 `presentation.mjs status`／`plan`；已有授权时执行必要的 `rebuild`。状态由来源及产物计算，决策仍读案例记录。
 
+- 多语要求只适用于本项目仓库内的操作文档、skill 与内置模板。用户的案例底稿、交付说明、自定义风格与声音清单依其工作语言维护一份；只有明确要求翻译时才增加语言版本。
+
 ## 按任务阅读
 
 - 新案件、schema、品牌、台词检阅：[工作流程](references/workflow.zh-CN.md)。

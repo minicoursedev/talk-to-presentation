@@ -21,7 +21,7 @@ A presentation is a connected narrative. We act as storytellers, taking the audi
 
 ## Edit, replace, and preserve versions
 
-First copy this directory to `shared/styles/default/` under the user data root. In that copy, edit the three language versions of `style.md`, `reference.html`, and other reference assets in this directory, and update `version` in `style.json`. The template covers narrative, voice, visuals, and pacing, not just colors or layout.
+First copy this directory to `shared/styles/default/` under the user data root. In that copy, edit one `style.md` in your working language (translations are optional), `reference.html`, and other reference assets in this directory, and update `version` in `style.json`. The template covers narrative, voice, visuals, and pacing, not just colors or layout.
 
 To keep multiple styles, copy the directory under the user data root at `shared/styles/my-style/`, update its content and `style.json` id/version, and select it when creating a case. Omitting `--style` selects `default`:
 
@@ -29,7 +29,7 @@ To keep multiple styles, copy the directory under the user data root at `shared/
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --style my-style
 ```
 
-New cases copy the entire template to `content/style/` and record its id, version, source, and snapshot location in `case.json.style`. Production uses that snapshot, so shared-template updates do not alter existing cases. Keep custom reference assets inside the template directory with relative links; external linked content is not part of the snapshot.
+New cases snapshot the template and reference assets under `content/style/`. Built-in styles copy only the selected language as `style.md`; custom styles retain user-supplied files without requiring translations. Cases record the style id, version, source, and snapshot location in `case.json.style`. Production uses that snapshot, so shared-template updates do not alter existing cases. Keep custom reference assets inside the template directory with relative links; external linked content is not part of the snapshot.
 
 For existing cases without a template record, retain current outputs and decisions instead of automatically applying the default. Migrate only on user request: preserve the old snapshot, create the new snapshot, update case records, and review affected scripts, images, narration, and layouts. No command automatically upgrades existing cases.
 

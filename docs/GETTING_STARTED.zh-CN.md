@@ -8,6 +8,18 @@
 
 默认核心模板为“说书人”：以整份简报的故事线统整逐页画面、旁白与节奏。用户可修改或替换模板；新案件保存所选版本的快照，既有案件不随共用模板变动。
 
+## 案例工作文档的语言
+
+多语要求只适用于本项目仓库内的操作文档、skill 与内置模板。用户的案例底稿、交付说明、自定义风格与声音清单依其工作语言维护一份；只有明确要求翻译时才增加语言版本。
+
+初始化默认使用繁体中文，仅创建 `content/draft.md`、内置风格的 `content/style/style.md`，以及数据目录的 `shared/voice/reference-voice/README.md`。文件名固定，不复制三份。需要英文或简体中文模板时，可用 `--doc-language en` 或 `--doc-language zh-CN`，例如：
+
+```bash
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --doc-language en
+```
+
+`init_data.py` 也支持相同选项。此选项只选取工作文档模板，不翻译演示文稿或录音逐字稿；其他语言可直接在同一份文档撰写。已存在的声音清单与案例文件不会被覆盖或删除，自定义风格只需 `style.json` 与单一 `style.md`，提供的参考文件会原样保留。
+
 ## 1. Clone 后：先检查环境
 
 将下载的专案放在自己选择的目录，目录名称不限。以包含工作区指引的目录开启任务；如果只取得制作能力包，也可直接开启该包。能力根目录是包含 `tools/`、`model.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用别人的本机路径。

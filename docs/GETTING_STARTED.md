@@ -8,6 +8,18 @@
 
 預設核心樣板為「說書人」：以整份簡報的故事線統整逐頁畫面、旁白與節奏。使用者可修改或替換樣板；新案件保存所選版本的快照，既有案件不隨共用樣板變動。
 
+## 案件工作文件的語言
+
+多語要求只適用於本專案倉庫內的操作文件、skill 與內建範本。使用者的案件底稿、交付說明、自訂風格與聲音清單依其工作語言維護一份；只有明確要求翻譯時才增加語言版本。
+
+初始化預設使用繁體中文，僅建立 `content/draft.md`、內建風格的 `content/style/style.md`，以及資料目錄的 `shared/voice/reference-voice/README.md`。檔名固定，不複製三份。需要英文或簡體中文範本時，可用 `--doc-language en` 或 `--doc-language zh-CN`，例如：
+
+```bash
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --doc-language en
+```
+
+`init_data.py` 也支援相同選項。此選項只選取工作文件範本，不翻譯簡報或錄音逐字稿；其他語言可直接在同一份文件撰寫。已存在的聲音清單與案件檔案不會被覆寫或刪除，自訂風格只需 `style.json` 與單一 `style.md`，提供的參考檔會原樣保留。
+
 ## 1. Clone 後：先檢查環境
 
 將下載的專案放在自己選擇的目錄，目錄名稱不限。以包含工作區指引的目錄開啟任務；如果只取得製作能力包，也可直接開啟該包。能力根目錄是包含 `tools/`、`model.json` 及 `.agents/skills/presentation-production/` 的位置，不需要使用別人的本機路徑。

@@ -8,6 +8,18 @@ This guide lists the decisions needed at first use and for each production. Copy
 
 The default core template is Storyteller: the whole presentation’s narrative guides page visuals, narration, and pacing. Users can edit or replace the template. New cases retain a snapshot of the selected version; shared-template changes do not alter existing cases.
 
+## Language of case working documents
+
+Multilingual maintenance applies only to this repository's project documentation, skill and built-in templates. User case drafts, delivery notes, custom styles and voice catalogs use one working-language document; add translations only when explicitly requested.
+
+Initialization defaults to Traditional Chinese and creates only `content/draft.md`, the built-in style document `content/style/style.md`, and the data-root voice catalog `shared/voice/reference-voice/README.md`. Filenames stay canonical instead of producing three copies. Select an English or Simplified Chinese template with `--doc-language en` or `--doc-language zh-CN`, for example:
+
+```bash
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/init_case.py" my-talk --doc-language en
+```
+
+`init_data.py` accepts the same option. It selects working-document templates without translating slides or recording transcripts; other languages can be written in the same document. Existing catalogs and case files are never overwritten or deleted. A custom style only needs `style.json` and one `style.md`; supplied reference files are preserved.
+
 ## 1. After cloning: check the environment
 
 Place the project in a directory of your choice; its name is unrestricted. Open the directory containing the workspace instructions. If you obtained only the production capability package, you may open that package directly. The capability root contains `tools/`, `model.json`, and `.agents/skills/presentation-production/`; do not copy another user's local paths.

@@ -76,9 +76,11 @@ The archive includes reusable tools, the skill, documentation, and sample source
 
 ## Documentation languages
 
+Multilingual maintenance applies only to this repository's project documentation, skill and built-in templates. User case drafts, delivery notes, custom styles and voice catalogs use one working-language document; add translations only when explicitly requested.
+
 Existing `.md` paths contain Traditional Chinese. Sibling `.zh-CN.md` and `.en.md` files contain Simplified Chinese and English. Each document has language links at the top, and internal explanatory links stay in the selected language. Translating documentation does not rewrite example slides, tone identifiers, filenames, or recording transcripts, and does not imply a localized CLI or third-party editor UI.
 
-Maintain all document languages together. After changes, run this check for translation coverage, links, and the voice-data contract:
+Maintain all language versions of project documentation together. After changes, run this check for translation coverage, links, and the voice-data contract:
 
 ```bash
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/tools/check_docs.py"

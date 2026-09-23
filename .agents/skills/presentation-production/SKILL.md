@@ -31,6 +31,8 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 
 - 查詢現況或重建前，依[操作與重建契約](../../../docs/OPERATIONS.md)使用 `presentation.mjs status`／`plan`；已有授權時執行必要的 `rebuild`。狀態由來源及產物計算，決策仍讀案件紀錄。
 
+- 多語要求只適用於本專案倉庫內的操作文件、skill 與內建範本。使用者的案件底稿、交付說明、自訂風格與聲音清單依其工作語言維護一份；只有明確要求翻譯時才增加語言版本。
+
 ## 按任務閱讀
 
 - 新案件、schema、品牌、台詞檢閱：[工作流程](references/workflow.md)。

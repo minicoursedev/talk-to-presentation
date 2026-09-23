@@ -16,6 +16,7 @@
 - Resolve paths from script location or explicit absolute project root, never from an assumed current directory or developer home.
 - Build success is not visual/listening acceptance. Report untested stages explicitly.
 
-- Maintain Traditional Chinese, Simplified Chinese, and English versions of every explanatory document, including same-language links. Preserve executable identifiers, file paths, and actual recording transcripts.
+- Maintain Traditional Chinese, Simplified Chinese and English project documentation with same-language links. Preserve executable identifiers, paths and recording transcripts.
+- Multilingual maintenance applies only to this repository's project documentation, skill and built-in templates. User case drafts, delivery notes, custom styles and voice catalogs use one working-language document; add translations only when explicitly requested.
 
 - At first use, proactively present the [getting-started guide](docs/GETTING_STARTED.en.md) and copyable starter. Read available information and inspect the environment, then ask only consequential unanswered questions. Surface required inputs before narration or bulk production rather than after a failed attempt.
