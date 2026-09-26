@@ -79,3 +79,9 @@ node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target html --repl
 These options are mutually exclusive. `--use-existing-html` does not establish synchronization with `slides.json`, content approval or human acceptance. Existing authorization persists; the options express tool behavior rather than adding repeated approval gates.
 
 See [acceptance](../.agents/skills/presentation-production/references/acceptance.en.md) and [reproducibility](REPRODUCIBILITY.en.md).
+
+## Frame uploads
+
+`render-video.mjs` wraps Canvas Commons FFmpeg frame request bodies in Blob by default to reduce browser overhead when uploading pixel arrays. The adapter runs only in the browser page launched by this tool and leaves the installed package intact. FFmpeg still encodes MP4 output. Existing `presentation.mjs` and render-script calls use this default automatically. Recheck the frame upload interface after package upgrades; the tool reports an error if no frames use the adapter.
+
+When invoking the tool directly, use `--frame-upload array` to restore the original transport, or `--frame-upload blob` to explicitly select the default. Use `--output-name <name>` for a separate comparison output. The previously added `--gpu` option enables Vulkan browser flags independently of Blob transport and should not be used for macOS tests. These are options of this tool.

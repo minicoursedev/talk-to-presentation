@@ -79,3 +79,9 @@ node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target html --repl
 这两个选项不能并用。`--use-existing-html` 不宣称 HTML 与 `slides.json` 已同步，也不代表该案件的内容或视听验收完成。使用者既有授权持续有效，选项用来表达工具要采取的操作，不增加重复确认关卡。
 
 实际产出验收见[验收指引](../.agents/skills/presentation-production/references/acceptance.zh-CN.md)，重建测试见[可重建验证](REPRODUCIBILITY.zh-CN.md)。
+
+## 帧传送方式
+
+`render-video.mjs` 默认将 Canvas Commons FFmpeg exporter 的帧请求内容包装成 Blob，改善浏览器直接传送像素数组的延迟。此适配只作用于工具启动的浏览器页面，不修改包文件；视频仍由 FFmpeg 编码为 MP4。现有 `presentation.mjs` 与转码脚本调用会自动使用此方式。包更新后需要确认帧上传接口仍兼容；若未应用到任何帧，工具会报错。
+
+直接调用工具时，可用 `--frame-upload array` 回到原始传送方式，或用 `--frame-upload blob` 明确指定默认方式。`--output-name <name>` 可将对照结果另存；`--gpu` 是此前加入的 Vulkan 浏览器选项，与 Blob 传送独立，macOS 测试不应启用它。这些都是本工具的选项。

@@ -9,12 +9,24 @@ import {capabilityRoot, caseFile} from './data-paths.mjs';
 import {loadCase} from './contract.mjs';
 
 const [id, ...flags] = process.argv.slice(2);
-if (!id || flags.some(f => f !== '--preview')) throw Error('Usage: node tools/render-video.mjs <case-id> [--preview]');
+const usage = 'Usage: node tools/render-video.mjs <case-id> [--preview] [--gpu] [--output-name <name>] [--frame-upload array|blob]';
+if (!id) throw Error(usage);
+let preview = false, gpu = false, outputName, frameUpload = 'blob', frameUploadSpecified = false;
+for (let index = 0; index < flags.length; index++) {
+  const flag = flags[index];
+  if (flag === '--preview' && !preview) preview = true;
+  else if (flag === '--gpu' && !gpu) gpu = true;
+  else if (flag === '--output-name' && outputName === undefined) outputName = flags[++index];
+  else if (flag === '--frame-upload' && !frameUploadSpecified) {frameUpload = flags[++index]; frameUploadSpecified = true;}
+  else throw Error(usage);
+}
+if (outputName !== undefined && !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(outputName)) throw Error('Invalid output name');
+if (frameUpload !== 'array' && frameUpload !== 'blob') throw Error(usage);
 const {dir} = loadCase(id), motion = caseFile(dir, 'motion');
 const prepared = JSON.parse(await readFile(caseFile(dir, 'motion/src/prepared.json'), 'utf8'));
-const preview = flags.includes('--preview');
 if (prepared.audio === preview) throw Error('Prepared audio mode differs: run prepare-motion with the same --preview setting');
-const name = preview ? 'preview' : 'presentation';
+const name = outputName ?? (preview ? 'preview' : 'presentation');
+const browserArgs = gpu ? ['--enable-gpu', '--use-angle=vulkan', '--enable-features=Vulkan', '--disable-vulkan-surface'] : [];
 const output = caseFile(dir, `motion/output/${name}.mp4`);
 caseFile(dir, 'motion/src/project.meta');
 if (!existsSync(resolve(motion, 'node_modules'))) symlinkSync(resolve(capabilityRoot, 'node_modules'), resolve(motion, 'node_modules'), 'dir');
@@ -26,13 +38,28 @@ const moduleSource = `
 import '@canvas-commons/2d/editor';
 import project from '/src/project.ts?project';
 import {Renderer, RendererResult, LogLevel} from '@canvas-commons/core';
+const frameUpload = ${JSON.stringify(frameUpload)};
 export async function render() {
+  let blobFrames = 0;
+  // Adapt only FFmpeg frame uploads in this page; leave the installed exporter intact.
+  if (frameUpload === 'blob') {
+    const originalFetch = globalThis.fetch.bind(globalThis);
+    globalThis.fetch = (url, options) => {
+      if (url === '/ffmpeg/handleFrame' && options?.body instanceof Uint8ClampedArray) {
+        blobFrames++;
+        return originalFetch(url, {...options, body: new Blob([options.body])});
+      }
+      return originalFetch(url, options);
+    };
+  }
   const renderer = new Renderer(project);
   let result;
   renderer.onFinished.subscribe(value => {result = value;});
   const settings = project.meta.getFullRenderingSettings();
   if (settings.exporter.name !== '@canvas-commons/ffmpeg') throw Error('Expected Video (FFmpeg) exporter');
   await renderer.render({...settings, name: ${JSON.stringify(name)}});
+  if (frameUpload === 'blob' && blobFrames === 0) throw Error('Blob frame upload was not used');
+  if (frameUpload === 'blob') console.log('BLOB_FRAMES ' + blobFrames);
   if (result !== RendererResult.Success) throw Error('Canvas Commons render failed: ' + result);
   const failures = project.logger.history.filter(log => log.level === LogLevel.Error);
   if (failures.length) throw Error(failures.map(log => log.message).join('\\n'));
@@ -53,11 +80,11 @@ try {
     },
   }]});
   await server.listen();
-  browser = await chromium.launch({headless: true, ...(process.env.BROWSER_EXECUTABLE ? {executablePath: process.env.BROWSER_EXECUTABLE} : {})});
+  browser = await chromium.launch({headless: true, args: browserArgs, ...(process.env.BROWSER_EXECUTABLE ? {executablePath: process.env.BROWSER_EXECUTABLE} : {})});
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(String(error)));
-  page.on('console', message => {if (message.type() === 'error') console.error(message.text());});
+  page.on('console', message => {if (message.type() === 'error') console.error(message.text()); else if (message.text().startsWith('BLOB_FRAMES ')) console.log(message.text());});
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/__t2p-render.html`);
   console.log(`Rendering ${name} with Canvas Commons Video (FFmpeg)…`);
   await page.evaluate(async () => {
