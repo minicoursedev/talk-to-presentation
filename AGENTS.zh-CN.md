@@ -5,6 +5,8 @@
 # 演示文稿制作
 
 - 演示文稿工作使用 `.agents/skills/presentation-production/SKILL.md`。
+- 已完成视频的 YouTube 上传或更新使用 `.agents/skills/youtube-upload/SKILL.zh-CN.md`。
+- 已完成视频上传至台南AI爽 Facebook 粉丝专页使用 `.agents/skills/facebook-upload/SKILL.zh-CN.md`。
 - 延续跨任务的用户决策与既有授权。不得将生成的草稿视为已确认内容。
 - 画面文字、主旁白、补背景旁白与语气分开保存。
 - 只改指定来源及受影响的输出；默认沿用已确认的图片与音讯。

@@ -81,8 +81,9 @@ function renderSlide(slide) {
   if (slide.layout === 'art-story') classes.push('art-story');
   if (slide.layout === 'art-cover') classes.push('art-cover');
   if (asset) classes.push('with-art');
+  if (slide.visual?.textInImage) classes.push('text-in-image');
   const art = asset
-    ? `<img class="art" src="../${encodeURI(asset)}" alt="${escapeHtml(slide.visual.notes || '')}">`
+    ? `<img class="art" src="../${encodeURI(asset)}" alt="${slide.visual?.textInImage ? '' : escapeHtml(slide.visual.notes || '')}">`
     : '<div class="abstract-orb"></div>';
   return `<section class="${classes.join(' ')}" aria-label="第 ${slide.page} 頁">${art}<div class="content">${parts}</div></section>`;
 }
@@ -106,6 +107,7 @@ const html = `<!doctype html>
     .sub-text { font-size: clamp(1.7rem, min(6.2cqw, 5.6cqh), 4.6rem); font-weight: 750; line-height: 1.28; text-shadow: 0 3px 18px rgba(0, 0, 0, .25); }
     .white { color: #fff; } .dark { color: #cbd5e1; } .highlight { color: #7dddff; } .danger { color: #ff6b7b; } .success { color: #79efaa; } .warning { color: #ffd46e; } .mint { color: #93cbb4; } .rose { color: #c9959d; }
     .with-art .art { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .with-art.text-in-image .content { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .with-art .content { justify-content: flex-start; align-items: flex-start; padding-top: 19cqh; text-align: left; } .with-art .sub-text, .with-art .main-text { max-width: 88cqw; } .with-art .dark { color: #dbeafe; }
     .with-art.art-story .content { padding: 17cqh 41cqw 12cqh 7cqw; } .with-art.art-story .sub-text, .with-art.art-story .main-text { max-width: 52cqw; overflow-wrap: anywhere; word-break: break-word; } .with-art.art-story .main-text { font-size: clamp(3rem, min(8.4cqw, 7.5cqh), 6.7rem); } .with-art.art-story .main-text.compact { font-size: clamp(3rem, min(6.6cqw, 6cqh), 5.8rem); }
     .with-art.art-story .main-text.tight { font-size: clamp(2.6rem, min(5.2cqw, 5cqh), 5rem); }

@@ -28,6 +28,7 @@ Use this skill with the capability project. It assumes no brand, topic, or speak
 - Read the brand name, logo, and semantic palette from the data root's `brand.json`. Explain neutral defaults when branding is undecided; do not inherit another case's brand.
 - If every page needs an image, set `case.json.visual.requireImages`, including titles, questions, and closing pages. File presence or compilation cannot replace visual review.
 - Invoke tools with absolute paths based on `PROJECT_ROOT`. Do not hard-code installation locations or write production data into the capability repository.
+- After video rendering starts, wait for the process to finish naturally without polling its progress. Verify the output when it ends, and handle failures using the reported error.
 
 - Before checking progress or rebuilding, use `presentation.mjs status` / `plan` as defined in the [operations contract](../../../docs/OPERATIONS.en.md); execute necessary `rebuild` steps within existing authorization. Status is derived from sources and outputs; decisions remain in case records.
 

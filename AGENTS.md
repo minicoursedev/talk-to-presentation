@@ -5,6 +5,8 @@
 # 簡報製作
 
 - 簡報工作使用 `.agents/skills/presentation-production/SKILL.md`。
+- 已完成影片的 YouTube 上傳或更新使用 `.agents/skills/youtube-upload/SKILL.md`。
+- 已完成影片上傳至台南AI爽 Facebook 粉絲專頁使用 `.agents/skills/facebook-upload/SKILL.md`。
 - 延續跨任務的使用者決策與既有授權。不得將生成的草稿視為已確認內容。
 - 畫面文字、主旁白、補背景旁白與語氣分開保存。
 - 只改指定來源及受影響的輸出；預設沿用已確認的圖片與音訊。

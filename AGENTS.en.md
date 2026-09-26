@@ -5,6 +5,8 @@
 # Presentation production
 
 - Use `.agents/skills/presentation-production/SKILL.md` for presentation work.
+- Use `.agents/skills/youtube-upload/SKILL.en.md` for YouTube uploads or updates to finished videos.
+- Use `.agents/skills/facebook-upload/SKILL.en.md` for finished video uploads to the Tainan AI Buffet Facebook Page.
 - Preserve user decisions and existing approvals across tasks. Never treat generated draft content as approved.
 - Keep screen text, main narration, background narration and tones separate.
 - Change only requested sources and their affected outputs; reuse confirmed images and audio by default.
