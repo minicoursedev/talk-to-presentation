@@ -67,12 +67,12 @@ node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk --json
 - WAV／页序／fps／停顿修改：重建时间轴及影片，不自动呼叫 TTS。
 - 自订场景修改：重建影片，保留案件 `motion/src/`。
 
-新版 `timeline.json.narrationSource` 只追踪会影响旁白与时间轴的来源。旧时间轴仍支援原始完整来源杂凑；旧来源有变时，用既有 WAV 执行一次 `voice.py timeline` 即可升级，不需搬移或重制声音。
+`timeline.json` 的 `narrationSource`、`source` 与音档 SHA 保留为制作纪录；prepare-motion 直接读取时间轴，不比对这些 SHA，也不因差异阻断制作。
 
 统一入口在成功后将生成证据写入案件 `verification/build/`，记录工具／输入指纹与产物 SHA-256。它可重建，不是第二份来源。原有个别指令仍可使用，但不会补写此纪录；直接修改或重建的结果需要重新判断，不会因档案存在就标成最新。
 
 
-Canvas Commons 的 `.meta` 文件以排序后的 JSON 内容计算指纹（`json:` 前缀），忽略重新保存造成的空白格式差异；设置值变更仍会失效。其余文件以原始字节 SHA-256 比对。
+Canvas Commons 的 `.meta` 文件以排序后的 JSON 内容计算指纹（`json:` 前缀），忽略重新保存造成的空白格式差异；设置值变更仍会失效。WAV 仅追踪是否存在，不以 SHA 比对判断过期或阻断制作；替换或后制 WAV 后，直接执行 `voice.py timeline` 更新时间轴、组合音轨与字幕。其他文件以原始字节 SHA-256 比对。
 
 | 状态 | 意义 |
 | --- | --- |

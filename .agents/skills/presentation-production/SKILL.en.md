@@ -23,16 +23,25 @@ Use this skill with the capability project. It assumes no brand, topic, or speak
 
 - Build a connected story across the deck: page content, visuals, and narration jointly advance understanding. Topic, brand, speed, and image coverage are case decisions recorded in `content/draft.md`.
 - Store and edit screen text, main narration, background narration, tones, images, and animation separately. `slides.json` is the shared source; `dist/` contains rebuildable outputs.
-- After changing topic, page order, or screen text, rebuild Takahashi HTML and provide a preview. Continue under existing confirmations and authorization. Clarify only unresolved choices affecting the next step; changing tasks or using a template does not reset approval gates.
+- After changing topic, page order, or screen text, update Takahashi HTML and provide a preview; determine the operator first if this requires a long-running output below. Continue under existing confirmations and authorization. Clarify only unresolved choices affecting the next step; changing tasks or using a template does not reset approval gates.
 - Record content confirmation and execution authorization separately. Text approval alone does not authorize speech generation; retain existing authorization for full production and follow the latest user instructions. Generated drafts are not approval. Ordinary rebuilds reuse existing images and WAVs; generation and regeneration stay within the user's authorized scope.
 - Read the brand name, logo, and semantic palette from the data root's `brand.json`. Explain neutral defaults when branding is undecided; do not inherit another case's brand.
 - If every page needs an image, set `case.json.visual.requireImages`, including titles, questions, and closing pages. File presence or compilation cannot replace visual review.
 - Invoke tools with absolute paths based on `PROJECT_ROOT`. Do not hard-code installation locations or write production data into the capability repository.
-- After video rendering starts, wait for the process to finish naturally without polling its progress. Verify the output when it ends, and handle failures using the reported error.
-
-- Before checking progress or rebuilding, use `presentation.mjs status` / `plan` as defined in the [operations contract](../../../docs/OPERATIONS.en.md); execute necessary `rebuild` steps within existing authorization. Status is derived from sources and outputs; decisions remain in case records.
+- Before checking progress or rebuilding, use `presentation.mjs status` / `plan` as defined in the [operations contract](../../../docs/OPERATIONS.en.md); handle necessary `rebuild` steps under existing production authorization and the operator choice below. Status is derived from sources and outputs; decisions remain in case records.
 
 - Multilingual maintenance applies only to this repository's project documentation, skill and built-in templates. User case drafts, delivery notes, custom styles and voice catalogs use one working-language document; add translations only when explicitly requested.
+
+## Operator for long-running output
+
+This rule applies to batch TTS, full preview or final video rendering, and `presentation.mjs rebuild --target preview|video`. Short `status`, `plan`, script review, and script preparation/checks may proceed under existing task authorization.
+
+Before starting each such output, check whether the user has already specified who will run this output. If not, ask, “Who should run this long-running output?” with the following two options. Do not start the output until the user chooses. Do not infer the operator from “continue,” “complete,” or general production authorization.
+
+1. **Option 1 “You run it”**: Based on the current state, AI prepares a copyable execution script and command, checks its syntax, paths, and verifiable prerequisites, and gives it to the user to run. AI does not launch or poll that output.
+2. **Option 2 “AI runs it”**: Based on the current state, AI launches the output, waits for the process to finish naturally without polling progress, then verifies the resulting artifact and handles failures using the actual error.
+
+Revisions and retries within the same output run keep the chosen operator. Ask again for a new output run unless the user has explicitly set a continuing preference.
 
 ## Read for the current task
 
@@ -50,5 +59,5 @@ After creating or editing illustrated HTML, run `node "$PROJECT_ROOT/tools/prese
 
 - Speech changes: regenerate only authorized pages, then rebuild timing, captions, and video. Keep other pages' WAVs unchanged.
 - Image changes: rebuild illustrated HTML and video. Animation changes: rebuild video. Brand changes: rebuild both HTML versions and video. Reuse confirmed narration for these operations.
-- Timeline freshness depends on narration, tone, page order, fps, gaps and WAVs; screen, image, brand or dimension changes alone can reuse it. Legacy timelines still check the full source hash and may need one refresh with existing WAVs. Detailed status and rebuild rules are defined in the [operations contract](../../../docs/OPERATIONS.en.md).
+- Timeline freshness depends on narration, tone, page order, fps, gaps and WAV existence without comparing WAV SHA values; screen, image, brand or dimension changes alone can reuse it. Neither new nor legacy timelines gate production on source SHA equality. Detailed status and rebuild rules are defined in the [operations contract](../../../docs/OPERATIONS.en.md).
 - After shared-capability changes, select relevant checks from [rebuild verification](../../../docs/REPRODUCIBILITY.en.md). Documentation-only proofreading checks translations, links, examples, and the skill. Dependency or production-flow changes need the corresponding independent installation or end-to-end checks. Report actual results and unverified stages.

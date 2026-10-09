@@ -67,20 +67,18 @@ test('unified workflow is read-only for status, protects HTML, and reuses unaffe
     cli('rebuild', 'example', '--target', 'timeline');
     const timelineBefore = snapshot(join(dir, 'audio'));
     assert.equal(state('timeline'), 'current');
-    const timelineFile = join(dir, 'content/timeline.json');
-    const timelineBytes = readFileSync(timelineFile), legacy = JSON.parse(timelineBytes);
-    const checkTimeline = `import {loadCase, assertTimeline} from ${JSON.stringify(new URL('./contract.mjs', import.meta.url).href)}; import {readFileSync} from 'node:fs'; const c=loadCase('example'); assertTimeline(c,JSON.parse(readFileSync(c.dir+'/content/timeline.json','utf8')));`;
-    delete legacy.narrationSource; writeFileSync(timelineFile, JSON.stringify(legacy));
-    run(process.execPath, ['--input-type=module', '-e', checkTimeline]);
     slides[0].screen = '只改畫面'; slides[0].visual.notes = '圖片文字说明';
     writeFileSync(slidesFile, JSON.stringify(slides));
-    assert.match(run(process.execPath, ['--input-type=module', '-e', checkTimeline], false).stderr, /Timeline stale/);
-    writeFileSync(timelineFile, timelineBytes);
-    run(process.execPath, ['--input-type=module', '-e', checkTimeline]);
     const sourceWav = join(dir, 'audio/main/page-1.wav'), wavBytes = readFileSync(sourceWav);
     const changedWav = Buffer.from(wavBytes); changedWav[48] ^= 1; writeFileSync(sourceWav, changedWav);
-    assert.match(run(process.execPath, ['--input-type=module', '-e', checkTimeline], false).stderr, /WAV changed/);
+    assert.equal(state('timeline'), 'current', 'WAV byte changes do not invalidate the timeline');
     writeFileSync(sourceWav, wavBytes);
+    for (const name of ['audio/timeline.wav', 'audio/combined/page-1.wav']) {
+      const path = join(dir, name), bytes = readFileSync(path), changed = Buffer.from(bytes);
+      changed[48] ^= 1; writeFileSync(path, changed);
+      assert.equal(state('timeline'), 'current', 'WAV output changes do not invalidate build receipts');
+      writeFileSync(path, bytes);
+    }
     assert.equal(state('timeline'), 'current'); assert.equal(state('visual'), 'stale');
     cli('rebuild', 'example', '--target', 'html');
     assert.match(cli('rebuild', 'example', '--target', 'timeline').stdout, /Reuse timeline/);

@@ -7,6 +7,7 @@ import {digest, fingerprint, narrationJobs} from './contract.mjs';
 const pick = (value, keys) => Object.fromEntries(keys.filter(k => value[k] !== undefined).map(k => [k, value[k]]));
 const fileHash = path => {
   if (!existsSync(path) || !statSync(path).isFile()) return null;
+  if (/\.wav$/i.test(path)) return 'present';
   const bytes = readFileSync(path);
   // Canvas Commons rewrites metadata formatting while loading a scene.
   // Track every setting, but do not treat whitespace-only saves as a change.

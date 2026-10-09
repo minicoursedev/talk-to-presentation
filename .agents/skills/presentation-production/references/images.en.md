@@ -24,7 +24,7 @@ This workflow covers new illustrations, edits, and replacements. Preserve conten
 
 - Store images in the case's `assets/illustrations/`. Keep the original when replacing an image and save the new version under a distinguishable filename so comparisons remain possible.
 - Update affected `slides.json[].visual.illustrations` references and relevant `visual.notes`. Record selected pages, requested changes, asset paths, and confirmation status in `content/draft.md`. Successful generation does not mean user approval.
-- HTML and video use the same updated asset references. Image changes do not regenerate narration or alter Takahashi text. If `slides.json` or `case.json` changes, run `voice.py timeline` with existing WAVs to refresh source hashes before prepare and render. This invokes no TTS; unchanged WAVs and timing settings retain the same duration.
+- HTML and video use the same updated asset references. Image changes do not regenerate narration or alter Takahashi text. Reuse the timeline for changes limited to screen content or images. If page order or timing also changes, run `voice.py timeline` with existing WAVs to update timing.
 - If illustrated HTML is correct and only video is wrong, fix and rebuild only the video.
 
 ## Verify

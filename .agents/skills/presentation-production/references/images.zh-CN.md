@@ -24,7 +24,7 @@
 
 - 图片存于案件 `assets/illustrations/`；替换时保留原图，用可辨识的新档名保存新版，避免覆写后失去对照依据。
 - 更新受影响页的 `slides.json[].visual.illustrations` 引用与必要的 `visual.notes`，在 `content/draft.md` 记录指定页、修改要求、资产路径与确认状态。生成成功不代表用户已确认。
-- HTML 与影片读取同一份更新后的资产引用。图片变更不重制旁白，也不修改高桥流文字。若改动 `slides.json` 或 `case.json`，先用既有 WAV 执行 `voice.py timeline` 刷新来源杂凑，再 prepare 与渲染；这不呼叫 TTS，未变更 WAV 与 timing 设定时，影片时长不变。
+- HTML 与影片读取同一份更新后的资产引用。图片变更不重制旁白，也不修改高桥流文字。只改画面或图片时沿用时间轴；若同时修改页序或时间设置，再用既有 WAV 执行 `voice.py timeline` 更新时间轴。
 - 若美化 HTML 已正确、只有视频显示错误，只修正视频并重建视频。
 
 ## 验证

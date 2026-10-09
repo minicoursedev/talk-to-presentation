@@ -67,12 +67,12 @@ Validation covers unique positive page IDs, dimensions and fps, nonnegative fram
 - WAVs/page order/fps/gaps: rebuild timing and video without automatically invoking TTS.
 - Custom scenes: rebuild video, preserving the case's `motion/src/`.
 
-New `timeline.json.narrationSource` tracks only inputs affecting narration and timing. Legacy timelines still use their original full-source hash. If old sources change, running `voice.py timeline` once with existing WAVs upgrades that timeline without moving data or regenerating speech.
+The `narrationSource`, `source`, and audio SHA fields in `timeline.json` remain production records. prepare-motion reads the timeline directly without comparing these SHA values or blocking production on differences.
 
 After successful stages the unified entry writes receipts under the case's `verification/build/`, recording tool/input fingerprints and output SHA-256 hashes. These are derived evidence, not another source. Existing individual commands remain supported but do not write these receipts; directly edited or rebuilt outputs must be reevaluated instead of treating file existence as freshness.
 
 
-Canvas Commons `.meta` files use a fingerprint of canonical JSON content (prefixed `json:`), ignoring whitespace-only saves while still invalidating changed settings. All other files use raw-byte SHA-256 hashes.
+Canvas Commons `.meta` files use a fingerprint of canonical JSON content (prefixed `json:`), ignoring whitespace-only saves while still invalidating changed settings. WAVs are tracked only for existence; SHA comparisons do not invalidate their build state or block production. After replacing or postprocessing WAVs, run `voice.py timeline` directly to update timing, combined audio, and subtitles. Other files use raw-byte SHA-256 hashes.
 
 | Status | Meaning |
 | --- | --- |

@@ -17,7 +17,7 @@ Keep technical testing separate from human content approval. Record sources, out
 ## Voice, timing, and video
 
 - Missing reference WAVs stop TTS and produce a list of missing inputs; do not substitute another human voice.
-- Main/background files remain separate. WAV SHA-256 values outside the selected regeneration pages remain unchanged.
+- Main/background files remain separate. Rewrite audio files only for the selected regeneration pages.
 - Listen to every regenerated page for text, tone, internal pauses, and endings. RMS, non-silence, and successful decoding do not prove listening acceptance.
 - Rebuild timing and subtitles from the final WAVs and align them to frame boundaries. Subtitles include the confirmed main and background narration.
 - Canvas Commons build, FFmpeg exporter render, subtitle muxing, ffprobe, and full decoding all pass, with matching dimensions, fps, and duration.

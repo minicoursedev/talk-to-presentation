@@ -25,7 +25,9 @@ After confirming each page's main narration, main tone, background narration, an
 
 Omit the second command when there is no background narration. Use `--pages 2 5` to generate only selected pages. Existing audio is protected from overwriting by default. Add `--replace` only for user-requested regeneration, and retain a copy of the files being replaced first. WAVs outside the selected pages remain unchanged. Main and background generation are independent; they do not merge or rewrite the text.
 
-Visual line breaks are not TTS pause instructions. The tool collapses narration whitespace, then applies OpenCC t2s for model input while preserving source text in display and subtitles. Each WAV’s sidecar JSON stores `ttsText` after whitespace normalization but before conversion, plus tone, model revision, reference hash, and output gain. Keep these records with reused WAVs. Synthesis is not guaranteed to be byte-identical.
+Visual line breaks are not TTS pause instructions. The tool collapses narration whitespace. Chinese generation then applies OpenCC t2s for model input; English generation uses the English text directly. Display text and subtitles keep the source wording. Each WAV’s sidecar JSON stores `ttsText` after whitespace normalization, plus language, tone, model revision, reference hash, and output gain. Keep these records with reused WAVs. Synthesis is not guaranteed to be byte-identical.
+
+When speech recognition is available, transcribe newly generated WAVs page by page. A Luna subagent may compare the transcripts with `narration` in `slides.json` and `ttsText` in each WAV's sidecar JSON, reporting suspected omissions, repetitions, numbers, and technical terms with page numbers. Treat names and other error-prone ASR words as listening review candidates. Luna's text comparison does not replace listening to each page, and it must not rewrite the script or regenerate WAVs on its own.
 
 Listen to each page for text, tone, pauses, and endings. Then rebuild timing without calling Qwen:
 
@@ -35,9 +37,9 @@ Listen to each page for text, tone, pauses, and endings. Then rebuild timing wit
 
 This step uses the Python standard library to check mono PCM16, nonempty and non-silent samples, peaks below the PCM16 limit, and a consistent sample rate. Main/background gaps follow case timing. Page durations are calculated from the actual WAVs and padded to exact video frame boundaries to prevent cross-page drift. Subtitles cover the main and background narration separately; titles do not replace spoken captions.
 
-After changing narration, tone, or segmentation, regenerate affected pages within the authorized scope, then rebuild timing and video. When only replacing or postprocessing WAVs for volume or speed, rebuild from the processed audio without another TTS run. prepare-motion rejects source or WAV hashes that differ from the timeline. Passing file or technical checks does not establish listening acceptance.
+After changing narration, tone, or segmentation, regenerate affected pages within the authorized scope, then rebuild timing and video. When only replacing or postprocessing WAVs for volume or speed, rebuild from the processed audio without another TTS run. prepare-motion reads the timeline directly; WAV and timeline-source SHA equality do not gate production. Passing file or technical checks does not establish listening acceptance.
 
-Documentation language does not change speech language. The current generator fixes `language="Chinese"`; reading the English documentation does not enable English narration. Other speech languages require a separate implementation change and validation.
+Documentation language does not change speech language. The generator defaults to `language="Chinese"`. For an English case, set `"voice": {"language": "English"}` in `case.json` and use an available reference WAV from the tone catalog. Listen to every generated English segment for pronunciation and tone. The current implementation accepts `Chinese` and `English` only.
 
 ## Reuse voice mappings and change speech speed
 

@@ -107,14 +107,6 @@ export function loadCase(id) {
   if (meta.style?.snapshot != null) caseFile(dir, meta.style.snapshot);
   return {dir, meta, slides, timelineSource: timelineSource(meta, slides)};
 }
-export function assertTimeline(context, timeline) {
-  const {dir, meta, slides} = context;
-  const expected = timeline.narrationSource != null ? timelineSource(meta, slides) :
-    digest(Buffer.concat([readFileSync(caseFile(dir, 'content/slides.json')), readFileSync(caseFile(dir, 'case.json'))]));
-  if ((timeline.narrationSource ?? timeline.source) !== expected) throw Error('Timeline stale: rebuild with tools/voice.py timeline');
-  if (!Array.isArray(timeline.inputs) || !timeline.inputs.length) throw Error('Timeline has no WAV inputs');
-  for (const input of timeline.inputs) if (digest(readFileSync(caseFile(dir, input.file))) !== input.sha256) throw Error('WAV changed: rebuild timeline');
-}
 if (process.argv[1] && realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)) {
   try {
     if (process.argv.length !== 3) throw Error('Usage: node tools/contract.mjs <case-id>');

@@ -4,7 +4,7 @@ import {resolve, extname, sep} from 'node:path';
 import {createServer} from 'node:http';
 import {chromium} from 'playwright';
 import {checkVisuals} from './check-visuals.mjs';
-import {loadCase, assertTimeline} from './contract.mjs';
+import {loadCase} from './contract.mjs';
 const root=dataRoot;
 const id=process.argv[2], preview=process.argv.includes('--preview');
 if(!id || !/^[\p{L}\p{N}_-]+$/u.test(id)) throw Error('Usage: node tools/prepare-motion.mjs <case-id> [--preview]');
@@ -18,7 +18,6 @@ await checkVisuals(caseDir, meta, slides);
 let timeline;
 if(!preview){
   timeline=await json(resolve(caseDir,'content/timeline.json'));
-  assertTimeline(context, timeline);
 }
 const output=caseFile(caseDir,'motion/public');await mkdir(resolve(output,'slides'),{recursive:true});
 const errors=[];

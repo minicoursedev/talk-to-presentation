@@ -40,8 +40,14 @@ def audio_path(case,page,kind,index):
     suffix=f'-segment-{index}' if index is not None else ''
     return case_file(case,f'audio/{kind}/page-{page}{suffix}.wav')
 
+def voice_language(meta):
+    language=(meta.get('voice') or {}).get('language','Chinese')
+    if language not in ('Chinese','English'): raise ValueError(f'Unsupported voice language: {language}')
+    return language
+
 def rebuild(case,meta,slides):
     narration_source=source_contract(case.name)['timelineSource']
+    language=voice_language(meta)
     fps=meta['format']['fps'];timing=meta['timing'];rate=None;combined=array.array('h');records=[];captions=[];cursor=0;inputs=[]
     for slide in slides:
         page=slide['page']; segments=[]
@@ -53,8 +59,8 @@ def rebuild(case,meta,slides):
                 if provenance.exists():
                     log=read(provenance)
                     expected=re.sub(r'\s+',' ',text).strip()
-                    if log.get('ttsText')!=expected or log.get('tone')!=tone:
-                        raise ValueError(f'{path}: narration or tone changed; regenerate this segment')
+                    if log.get('ttsText')!=expected or log.get('tone')!=tone or log.get('language','Chinese')!=language:
+                        raise ValueError(f'{path}: narration, tone, or language changed; regenerate this segment')
                 if rate is None: rate=r
                 if rate!=r: raise ValueError(f'Sample rate mismatch: {path}')
                 inputs.append({'file':str(path.relative_to(case)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
@@ -86,6 +92,7 @@ def rebuild(case,meta,slides):
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['check','generate','timeline']);p.add_argument('case_id');p.add_argument('--kind',choices=['main','background'],default='main');p.add_argument('--pages',nargs='+',type=int);p.add_argument('--replace',action='store_true');a=p.parse_args()
     case,meta,slides=load(a.case_id)
+    language=voice_language(meta)
     if a.action=='timeline': rebuild(case,meta,slides);return
     selected=[s for s in slides if not a.pages or s['page'] in a.pages]
     if a.pages and set(a.pages)-{s['page'] for s in slides}: p.error('Unknown page number')
@@ -106,7 +113,7 @@ def main():
                 tts=re.sub(r'\s+',' ',part_text).strip()
                 jobs.append((s,kind,index,tone,tts))
     if errors: raise SystemExit('\n'.join(errors))
-    if a.action=='check': print('Voice inputs valid');return
+    if a.action=='check': print(f'Voice inputs valid ({language})');return
     if not jobs: raise SystemExit('No selected narration to generate')
     # Preflight all targets before loading model or changing audio.
     for s,kind,index,tone,tts in jobs:
@@ -130,7 +137,8 @@ def main():
             wav,text=refs[tone]
             prompts[tone]=model.create_voice_clone_prompt(ref_audio=str(wav),ref_text=converter.convert(text))
         print(f'Page {s["page"]} {kind}{f" segment {index}" if index is not None else ""} [{tone}]: {tts}',flush=True)
-        wavs,rate=model.generate_voice_clone(text=converter.convert(tts),language='Chinese',voice_clone_prompt=prompts[tone],non_streaming_mode=True)
+        text_for_model=converter.convert(tts) if language=='Chinese' else tts
+        wavs,rate=model.generate_voice_clone(text=text_for_model,language=language,voice_clone_prompt=prompts[tone],non_streaming_mode=True)
         data=np.asarray(wavs[0]).reshape(-1)
         if not len(data) or not np.isfinite(data).all(): raise RuntimeError('Invalid TTS output')
         peak=float(np.max(np.abs(data)))
@@ -139,6 +147,6 @@ def main():
         if gain<1: data=data*gain
         target=audio_path(case,s['page'],kind,index)
         save(target,int(rate),array.array('h',np.rint(data*32767).astype(np.int16)))
-        write(target.with_suffix('.json'),{'page':s['page'],'kind':kind,'segment':index,'tone':tone,'ttsText':tts,'model':config,'referenceSha256':hashlib.sha256(refs[tone][0].read_bytes()).hexdigest(),'outputPeakBeforeGain':peak,'outputGain':gain})
+        write(target.with_suffix('.json'),{'page':s['page'],'kind':kind,'segment':index,'tone':tone,'ttsText':tts,'language':language,'model':config,'referenceSha256':hashlib.sha256(refs[tone][0].read_bytes()).hexdigest(),'outputPeakBeforeGain':peak,'outputGain':gain})
     print('Generated selected WAVs only. Listen, then run timeline to rebuild captions and timing.')
 if __name__=='__main__': main()
