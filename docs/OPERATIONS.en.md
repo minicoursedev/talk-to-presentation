@@ -10,6 +10,7 @@
 
 ```bash
 node "$PROJECT_ROOT/tools/presentation.mjs" validate my-talk
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk
 node "$PROJECT_ROOT/tools/presentation.mjs" status my-talk --json
 node "$PROJECT_ROOT/tools/presentation.mjs" plan my-talk --target video
 node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target video
@@ -32,6 +33,25 @@ node "$PROJECT_ROOT/tools/presentation.mjs" check
 | `video` | Script review, illustrated HTML, timeline, capture, Canvas Commons build/narrated export, subtitle mux and technical verification |
 
 Python uses the project's `.venv/bin/python` when present, otherwise `python3`; override with `PRESENTATION_PYTHON`. Browser selection retains `BROWSER_EXECUTABLE`. See [SETUP](SETUP.en.md).
+
+## HTML layout measurement
+
+After creating or editing illustrated HTML, run this independent check before video capture:
+
+```bash
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk --json
+```
+
+The tool waits up to 1.5 seconds for finite page transitions; animations still running are marked as limitations. The tool uses Playwright / `BROWSER_EXECUTABLE` to open existing illustrated HTML over local HTTP at the case dimensions, wait for fonts and images, and measure each page using its slider. It requires `.slide`, exactly one `.slide.active`, and `#progress` or `#progressBar`; the frame is `.short-frame` or the active slide. Page-count or frame-size mismatches, missing images and loading failures are errors. It does not edit HTML, cases or video, take screenshots or call AI. Output goes to stdout; `--json` includes every page, the HTML SHA-256, browser version and check time. This remains an independent step, not an automatic `rebuild` stage or build receipt change.
+
+1. `outside-frame`: text/image bounds exceed the frame; `clipped-content`: a rectangular container clips text/image bounds. Measurements allow 2px tolerance.
+2. `possible-overlap`: recognized text blocks, images, branding or counters intersect. These are warnings, not proof of occlusion or design intent. Text collisions require both element boxes and text rectangles to intersect, reducing false positives from font metrics; glyph pixels and ink collisions outside element boxes are not checked. Ancestor/descendant pairs, full-slide illustrations and `.art` are excluded from collision checks.
+3. Custom HTML may mark a content block with `data-layout-role="content"`. The `background`, `decoration` and `ignore` roles exclude the element and descendants from measurement. `data-layout-allow-overlap` excludes only collisions for that block; overflow and clipping are still checked. Annotations must reflect design intent, not hide defects.
+4. Baked-in text, image interiors, Canvas/SVG/iframe interiors, complex masks, rotated/3D bounds and running animations are reported as coverage limitations. Intentionally hidden text is excluded from visible-content checks; pages with no visible DOM text are explicitly reported. CSS backgrounds, pseudo-elements and arbitrary custom visual components are outside complete coverage.
+5. Exit `0` means no geometry errors were found, but warnings and limitations may remain; `2` means overflow/clipping was found; `1` means execution or input failure. Default output lists at most 20 findings; use `--json` for all details. Rerun after source edits. Reports do not confirm agreement with source text or establish visual/video acceptance.
+
+Use the report to fix geometry first, then inspect every page according to [acceptance](../.agents/skills/presentation-production/references/acceptance.en.md). Pages using `textInImage` still need review of text inside images. Screenshots required for video production remain unchanged.
 
 ## Source contract
 

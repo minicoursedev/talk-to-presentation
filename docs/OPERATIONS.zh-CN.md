@@ -10,6 +10,7 @@
 
 ```bash
 node "$PROJECT_ROOT/tools/presentation.mjs" validate my-talk
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk
 node "$PROJECT_ROOT/tools/presentation.mjs" status my-talk --json
 node "$PROJECT_ROOT/tools/presentation.mjs" plan my-talk --target video
 node "$PROJECT_ROOT/tools/presentation.mjs" rebuild my-talk --target video
@@ -32,6 +33,25 @@ node "$PROJECT_ROOT/tools/presentation.mjs" check
 | `video` | 台词检阅、美化 HTML、时间轴、撷取、Canvas Commons build／含音讯汇出、字幕封装与技术验证 |
 
 Python 优先使用专案 `.venv/bin/python`，没有时使用 `python3`；可用 `PRESENTATION_PYTHON` 指定执行档。浏览器沿用 `BROWSER_EXECUTABLE` 设定。完整安装见 [SETUP](SETUP.zh-CN.md)。
+
+## HTML 版面测量
+
+美化 HTML 完成或修版后、影片撷取前，执行独立检查：
+
+```bash
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk
+node "$PROJECT_ROOT/tools/presentation.mjs" check-layout my-talk --json
+```
+
+工具会等待有限的换页动画最多 1.5 秒；仍在播放的动画标为限制。工具沿用 Playwright／`BROWSER_EXECUTABLE`，以案件画幅通过本机 HTTP 打开既有美化 HTML，等待字体与图片、依既有滑杆逐页测量。需要 `.slide`、唯一 `.slide.active`、`#progress` 或 `#progressBar`，画布使用 `.short-frame` 或当前投影片。页数与画幅不符、缺图或加载失败会报错。它不修改 HTML、案件或影片，不截图、不调用 AI；输出到终端，`--json` 提供完整逐页结果、HTML SHA-256、浏览器版本与检查时间。这是独立步骤，不自动并入 `rebuild` 或变更生成记录。
+
+1. `outside-frame`：文字／图片外框超出画布；`clipped-content`：文字／图片被矩形容器裁切。允许 2px 误差。
+2. `possible-overlap`：可识别的文字区块、图片、品牌或页码范围相交，仅为警告。文字碰撞需区块外框及文字测量范围同时相交，以减少字体留白造成的误报；不检测字形像素或超出区块外框的笔画碰撞。排除父子元素、满版插图与 `.art` 的碰撞，不推定遮挡或设计意图。
+3. 自定义 HTML 可用 `data-layout-role="content"` 指定内容区块；`background`、`decoration`、`ignore` 排除该元素及子元素的测量。`data-layout-allow-overlap` 只排除该区块的碰撞检查，仍测量越界与裁切。这些标记需反映设计意图，不用来隐藏错误。
+4. 图片内文字、图片内部、Canvas／SVG／iframe 内部、复杂遮罩、旋转／3D 外框与进行中的动画会标为检查限制。刻意隐藏的文字不作可见内容检查；没有可见 DOM 文字的页面也会明示。CSS 背景、伪元素及任意自定义视觉组件不在完整检查范围内。
+5. 结束码 `0` 表示未找到几何错误，仍可能有警告或未检查范围；`2` 表示找到越界／裁切；`1` 表示执行或输入失败。一般输出最多列 20 条问题，完整内容使用 `--json`。修改来源后重新测量；报告不确认 HTML 与原稿文字一致，也不代表视觉或影片验收。
+
+先利用测量报告修正几何问题，再依[验收指引](../.agents/skills/presentation-production/references/acceptance.zh-CN.md)逐页看图。`textInImage` 页面仍须检查图片内文字；影片制作用的截图维持原流程。
 
 ## 来源契约
 

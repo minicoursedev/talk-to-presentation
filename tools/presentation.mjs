@@ -9,6 +9,7 @@ import {stageNames, targets, stageInput, stageStatus, recordStage, audioIssues, 
 
 const help = `Usage: node tools/presentation.mjs <command> [case-id] [options]
   validate <case-id>                 Check the shared source contract and assets
+  check-layout <case-id> [--json]    Measure rendered HTML geometry without writing files
   status <case-id> [--json]           Read-only derived build status
   plan <case-id> --target <target>    Read-only rebuild plan
   rebuild <case-id> --target <target> Reuse current outputs; run needed stages
@@ -46,7 +47,10 @@ function execute(stage, context, id) {
 try {
   const args = process.argv.slice(2), command = args.shift();
   if (!command || ['--help', '-h'].includes(command)) {console.log(help); process.exit(0);}
-  if (command === 'check') {
+  if (command === 'check-layout') {
+    const {layoutCommand} = await import('./check-layout.mjs');
+    process.exitCode = await layoutCommand(args);
+  } else if (command === 'check') {
     if (args.length) throw Error(help);
     run(process.execPath, ['--test', ...readdirSync(resolve(capabilityRoot, 'tools')).filter(name => name.endsWith('.test.mjs')).sort().map(name => resolve(capabilityRoot, 'tools', name))]);
     py('check_docs.py'); py('smoke_test.py');

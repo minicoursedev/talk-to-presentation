@@ -44,6 +44,8 @@ description: 透過人與 AI 對話整理簡報，使用隨附的可攜 macOS �
 
 內容整理或台詞修改後，執行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主動提供 `dist/script-review.html`。它顯示逐頁對照、連續台詞及分段語氣；修訂仍回寫 `slides.json` 再生成，不另建可編輯詞稿。生成檢閱頁不代表台詞已確認。
 
+美化 HTML 完成或修改後、影片擷取前，執行 `node "$PROJECT_ROOT/tools/presentation.mjs" check-layout <case-id>`，先依報告修正越界／裁切並審核疑似重疊，再進行逐頁視覺驗收。`--json` 提供完整資料；圖片內文字與其他未檢查範圍不得當作通過。這是獨立唯讀檢查，不自動改版或渲染；用法及自訂 HTML 標記見[操作契約](../../../docs/OPERATIONS.md)。
+
 ## 修改後重建
 
 - 配音變更：只重製授權範圍內的頁面，再更新時間軸、字幕與影片；其他頁 WAV 保持不變。

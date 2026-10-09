@@ -8,6 +8,8 @@ Keep technical testing separate from human content approval. Record sources, out
 
 ## HTML
 
+- After HTML edits, run `presentation.mjs check-layout <case-id>`, address overflow/clipping and review possible overlaps. Preserve coverage limitations for baked-in text and other unmeasured areas. Geometry checks do not replace the following per-page visual review.
+
 - Both HTML versions match slides.json in page order and text; keyboard and page-slider navigation work.
 - Inspect every page over local HTTP for line breaks, overflow, image crops, branding, and page numbers.
 - When the brand name or logo changes, all three outputs use brand.json. The user supplies the production logo.

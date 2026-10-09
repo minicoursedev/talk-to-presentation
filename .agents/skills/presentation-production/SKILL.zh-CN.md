@@ -44,6 +44,8 @@ description: 通过人与 AI 对话整理演示文稿，使用随附的可携 ma
 
 内容整理或台词修改后，执行 `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>`，主动提供 `dist/script-review.html`。它显示逐页对照、连续台词及分段语气；修订仍回写 `slides.json` 再生成，不另建可编辑词稿。生成检阅页不代表台词已确认。
 
+美化 HTML 完成或修改后、影片撷取前，执行 `node "$PROJECT_ROOT/tools/presentation.mjs" check-layout <case-id>`，先依报告修正越界／裁切并审核疑似重叠，再进行逐页视觉验收。`--json` 提供完整数据；图片内文字与其他未检查范围不得当作通过。这是独立唯读检查，不自动改版或渲染；用法及自定义 HTML 标记见[操作契约](../../../docs/OPERATIONS.zh-CN.md)。
+
 ## 修改后重建
 
 - 配音变更：只重制授权范围内的页面，再更新时间轴、字幕与影片；其他页 WAV 保持不变。

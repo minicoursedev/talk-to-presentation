@@ -8,6 +8,8 @@
 
 ## HTML
 
+- HTML 修版后先执行 `presentation.mjs check-layout <case-id>`，处理越界／裁切并审核疑似重叠；保留图片内文字与其他未检查范围的标示。测量通过不能取代下列逐页视觉检查。
+
 - 两种 HTML 页序与文字皆对应 slides.json；键盘、页码滑杆可操作。
 - 在本机 HTTP 预览实际查看所有页面，检查换行、溢出、图片裁切、品牌、页码。
 - 修改品牌名称与 Logo 时三种输出共用 brand.json，正式 Logo 由用户提供。

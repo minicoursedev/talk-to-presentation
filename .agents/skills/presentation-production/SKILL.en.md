@@ -44,6 +44,8 @@ Use this skill with the capability project. It assumes no brand, topic, or speak
 
 After organizing content or editing narration, run `node "$PROJECT_ROOT/tools/review-script.mjs" <case-id>` and provide `dist/script-review.html`. It shows page comparison, continuous narration, and segment tones. Apply revisions to `slides.json` and regenerate instead of maintaining a second editable manuscript. Creating the review page does not establish content approval.
 
+After creating or editing illustrated HTML, run `node "$PROJECT_ROOT/tools/presentation.mjs" check-layout <case-id>` before video capture. Fix reported overflow/clipping and review possible overlaps before per-page visual acceptance. Use `--json` for full details; baked-in text and other unmeasured areas are not passes. This independent read-only check does not edit layouts or render video; see the [operations contract](../../../docs/OPERATIONS.en.md) for usage and custom HTML annotations.
+
 ## Rebuild after changes
 
 - Speech changes: regenerate only authorized pages, then rebuild timing, captions, and video. Keep other pages' WAVs unchanged.
