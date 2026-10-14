@@ -130,7 +130,9 @@ def main():
     from opencc import OpenCC
     from qwen_tts import Qwen3TTSModel
     torch.manual_seed(42);converter=OpenCC('t2s')
-    model=Qwen3TTSModel.from_pretrained(str(modeldir),device_map='cpu',dtype=torch.float32,attn_implementation='eager')
+    device = os.environ.get('T2P_TTS_DEVICE') or ('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print(f'TTS device: {device}; torch: {torch.__version__}; dtype: float32; attention: eager', flush=True)
+    model=Qwen3TTSModel.from_pretrained(str(modeldir),device_map=device,dtype=torch.float32,attn_implementation='eager')
     prompts={}
     for s,kind,index,tone,tts in jobs:
         if tone not in prompts:
